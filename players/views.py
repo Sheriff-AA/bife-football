@@ -4,7 +4,10 @@ from django.views import generic
 from .models import Player
 
 
-# Create your views here.
+class LandingPageView(generic.TemplateView):
+    template_name = "landing_page.html"
+
+
 class PlayerListView(generic.ListView):
     template_name = "players/player_list.html"
     context_object_name = "players"

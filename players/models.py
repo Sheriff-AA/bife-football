@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from utils.generators import unique_slugify
+import datetime
 
 
 PLAYER_POSITION = (
@@ -35,20 +37,35 @@ class Team(models.Model):
     )
 
     def __str__(self):
-        return self.user.username
+        return self.team_name
+    
+
+class Coach(models.Model):
+    first_name = models.CharField(max_length=20)
+    last_name = models.CharField(max_length=20)
+    team = models.ForeignKey("Team", on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.first_name} {self.last_name}"
 
 
 class Player(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     shirt_number = models.IntegerField()
+    slug = models.SlugField(null=True, blank=True, unique=True)
     age = models.IntegerField(default=0)
-    team = models.ForeignKey("Team", on_delete=models.CASCADE)
+    teams = models.ManyToManyField("Team", through="Contract")
     matches = models.ManyToManyField("Match", through="PlayerStat")
     position = models.CharField(max_length=30, blank=True, choices=PLAYER_POSITION)
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
+    
+    def save(self, *args, **kwargs):
+        new_slug = f"{self.first_name} {self.last_name}"
+        unique_slugify(self, new_slug)
+        super().save(*args, **kwargs)
     
 
 class PlayerStat(models.Model):
@@ -62,12 +79,25 @@ class PlayerStat(models.Model):
 class Venue(models.Model):
     name = models.CharField(max_length=120)
 
+    def __str__(self):
+        return f"{self.name}"
+
 
 class Match(models.Model):
     home_team = models.ForeignKey("Team", related_name='home_matches', on_delete=models.CASCADE)
     away_team = models.ForeignKey("Team", related_name='away_matches', on_delete=models.CASCADE)
     venue = models.ForeignKey("Venue", null=True, blank=True, on_delete=models.SET_NULL)
     date = models.DateTimeField(auto_now_add=True)
+    slug = models.SlugField(null=True, blank=True, unique=True)
+    
+
+    def save(self, *args, **kwargs):
+        new_slug = f"{self.home_team} vs {self.away_team}"
+        unique_slugify(self,new_slug)
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.home_team} VS {self.away_team}"
 
 
 class Result(models.Model):
@@ -76,5 +106,10 @@ class Result(models.Model):
     score_awayteam = models.IntegerField()
 
     def __str__(self):
-        return f"{self.score_hometeam} - {self.score_awayteam}"
+        return f"{self.match} --> {self.score_hometeam} - {self.score_awayteam}"
     
+
+class Contract(models.Model):
+    player = models.ForeignKey("Player", on_delete=models.CASCADE)
+    team = models.ForeignKey("Team", on_delete=models.CASCADE)
+    contract_date = models.DateField(default=datetime.date.today)

@@ -7,5 +7,6 @@ BASE ENDPOINT /players
 app_name = "players"
 
 urlpatterns = [
-    path("", PlayerListView.as_view())
+    path("", PlayerListView.as_view()),
+    path("<slug:slug>/", PlayerDetailView.as_view())
 ]
