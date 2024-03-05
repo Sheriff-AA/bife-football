@@ -75,6 +75,12 @@ class PlayerStat(models.Model):
     assists = models.IntegerField()
     minutes_played = models.IntegerField()
 
+    class Meta:
+        unique_together = ['player', 'match']
+
+    def __str__(self):
+        return f"{self.player} in {self.match}"
+    
 
 class Venue(models.Model):
     name = models.CharField(max_length=120)
@@ -87,9 +93,11 @@ class Match(models.Model):
     home_team = models.ForeignKey("Team", related_name='home_matches', on_delete=models.CASCADE)
     away_team = models.ForeignKey("Team", related_name='away_matches', on_delete=models.CASCADE)
     venue = models.ForeignKey("Venue", null=True, blank=True, on_delete=models.SET_NULL)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField()
     slug = models.SlugField(null=True, blank=True, unique=True)
-    
+
+    class Meta:
+        unique_together = ['home_team', 'away_team', 'date']    
 
     def save(self, *args, **kwargs):
         new_slug = f"{self.home_team} vs {self.away_team}"
@@ -97,7 +105,7 @@ class Match(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.home_team} VS {self.away_team}"
+        return f"{self.home_team} vs {self.away_team}"
 
 
 class Result(models.Model):
@@ -113,3 +121,9 @@ class Contract(models.Model):
     player = models.ForeignKey("Player", on_delete=models.CASCADE)
     team = models.ForeignKey("Team", on_delete=models.CASCADE)
     contract_date = models.DateField(default=datetime.date.today)
+    
+    class Meta:
+        unique_together = ['player', 'team', 'contract_date']
+
+    def __str__(self):
+        return f"{self.player} --> {self.team}"

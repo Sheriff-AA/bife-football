@@ -1,7 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.views import generic
+from django.db.models import Sum
 
-from .models import Player
+from .models import Player, PlayerStat
+from .forms import PlayerModelForm
 
 
 class LandingPageView(generic.TemplateView):
@@ -26,3 +28,55 @@ class PlayerDetailView(generic.DetailView):
         queryset = Player.objects.all()
 
         return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super(PlayerDetailView, self).get_context_data(**kwargs)
+        queryset = PlayerStat.objects.filter(
+            player=self.get_object()
+            )
+        context.update({
+            "stats": queryset.aggregate(
+                goals = Sum('goals'),
+                assists = Sum('assists'),
+                minutes_played = Sum('minutes_played'))
+        })
+
+        return context
+    
+
+class PlayerCreateView(generic.CreateView):
+    template_name = "players/player_create.html"
+    form_class = PlayerModelForm
+
+    def get_success_url(self):
+        return reverse("players:player-list")
+    
+    def form_valid(self, form):
+        player = form.save(commit=False)
+        player.save()
+        return super(PlayerCreateView, self).form_valid(form)
+    
+
+class PlayerUpdateView(generic.UpdateView):
+    template_name = "players/player_update.html"
+    form_class = PlayerModelForm
+
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of players for entire team       
+        return Player.objects.filter(teams=user)
+    
+    def get_success_url(self):
+        return reverse("players:player-list")
+    
+
+class LeadDeleteView(generic.DeleteView):
+    template_name = "players/player_delete.html"
+    
+    def get_queryset(self):
+        user = self.request.user
+        # initial queryset of players for entire team       
+        return Player.objects.filter(teams=user)
+
+    def get_success_url(self):
+        return reverse("players:player-list")
