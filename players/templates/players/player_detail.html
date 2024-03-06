@@ -11,7 +11,8 @@
         </div>
         <div class="p-4 sm:w-1/2 lg:w-1/4 w-1/2">
           <h2 class="title-font font-medium text-3xl text-gray-900">
-            {{ player.stats.all.count }}</h2>
+            <a href="{% url 'players:player-matches' player.slug %}">
+              {{ player.stats.all.count }}</a></h2>
           <p class="leading-relaxed">Game(s)</p>
         </div>
         <div class="p-4 sm:w-1/2 lg:w-1/4 w-1/2">

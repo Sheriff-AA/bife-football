@@ -14,3 +14,8 @@ class PlayerModelForm(forms.ModelForm):
         #     team = Team.objects.filter(organisation=request.user)
         #     super(PlayerModelForm, self).__init__(*args, **kwargs)
         #     self.fields["teams"].queryset = team
+
+class PlayerModelUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Player
+        fields =("first_name", "last_name", "shirt_number", "age", "position")

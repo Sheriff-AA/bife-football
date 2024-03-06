@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, reverse
 from django.views import generic
 from django.db.models import Sum
 
-from .models import Player, PlayerStat
-from .forms import PlayerModelForm
+from .models import Player, PlayerStat, Match
+from .forms import PlayerModelForm, PlayerModelUpdateForm
 
 
 class LandingPageView(generic.TemplateView):
@@ -18,6 +18,27 @@ class PlayerListView(generic.ListView):
         queryset = Player.objects.all()
 
         return queryset
+
+
+class PlayerMatchesListView(generic.DetailView):
+    template_name = "players/players_matches.html"
+    context_object_name = "player"
+
+    def get_queryset(self):
+        queryset = Player.objects.all()
+
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super(PlayerMatchesListView, self).get_context_data(**kwargs)
+        queryset = PlayerStat.objects.filter(
+            player=self.get_object()
+            )
+        context.update({
+            "stats": queryset
+        })
+
+        return context
     
 
 class PlayerDetailView(generic.DetailView):
@@ -59,24 +80,28 @@ class PlayerCreateView(generic.CreateView):
 
 class PlayerUpdateView(generic.UpdateView):
     template_name = "players/player_update.html"
-    form_class = PlayerModelForm
+    form_class = PlayerModelUpdateForm
+    context_object_name = "player"
 
     def get_queryset(self):
         user = self.request.user
         # initial queryset of players for entire team       
-        return Player.objects.filter(teams=user)
+        return Player.objects.all()
+        # return Player.objects.filter(teams=user)
     
     def get_success_url(self):
         return reverse("players:player-list")
     
 
-class LeadDeleteView(generic.DeleteView):
+class PlayerDeleteView(generic.DeleteView):
     template_name = "players/player_delete.html"
+    context_object_name = "player"
     
     def get_queryset(self):
         user = self.request.user
-        # initial queryset of players for entire team       
-        return Player.objects.filter(teams=user)
+        # initial queryset of players for entire team  
+        return Player.objects.all()     
+        # return Player.objects.filter(teams=user)
 
     def get_success_url(self):
         return reverse("players:player-list")

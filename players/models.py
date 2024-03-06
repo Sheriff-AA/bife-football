@@ -114,7 +114,7 @@ class Result(models.Model):
     score_awayteam = models.IntegerField()
 
     def __str__(self):
-        return f"{self.match} --> {self.score_hometeam} - {self.score_awayteam}"
+        return f"{self.match}: {self.score_hometeam} - {self.score_awayteam}"
     
 
 class Contract(models.Model):
