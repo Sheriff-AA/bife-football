@@ -35,6 +35,9 @@
             <td class="px-4 py-3">
                 {{ stat.match.result.score_hometeam }} : {{ stat.match.result.score_awayteam }}</td>
             <td class="px-4 py-3 text-lg text-gray-900">{{ stat.match.date }}</td>
+            <td class="px-4 py-3 text-lg text-gray-900">
+              <a href="{% url 'matches:match-detail' stat.match.slug %}">View</a>
+            </td>
             </tr>
           </tbody>
           {% endfor %}

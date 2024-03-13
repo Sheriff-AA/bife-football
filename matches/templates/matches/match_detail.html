@@ -2,92 +2,87 @@
 
 {% block content %}
 <section class="container mx-auto p-6 font-mono">
-    <div class="flex flex-col text-center w-full mb-20">
-        <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Match Details</h1>
-        <p class="lg:w-2/3 mx-auto leading-relaxed text-base">{{ match.result }}</p>
-      </div>
-    <p class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Home Team - {{ match.home_team }}</p>
-    <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
-      <div class="w-full overflow-x-auto">
-        <table class="w-full">
-          <thead>
-            <tr class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-              <th class="px-4 py-3">Name</th>
-              <th class="px-4 py-3">Age</th>
-              <th class="px-4 py-3">Rating</th>
-              <th class="px-4 py-3">Minutes played</th>
-            </tr>
-          </thead>
-          {% for home_player in hometeam_players %}
-          <tbody class="bg-white">
-            <tr class="text-gray-700">
-              <td class="px-4 py-3 border">
-                <div class="flex items-center text-sm">
-                  <div>
-                    <p class="font-semibold text-black">{{ home_player.first_name}}
-                        {{ home_player.last_name}}
-                    </p>
-                    <p class="text-xs text-gray-600">{{ home_player.position}}</p>
-                  </div>
-                </div>
-              </td>
-              <td class="px-4 py-3 text-ms font-semibold border">{{ home_player.age }}</td>
-              <td class="px-4 py-3 text-xs border">
-                <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-sm"> 8.0 </span>
-              </td>
-            {% for stats in players_stats %}
-                {% if home_player == stats.player %}
-                <td class="px-4 py-3 text-sm border">{{ stats.minutes_played }}</td>
-                {% endif %}
-            {% endfor %}
-            </tr>
-          </tbody>
-          {% endfor %}
-        </table>
-      </div>
-    </div>
+  <div class="flex flex-col text-center w-full mb-20">
+    <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Match Details</h1>
+    <p class="lg:w-2/3 mx-auto leading-relaxed text-base">{{ match.result }}</p>
+  </div>
 
-    
-    <p class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Away Team - {{ match.away_team }}</p>
-    <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
-      <div class="w-full overflow-x-auto">
-        <table class="w-full">
-          <thead>
-            <tr class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
-              <th class="px-4 py-3">Name</th>
-              <th class="px-4 py-3">Age</th>
-              <th class="px-4 py-3">Rating</th>
-              <th class="px-4 py-3">Minutes played</th>
-            </tr>
-          </thead>
-          {% for home_player in awayteam_players %}
+  
+  <p class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Home Team - {{ match.home_team }}</p>
+  <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
+    <div class="w-full overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
+            <th class="px-4 py-3">Name</th>
+            <th class="px-4 py-3">Age</th>
+            <th class="px-4 py-3">Rating</th>
+            <th class="px-4 py-3">Minutes played</th>
+          </tr>
+        </thead>
+        {% for player_stat in hometeam_players %}
           <tbody class="bg-white">
             <tr class="text-gray-700">
               <td class="px-4 py-3 border">
                 <div class="flex items-center text-sm">
                   <div>
-                    <p class="font-semibold text-black">{{ home_player.first_name}}
-                        {{ home_player.last_name}}
+                    <p class="font-semibold text-black">
+                      {{ player_stat.player.first_name}} {{ player_stat.player.last_name}}
                     </p>
-                    <p class="text-xs text-gray-600">{{ home_player.position}}</p>
+                    <p class="text-xs text-gray-600">{{ player_stat.player.position}}</p>
                   </div>
                 </div>
               </td>
-              <td class="px-4 py-3 text-ms font-semibold border">{{ home_player.age }}</td>
+              <td class="px-4 py-3 text-ms font-semibold border">{{ player_stat.player.age }}</td>
               <td class="px-4 py-3 text-xs border">
-                <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-sm"> 8.0 </span>
+                <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-sm"> {{ player_stat.rating }} </span>
               </td>
-            {% for stats in players_stats %}
-                {% if away_player == stats.player %}
-                <td class="px-4 py-3 text-sm border">{{ stats.minutes_played }}</td>
-                {% endif %}
-            {% endfor %}
+              <td class="px-4 py-3 text-sm border">{{ player_stat.minutes_played }}</td>
             </tr>
           </tbody>
-          {% endfor %}
-        </table>
-      </div>
+        {% endfor %}
+      </table>
     </div>
-  </section>
+  </div>
+
+  <p class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Away Team - {{ match.away_team }}</p>
+  <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
+    <div class="w-full overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
+            <th class="px-4 py-3">Name</th>
+            <th class="px-4 py-3">Age</th>
+            <th class="px-4 py-3">Rating</th>
+            <th class="px-4 py-3">Minutes played</th>
+          </tr>
+        </thead>
+        {% for player_stat in awayteam_players %}
+          <tbody class="bg-white">
+            <tr class="text-gray-700">
+              <td class="px-4 py-3 border">
+                <div class="flex items-center text-sm">
+                  <div>
+                    <p class="font-semibold text-black">{{ player_stat.player.first_name}}
+                        {{ player_stat.player.last_name}}
+                    </p>
+                    <p class="text-xs text-gray-600">{{ player_stat.player.position}}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-ms font-semibold border">{{ player_stat.player.age }}</td>
+              <td class="px-4 py-3 text-xs border">
+                <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-sm"> {{ player_stat.rating }} </span>
+              </td>
+              <td class="px-4 py-3 text-sm border">{{ player_stat.minutes_played }}</td>
+            
+            </tr>
+          </tbody>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+    
+</section>
   
 {% endblock content %}

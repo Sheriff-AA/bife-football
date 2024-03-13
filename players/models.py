@@ -71,9 +71,11 @@ class Player(models.Model):
 class PlayerStat(models.Model):
     player = models.ForeignKey("Player", related_name="stats", on_delete=models.CASCADE)
     match = models.ForeignKey("Match", on_delete=models.CASCADE)
+    team = models.ForeignKey("Team", on_delete=models.CASCADE)
     goals = models.IntegerField()
     assists = models.IntegerField()
     minutes_played = models.IntegerField()
+    rating = models.DecimalField(max_digits=5, decimal_places=2)
 
     class Meta:
         unique_together = ['player', 'match']
@@ -95,6 +97,7 @@ class Match(models.Model):
     venue = models.ForeignKey("Venue", null=True, blank=True, on_delete=models.SET_NULL)
     date = models.DateTimeField()
     slug = models.SlugField(null=True, blank=True, unique=True)
+    is_fixture = models.BooleanField(default=True)
 
     class Meta:
         unique_together = ['home_team', 'away_team', 'date']    
