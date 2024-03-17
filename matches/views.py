@@ -3,8 +3,8 @@ from django.views import generic
 from django.utils import timezone
 import datetime
 
-from players.models import Match, Result, PlayerStat
-from .forms import MatchModelForm
+from players.models import Match, Result, PlayerStat, MatchEvent
+from .forms import MatchModelForm, MatchEventFormSet, MatchEventModelForm
 
 
 # Create your views here.
@@ -69,3 +69,49 @@ class MatchCreateView(generic.CreateView):
         match.save()
         return super(MatchCreateView, self).form_valid(form)
 
+
+class MatchCreateEventView(generic.CreateView):
+    template_name = "matches/match_event_create.html"
+    form_class = MatchEventModelForm
+
+    # def get_queryset(self):
+    #     queryset = Match.objects.all()
+
+    #     return queryset
+
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(MatchCreateEventView, self).get_form_kwargs(**kwargs)
+        kwargs.update({
+            "slug": self.kwargs['slug']
+        })
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(MatchCreateEventView, self).get_context_data(**kwargs)
+        match_instance = Match.objects.get(slug=self.kwargs['slug'])
+        
+        context['match'] = match_instance
+        if self.request.POST:
+            context['formset'] = MatchEventFormSet(
+                self.request.POST, 
+                prefix='matchevents',
+                form_kwargs={'slug': self.kwargs['slug']})
+        else:
+            context['formset'] = MatchEventFormSet(
+                prefix='matchevents',
+                form_kwargs={'slug': self.kwargs['slug']}, 
+                instance=match_instance)
+        return context
+    
+    def form_valid(self, form):
+        context = self.get_context_data()
+        formset = context['formset']
+        if formset.is_valid():
+            self.object = form.save()
+            formset.instance = self.object
+            formset.save()
+        else:
+            return self.render_to_response(self.get_context_data(form=form))   
+
+    def get_success_url(self):
+        return reverse("matches:match-list")

@@ -57,28 +57,28 @@
         <table class="table-auto w-full text-left whitespace-no-wrap">
           <thead>
             <tr>
-              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
-              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
-              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
-              <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+              <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
+              <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
+              <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
+              <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
             </tr>
           </thead>
           {% for fixture in fixtures %}
           <tbody>
             <tr>
-            <td class="px-4 py-3">
+            <td class="px-3 py-3">
                 <a href="{% url 'matches:match-detail' fixture.slug %}">
                     {{ fixture.home_team }}
                 </a>
             </td>
-            <td class="px-4 py-3">
+            <td class="px-3 py-3">
                 <a href="{% url 'matches:match-detail' fixture.slug %}">
                     {{ fixture.away_team }}
                 </a>
             </td>
-            <td class="px-4 py-3 text-lg text-gray-900">{{ fixture.date|date:"F d, Y, h:i A" }}</td>
-            <td class="px-4 py-3 text-lg text-gray-900">
-              <a href="{% url 'matches:match-detail' fixture.slug %}">View</a>
+            <td class="px-3 py-3 text-lg text-gray-900">{{ fixture.date|date:"F d, Y, h:i A" }}</td>
+            <td class="px-3 py-3 text-lg text-gray-900">
+              <a href="{% url 'matches:match-event-create' fixture.slug %}">Add event(s)</a>
             </td>
             </tr>
           </tbody>

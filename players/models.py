@@ -21,6 +21,8 @@ PLAYER_POSITION = (
         ("RW", "Right Wing"),
     )
 
+MINUTES_CHOICES = [(i, f"{i}'") for i in range(1, 121)]
+
 
 class User(AbstractUser):
     pass
@@ -130,3 +132,27 @@ class Contract(models.Model):
 
     def __str__(self):
         return f"{self.player} --> {self.team}"
+
+
+class MatchEvent(models.Model):
+    EVENT_CHOICES = (
+        ('GOAL', 'Goal'),
+        ('ASSIST', 'Assist'),
+        ('YELLOW_CARD', 'Yellow Card'),
+        ('RED_CARD', 'Red Card'),
+        ('SUBSTITUTION', 'Substitution'),
+    )
+
+    match = models.ForeignKey('Match', on_delete=models.CASCADE)
+    event_type = models.CharField(max_length=20, choices=EVENT_CHOICES)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    minute = models.PositiveSmallIntegerField(choices=MINUTES_CHOICES)
+    player = models.ForeignKey('Player', on_delete=models.CASCADE, null=True, blank=True)
+    related_player = models.ForeignKey('Player', on_delete=models.CASCADE, null=True, blank=True, related_name='related_events')
+    is_own_goal = models.BooleanField(default=False)
+    is_penalty = models.BooleanField(default=False)
+    is_second_yellow_card = models.BooleanField(default=False)
+    is_direct_red_card = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.event_type} - Match: {self.match}"

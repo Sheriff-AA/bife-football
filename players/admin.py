@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import (User, Team, Player, Match, PlayerStat, Contract, Venue, Result, Coach)
+from .models import (User, Team, Player, Match, PlayerStat, Contract, Venue, Result, Coach, MatchEvent)
 
 # Register your models here.
 admin.site.register(User)
@@ -11,3 +11,4 @@ admin.site.register(Contract)
 admin.site.register(Venue)
 admin.site.register(Result)
 admin.site.register(Coach)
+admin.site.register(MatchEvent)
