@@ -141,6 +141,8 @@ class MatchEvent(models.Model):
         ('YELLOW_CARD', 'Yellow Card'),
         ('RED_CARD', 'Red Card'),
         ('SUBSTITUTION', 'Substitution'),
+        ('HALFTIME', 'Halftime'),
+        ('FULLTIME', 'Fulltime'),
     )
 
     match = models.ForeignKey('Match', on_delete=models.CASCADE)

@@ -2,13 +2,13 @@
 {% block content %}
 
 <div class="container p-6 mx-auto">
-  <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
+    <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
 
-  <div class="py-5 border-t border-gray-200">
+    <div class="py-5 border-t border-gray-200">
     <h1 class="text-4xl text-gray-800">Create match event(s) for {{ match }}</h1>
-  </div>
+    </div>
 
-  <form method="post" class="">
+    <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {{ formset.management_form }}
     <script type="text/html" id="matchevents-template">
@@ -23,7 +23,7 @@
         </tr>
     </script>
 
-    <table class="table-auto w-full text-left whitespace-no-wrap">
+    <table class="mb-5 table-auto w-full text-left whitespace-no-wrap">
         <thead>
             <tr>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Event Type</th>
@@ -34,7 +34,6 @@
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Penalty?</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Second Yellow Card?</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Straight Red Card?</th>
-            <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
             </tr>
         </thead>
 
@@ -44,7 +43,7 @@
             <tr id="matchevents-{{ forloop.counter0 }}" class="hide_all">
                 {{ form.id }}
                 {% for field in form.visible_fields %}
-                <td class="px-7 py-2 border">
+                <td class="px-7 py-2 rounded-tr rounded-br border">
                     {{ field }}
                 </td>
                 {% endfor %}
@@ -52,31 +51,59 @@
             {% endfor %}
         </tbody>
     </table>
-    
 
-    <a href="#" id="add-matchevents-button" class="add-matchevents">Add More</a>
+
+    <a href="#" id="add-matchevents-button" class="mt-10 text-white bg-gray-500 hover:bg-gray-600 px-3 py-2 rounded-md add-matchevents">Add More</a>
 
     <button type="submit" class="w-full mt-5 text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
     </form>
-  </form>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    {% if events %}
+    <div class="py-5 border-t border-gray-200">
+        <h1 class="text-4xl text-gray-800">Match events</h1>
+    </div>
+    <div class="px-5 lg:w-3/3 w-full mx-auto overflow-auto">
+        <table class="table-auto w-full text-left whitespace-no-wrap">
+          <thead>
+            <tr>
+              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Event type</th>
+              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Player</th>
+              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Minute</th>
+              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Related player</th>
+            </tr>
+          </thead>
+          {% for event in events %}
+          <tbody>
+            <tr>
+            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.event_type }}</td>
+            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.player }}</td>
+            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.minute }}'</td>
+            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.related_player }}</td>
+            </tr>
+          </tbody>
+          {% endfor %}
+        </table>
+    </div>
+    {% endif %}
 
-<script>
-  $(document).ready(function() {
-    // when user clicks add more btn of variants
-      $('.add-matchevents').click(function(ev) {
-          ev.preventDefault();
-          var count = $('#item-matchevents').children().length;
-          var tmplMarkup = $('#matchevents-template').html();
-          var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
-          $('#item-matchevents').append(compiledTmpl);
-  
-          // update form count
-          $('#id_matchevents-TOTAL_FORMS').attr('value', count+1);
-      });
-  });
-</script>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // when user clicks add more btn of variants
+            $('.add-matchevents').click(function(ev) {
+                ev.preventDefault();
+                var count = $('#item-matchevents').children().length;
+                var tmplMarkup = $('#matchevents-template').html();
+                var compiledTmpl = tmplMarkup.replace(/__prefix__/g, count);
+                $('#item-matchevents').append(compiledTmpl);
+
+                // update form count
+                $('#id_matchevents-TOTAL_FORMS').attr('value', count+1);
+            });
+        });
+    </script>
 
 </div>
 

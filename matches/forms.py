@@ -33,15 +33,13 @@ class MatchEventModelForm(forms.ModelForm):
     #     self.player_set
 
     def __init__(self, *args, **kwargs):
-        slug = kwargs.pop("slug")
-        match = Match.objects.get(slug=slug)
-        # home_player = Player.objects.filter(teams=match.home_team)
-        # away_player = Player.objects.filter(teams=match.away_team)
+        match = Match.objects.get(slug=kwargs.pop("slug"))
 
         player = Player.objects.filter(Q(teams=match.home_team) | Q(teams=match.away_team))
         super(MatchEventModelForm, self).__init__(*args, **kwargs)
         self.fields["player"].queryset = player
         self.fields["related_player"].queryset = player
+    #     # print(self.fields)
 
 
 MatchEventFormSet = inlineformset_factory(
