@@ -4,7 +4,7 @@ from django.views import generic
 from django.utils import timezone
 from django.db import transaction
 
-from players.models import Match, Result, PlayerStat, MatchEvent
+from players.models import Match, Result, PlayerStat, MatchEvent, Player
 from .forms import MatchModelForm, MatchEventFormSet, MatchEventModelForm
 
 
@@ -127,7 +127,7 @@ class MatchCreateEventView(generic.CreateView):
                 instance=match_instance,
                 form_kwargs={'slug': self.kwargs['slug']},
                 )
-        if (form.is_valid, formset.is_valid()):
+        if (form.is_valid and formset.is_valid()):
             return self.form_valid(form, formset, match_instance)
         else:
             return self.form_invalid(form, formset)
@@ -138,10 +138,11 @@ class MatchCreateEventView(generic.CreateView):
         """
         match_events = formset.save(commit=False)
         for match_event in match_events:
+            match_event.save()
             if match_event.event_type == "FULLTIME":
                 instance.is_fixture = False
                 instance.save()
-            match_event.save()
+                return redirect("matches:result-create", slug=instance.slug)
         return HttpResponseRedirect(self.get_success_url())
     
     def form_invalid(self, form, formset):
@@ -150,7 +151,7 @@ class MatchCreateEventView(generic.CreateView):
         data-filled forms and errors.
         """
         return self.render_to_response(
-            self.get_context_data(form=form, ingredient_form=formset))
+            self.get_context_data(form=form, formset=formset))
     
     def get_context_data(self, **kwargs):
         data = super(MatchCreateEventView, self).get_context_data(**kwargs)
@@ -175,4 +176,40 @@ class MatchCreateEventView(generic.CreateView):
                 prefix = 'matchevents'
                 )
         
+        return data
+    
+
+class ResultCreateView(generic.CreateView):
+    template_name = "matches/result_create.html"
+    context_object_name = "match"
+    fields = []
+
+    def get_queryset(self):
+        queryset = Match.objects.filter(slug=self.kwargs['slug'])
+        return queryset
+
+    def get_success_url(self):
+        return reverse("matches:match-list")
+    
+    def form_valid(self, form):
+        context = self.get_context_data()
+        Result.objects.create(
+            match=context["match"], 
+            score_hometeam=context["hometeam_score"], 
+            score_awayteam=context["awayteam_score"]
+            )
+        return HttpResponseRedirect(self.get_success_url())
+    
+    def get_context_data(self, **kwargs):
+        data = super(ResultCreateView, self).get_context_data(**kwargs)
+        match_instance = Match.objects.get(slug=self.kwargs['slug'])
+        home_team_players = Player.objects.filter(teams=match_instance.home_team)
+        away_team_players = Player.objects.filter(teams=match_instance.away_team)
+        goal_events = MatchEvent.objects.filter(match=match_instance, event_type="GOAL")
+        hometeam_score = goal_events.filter(player__in=home_team_players).count()
+        awayteam_score = goal_events.filter(player__in=away_team_players).count()
+        data = {'match': match_instance,
+                'hometeam_score': hometeam_score,
+                'awayteam_score': awayteam_score
+                }
         return data

@@ -1,0 +1,20 @@
+{% extends "base.html" %} 
+{% block content %}
+
+<div class="w-2/3 mx-auto">
+  <div class="border-b border-gray-200">
+    <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}">Go back to match list</a>
+  </div>
+
+  <h1 class="text-4xl py-5 text-gray-800">
+    Confirm the result of '{{ match }}' match?</h1>
+  <h1 class="text-2xl text-red-500 mt-3 flex justify-center items-center">
+    Result: {{ match.home_team }} {{ hometeam_score }} : {{ awayteam_score }} {{ match.away_team }}</h1>
+    
+  <form method="post" class="mt-5">
+    {% csrf_token %} {{ form.as_p }}
+    <button type="submit" class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
+  </form>
+</div>
+
+{% endblock content %}
