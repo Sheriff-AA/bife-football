@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     # LOCAL
     'matches',
     'players',
+    'teams',
 ]
 
 MIDDLEWARE = [

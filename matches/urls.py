@@ -1,5 +1,11 @@
 from django.urls import path
-from .views import MatchListView, MatchDetailView, MatchCreateView, MatchCreateEventView, ResultCreateView
+from .views import (
+    MatchListView,
+    MatchDetailView,
+    MatchCreateView,
+    MatchCreateEventView,
+    ResultCreateView,
+    )
 
 """
 BASE ENDPOINT /matches

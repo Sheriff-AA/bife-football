@@ -24,4 +24,5 @@ urlpatterns = [
     path('', LandingPageView.as_view(), name="landing-page"),
     path("matches/", include("matches.urls", namespace="matches")),
     path("players/", include("players.urls", namespace="players")),
+    path("teams/", include("teams.urls", namespace="teams")),
 ]

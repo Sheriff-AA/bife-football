@@ -26,12 +26,6 @@ class MatchEventModelForm(forms.ModelForm):
         model = MatchEvent
         fields = "__all__"
 
-    # player_set = None
-    # player = forms.ModelChoiceField(queryset=player_set)
-
-    # def __init__(self, *args, **kwargs):
-    #     self.player_set
-
     def __init__(self, *args, **kwargs):
         match = Match.objects.get(slug=kwargs.pop("slug"))
 

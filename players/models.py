@@ -31,11 +31,9 @@ class User(AbstractUser):
 class Team(models.Model):
     team_name = models.CharField(max_length=80, unique=True)
     short_team_name = models.CharField(unique=True, max_length=3)
-    organisation = models.OneToOneField(
+    organisation = models.ForeignKey("User",
         on_delete=models.CASCADE,
-        to=User,
-        primary_key=True,
-        related_name='team',
+        related_name='team'
     )
 
     def __str__(self):
@@ -76,7 +74,7 @@ class PlayerStat(models.Model):
     team = models.ForeignKey("Team", on_delete=models.CASCADE)
     goals = models.IntegerField()
     assists = models.IntegerField()
-    minutes_played = models.IntegerField()
+    minutes_played = models.IntegerField(choices=MINUTES_CHOICES)
     rating = models.DecimalField(max_digits=5, decimal_places=2)
 
     class Meta:

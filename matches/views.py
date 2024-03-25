@@ -4,11 +4,20 @@ from django.views import generic
 from django.utils import timezone
 from django.db import transaction
 
-from players.models import Match, Result, PlayerStat, MatchEvent, Player
-from .forms import MatchModelForm, MatchEventFormSet, MatchEventModelForm
+from players.models import (
+    Match,
+    Result,
+    PlayerStat,
+    MatchEvent,
+    Player,
+    )
+from .forms import (
+    MatchModelForm,
+    MatchEventFormSet,
+    MatchEventModelForm,
+    )
 
 
-# Create your views here.
 class MatchListView(generic.ListView):
     template_name = "matches/match_list.html"
     context_object_name = "matches"

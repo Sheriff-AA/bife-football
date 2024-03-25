@@ -1,5 +1,12 @@
 from django.urls import path
-from .views import PlayerListView, PlayerDetailView, PlayerCreateView, PlayerUpdateView, PlayerDeleteView, PlayerMatchesListView
+from .views import (
+    PlayerListView,
+    PlayerDetailView,
+    PlayerCreateView,
+    PlayerUpdateView,
+    PlayerDeleteView,
+    PlayerMatchesListView,
+    )
 
 """
 BASE ENDPOINT /players
