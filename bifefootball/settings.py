@@ -38,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # 3RD PARTY
+    # 'django_seed',
+
     # LOCAL
     'matches',
     'players',
