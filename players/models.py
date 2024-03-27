@@ -127,6 +127,7 @@ class Contract(models.Model):
     
     class Meta:
         unique_together = ['player', 'team', 'contract_date']
+        ordering = ['-contract_date']
 
     def __str__(self):
         return f"{self.player} --> {self.team}"

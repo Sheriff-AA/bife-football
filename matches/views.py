@@ -2,6 +2,7 @@ from django.shortcuts import render, reverse, redirect
 from django.http import HttpResponseRedirect
 from django.views import generic
 from django.utils import timezone
+from django.db.models import Q
 from django.db import transaction
 
 from players.models import (
@@ -10,11 +11,14 @@ from players.models import (
     PlayerStat,
     MatchEvent,
     Player,
+    Contract,
     )
 from .forms import (
     MatchModelForm,
     MatchEventFormSet,
     MatchEventModelForm,
+    PlayerStatFormSet,
+    PlayerStatModelForm
     )
 
 
@@ -127,8 +131,6 @@ class MatchCreateEventView(generic.CreateView):
         form_class = self.get_form_class()
         form = self.get_form(form_class)
         match_instance = Match.objects.get(slug=self.kwargs['slug'])
-        if form.is_valid():
-            self.object = form.save(commit=False)
         formset = MatchEventFormSet(
                 self.request.POST or None,
                 self.request.FILES or None,
@@ -136,7 +138,7 @@ class MatchCreateEventView(generic.CreateView):
                 instance=match_instance,
                 form_kwargs={'slug': self.kwargs['slug']},
                 )
-        if (form.is_valid and formset.is_valid()):
+        if (form.is_valid() and formset.is_valid()):
             return self.form_valid(form, formset, match_instance)
         else:
             return self.form_invalid(form, formset)
@@ -159,6 +161,7 @@ class MatchCreateEventView(generic.CreateView):
         Called if a form is invalid. Re-renders the context data with the
         data-filled forms and errors.
         """
+        print(formset.errors)
         return self.render_to_response(
             self.get_context_data(form=form, formset=formset))
     
@@ -207,7 +210,10 @@ class ResultCreateView(generic.CreateView):
             score_hometeam=context["hometeam_score"], 
             score_awayteam=context["awayteam_score"]
             )
-        return HttpResponseRedirect(self.get_success_url())
+        
+        return redirect("matches:player-stat-create", slug=context["match"].slug)
+        
+        # return HttpResponseRedirect(self.get_success_url())
     
     def get_context_data(self, **kwargs):
         data = super(ResultCreateView, self).get_context_data(**kwargs)
@@ -221,4 +227,115 @@ class ResultCreateView(generic.CreateView):
                 'hometeam_score': hometeam_score,
                 'awayteam_score': awayteam_score
                 }
+        return data
+
+
+class PlayerStatCreateEventView(generic.CreateView):
+    template_name = "matches/player_stats_create.html"
+    form_class = PlayerStatModelForm
+
+    def get_queryset(self):
+        queryset = Match.objects.filter(slug=self.kwargs['slug'])
+        return queryset
+    
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(PlayerStatCreateEventView, self).get_form_kwargs(**kwargs)
+        kwargs.update({
+            "slug": self.kwargs['slug']
+        })
+        return kwargs
+        
+    def get_success_url(self):
+        return reverse("matches:match-list")
+    
+    def get(self, request, *args, **kwargs):
+        """
+        Handles GET requests and instantiates blank versions of the form
+        and its inline formsets.
+        """
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        match_instance = Match.objects.get(slug=self.kwargs['slug'])
+        formset = PlayerStatFormSet(
+                prefix='playerstats',
+                form_kwargs={'slug': self.kwargs['slug']},
+                instance=match_instance,
+                queryset=PlayerStat.objects.none()
+                )
+
+        return self.render_to_response(
+            self.get_context_data(form=form, formset=formset))
+    
+    def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests, instantiating a form instance and its inline
+        formsets with the passed POST variables and then checking them for
+        validity.
+        """
+        self.object = None
+        form_class = self.get_form_class()
+        form = self.get_form(form_class)
+        match_instance = Match.objects.get(slug=self.kwargs['slug'])
+        if form.is_valid():
+            self.object = form.save(commit=False)
+        formset = PlayerStatFormSet(
+                self.request.POST or None,
+                self.request.FILES or None,
+                prefix='playerstats',
+                instance=match_instance,
+                form_kwargs={'slug': self.kwargs['slug']},
+                )
+        if (form.is_valid() and formset.is_valid()):
+            return self.form_valid(form, formset, match_instance)
+        else:
+            return self.form_invalid(form, formset)
+    
+    def form_valid(self, form, formset, instance):
+        """
+        Called if all forms are valid. Creates a PlayerStat instance and then redirects to a success page.
+        """
+        player_stats = formset.save(commit=False)
+        home_team = instance.home_team
+        away_team = instance.away_team
+        # Filter for all players who have contracts with home and away team
+        contracts = Contract.objects.filter(Q(team=home_team) | Q(team=away_team))
+
+        for player_stat in player_stats:
+            # Get and assign the team that each player are playing for in this match
+            contract = contracts.get(player=player_stat.player)
+            player_stat.team = contract.team
+            player_stat.save()
+        return HttpResponseRedirect(self.get_success_url())
+    
+    def form_invalid(self, form, formset):
+        """
+        Called if a form is invalid. Re-renders the context data with the
+        data-filled forms and errors.
+        """
+        return self.render_to_response(
+            self.get_context_data(form=form, formset=formset))
+    
+    def get_context_data(self, **kwargs):
+        data = super(PlayerStatCreateEventView, self).get_context_data(**kwargs)
+        match_instance = Match.objects.get(slug=self.kwargs['slug'])
+        data = {'match': match_instance,
+                }
+
+        if self.request.POST:
+            data['formset'] = PlayerStatFormSet(
+                self.request.POST or None,
+                self.request.FILES or None,
+                instance=match_instance,
+                form_kwargs={'slug': self.kwargs['slug']},
+                prefix = 'playerstats'
+                )
+        else:
+            data['formset'] =  PlayerStatFormSet(
+                queryset=PlayerStat.objects.none(),
+                instance=match_instance,
+                form_kwargs={'slug': self.kwargs['slug']},
+                prefix = 'playerstats'
+                )
+        
         return data
