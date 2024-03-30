@@ -1,5 +1,5 @@
 from django import forms
-from players.models import Player, Match, MatchEvent, PlayerStat
+from players.models import Player, Match, MatchEvent, PlayerStat, Contract
 from .widgets import DateTimePickerInput
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
@@ -50,6 +50,14 @@ class PlayerStatModelForm(forms.ModelForm):
         # Filter for players that have signed a contract for each team
         # Then filter for the latest contract for each players
         player = Player.objects.filter(Q(teams=match.home_team) | Q(teams=match.away_team))
+        latest_contracts = Contract.objects.extra(
+            where=[
+            '''id IN (SELECT id FROM (SELECT id, ROW_NUMBER() 
+            OVER (PARTITION BY player_id ORDER BY contract_date DESC) AS rn 
+            FROM players_contract) AS subquery 
+            WHERE rn = 1)'''
+            ]
+        )
         super(PlayerStatModelForm, self).__init__(*args, **kwargs)
         self.fields["player"].queryset = player
 
