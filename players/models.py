@@ -43,7 +43,7 @@ class Team(models.Model):
 class Coach(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
-    team = models.ForeignKey("Team", on_delete=models.CASCADE)
+    team = models.ForeignKey("Team", on_delete=models.CASCADE, related_name='coach')
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -108,7 +108,7 @@ class Match(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.home_team} vs {self.away_team}"
+        return f"{self.home_team} ({self.home_team.short_team_name}) vs {self.away_team} ({self.away_team.short_team_name})"
 
 
 class Result(models.Model):

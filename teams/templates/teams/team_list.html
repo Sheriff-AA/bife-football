@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<section class="text-gray-600 body-font">
+  <div class="container px-5 py-6 mx-auto">
+    <div class="flex flex-col text-center w-full mb-10">
+      <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Teams</h1>
+      <p class="lg:w-2/3 mx-auto leading-relaxed text-base">Teams, Organisations and Coaches</p>
+    </div>
+
+    <div class="lg:w-3/3 w-full mx-auto overflow-auto">
+      <table class="table-auto w-full text-left">
+        <thead>
+          <tr>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Team</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Short name</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Coach</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Organisation</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+          </tr>
+        </thead>
+        {% for team in teams %}
+        <tbody>
+          <tr>
+          <td class="px-4 py-3">
+              <a href="#">{{ team.team_name }}
+              </a>
+          </td>
+          <td class="px-4 py-3">
+              <a href="#">{{ team.short_team_name }}
+              </a>
+          </td>
+          <td class="px-4 py-3">{{ team.coach.first }}</td>
+          <td class="px-4 py-3 text-lg text-gray-900">{{ team.organisation }}</td>
+          <td class="px-4 py-3 text-right text-lg text-gray-900">
+            <a href="#">View team</a>
+          </td>
+          </tr>
+        </tbody>
+        {% endfor %}
+      </table>
+    </div>
+
+  </div>
+</section>
+
+{% endblock content %}
