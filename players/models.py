@@ -70,15 +70,15 @@ class Player(models.Model):
 
 class PlayerStat(models.Model):
     player = models.ForeignKey("Player", related_name="stats", on_delete=models.CASCADE)
+    player_contract = models.ForeignKey("Contract", related_name="stats", on_delete=models.CASCADE)
     match = models.ForeignKey("Match", on_delete=models.CASCADE)
-    team = models.ForeignKey("Team", on_delete=models.CASCADE)
     goals = models.IntegerField()
     assists = models.IntegerField()
     minutes_played = models.IntegerField(choices=MINUTES_CHOICES)
     rating = models.DecimalField(max_digits=5, decimal_places=2)
 
     class Meta:
-        unique_together = ['player', 'match']
+        unique_together = ['player_contract', 'match']
 
     def __str__(self):
         return f"{self.player} in {self.match}"
@@ -130,7 +130,7 @@ class Contract(models.Model):
         ordering = ['-contract_date']
 
     def __str__(self):
-        return f"{self.player} --> {self.team}"
+        return f"{self.player} for {self.team.short_team_name}"
 
 
 class MatchEvent(models.Model):
@@ -148,8 +148,8 @@ class MatchEvent(models.Model):
     event_type = models.CharField(max_length=20, choices=EVENT_CHOICES)
     timestamp = models.DateTimeField(auto_now_add=True)
     minute = models.PositiveSmallIntegerField(choices=MINUTES_CHOICES)
-    player = models.ForeignKey('Player', on_delete=models.CASCADE, null=True, blank=True)
-    related_player = models.ForeignKey('Player', on_delete=models.CASCADE, null=True, blank=True, related_name='related_events')
+    player_contract = models.ForeignKey('Contract', on_delete=models.CASCADE, null=True, blank=True)
+    related_player = models.ForeignKey('Contract', on_delete=models.CASCADE, null=True, blank=True, related_name='related_events')
     is_own_goal = models.BooleanField(default=False)
     is_penalty = models.BooleanField(default=False)
     is_second_yellow_card = models.BooleanField(default=False)

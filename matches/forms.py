@@ -30,10 +30,18 @@ class MatchEventModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         match = Match.objects.get(slug=kwargs.pop("slug"))
 
-        player = Player.objects.filter(Q(teams=match.home_team) | Q(teams=match.away_team))
+        contract_for_teams = Contract.objects.filter(Q(team=match.home_team) | Q(team=match.away_team))
+        latest_contracts = contract_for_teams.extra(
+            where=[
+            '''id IN (SELECT id FROM (SELECT id, ROW_NUMBER() 
+            OVER (PARTITION BY player_id ORDER BY contract_date DESC) AS rn 
+            FROM players_contract) AS subquery 
+            WHERE rn = 1)'''
+            ]
+        )
         super(MatchEventModelForm, self).__init__(*args, **kwargs)
-        self.fields["player"].queryset = player
-        self.fields["related_player"].queryset = player
+        self.fields["player_contract"].queryset = latest_contracts
+        self.fields["related_player"].queryset = latest_contracts
 
 
 MatchEventFormSet = inlineformset_factory(
@@ -43,14 +51,14 @@ MatchEventFormSet = inlineformset_factory(
 class PlayerStatModelForm(forms.ModelForm):
     class Meta:
         model = PlayerStat
-        fields = ("player", "goals", "assists", "minutes_played", "rating")
+        fields = ("player_contract", "goals", "assists", "minutes_played", "rating")
 
     def __init__(self, *args, **kwargs):
         match = Match.objects.get(slug=kwargs.pop("slug"))
         # Filter for players that have signed a contract for each team
         # Then filter for the latest contract for each players
-        player = Player.objects.filter(Q(teams=match.home_team) | Q(teams=match.away_team))
-        latest_contracts = Contract.objects.extra(
+        contract_for_teams = Contract.objects.filter(Q(team=match.home_team) | Q(team=match.away_team))
+        latest_contracts = contract_for_teams.extra(
             where=[
             '''id IN (SELECT id FROM (SELECT id, ROW_NUMBER() 
             OVER (PARTITION BY player_id ORDER BY contract_date DESC) AS rn 
@@ -59,7 +67,7 @@ class PlayerStatModelForm(forms.ModelForm):
             ]
         )
         super(PlayerStatModelForm, self).__init__(*args, **kwargs)
-        self.fields["player"].queryset = player
+        self.fields["player_contract"].queryset = latest_contracts
 
 
 PlayerStatFormSet = inlineformset_factory(
