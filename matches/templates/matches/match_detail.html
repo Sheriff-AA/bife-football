@@ -82,6 +82,34 @@
       </table>
     </div>
   </div>
+
+  {% if events %}
+    <div class="py-5 border-t border-gray-200">
+        <h1 class="text-4xl text-gray-800">Match events</h1>
+    </div>
+    <div class="px-5 lg:w-3/3 w-full mx-auto overflow-auto">
+        <table class="table-auto w-full text-left whitespace-no-wrap">
+          <thead>
+            <tr>
+              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Event type</th>
+              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Player</th>
+              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Minute</th>
+              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Related player</th>
+            </tr>
+          </thead>
+          {% for event in events %}
+          <tbody>
+            <tr>
+            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.event_type }}</td>
+            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.player_contract }}</td>
+            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.minute }}'</td>
+            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.related_player }}</td>
+            </tr>
+          </tbody>
+          {% endfor %}
+        </table>
+    </div>
+  {% endif %}
     
 </section>
   

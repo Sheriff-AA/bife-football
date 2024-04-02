@@ -49,7 +49,6 @@ class MatchDetailView(generic.DetailView):
 
     def get_queryset(self):
         queryset = Match.objects.all()
-
         return queryset
     
     def get_context_data(self, **kwargs):
@@ -64,7 +63,8 @@ class MatchDetailView(generic.DetailView):
         )
         context.update({
             "hometeam_players": home_team,
-            "awayteam_players": away_team
+            "awayteam_players": away_team,
+            "events": self.get_object().matchevent_set.all()
         })
         return context
 
