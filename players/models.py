@@ -30,6 +30,7 @@ class User(AbstractUser):
 
 class Team(models.Model):
     team_name = models.CharField(max_length=80, unique=True)
+    slug = models.SlugField(null=True, blank=True, unique=True)
     short_team_name = models.CharField(unique=True, max_length=3)
     organisation = models.ForeignKey("User",
         on_delete=models.CASCADE,
@@ -38,6 +39,11 @@ class Team(models.Model):
 
     def __str__(self):
         return self.team_name
+    
+    def save(self, *args, **kwargs):
+        new_slug = f"{self.team_name}"
+        unique_slugify(self, new_slug)
+        super().save(*args, **kwargs)
     
 
 class Coach(models.Model):

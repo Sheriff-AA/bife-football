@@ -1,8 +1,10 @@
 from django.shortcuts import render, reverse
 from django.views import generic
+from django.db.models import Q
+
 
 from .forms import TeamModelForm
-from players.models import Team
+from players.models import Team, Contract, Match, Result
 
 
 class TeamListView(generic.ListView):
@@ -23,3 +25,34 @@ class TeamCreateView(generic.CreateView):
     
     def form_valid(self, form):
         return super(TeamCreateView, self).form_valid(form)
+
+
+class TeamDetailView(generic.DetailView):
+    template_name = "teams/team_detail.html"
+    context_object_name = "team"
+
+    def get_queryset(self):
+        return Team.objects.all()
+    
+    def get_context_data(self, **kwargs):
+        context = super(TeamDetailView, self).get_context_data(**kwargs)
+        contract = Contract.objects.filter(team=self.get_object()).order_by('-contract_date')
+        latest_contracts = contract.extra(
+            where=[
+            '''id IN (SELECT id FROM (SELECT id, ROW_NUMBER() 
+            OVER (PARTITION BY player_id ORDER BY contract_date DESC) AS rn 
+            FROM players_contract) AS subquery 
+            WHERE rn = 1)'''
+            ]
+        )
+        latest_matches = Match.objects.filter(Q(home_team=self.get_object()) | Q(away_team=self.get_object()))[:10]
+        team_results = Result.objects.filter(
+            match__in=latest_matches
+            )
+        context.update({
+            "contracts": latest_contracts,
+            "latest_matches": latest_matches,
+            "team_results": team_results
+        })
+
+        return context

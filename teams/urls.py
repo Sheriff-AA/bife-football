@@ -1,7 +1,8 @@
 from django.urls import path
 from .views import (
     TeamListView,
-    TeamCreateView
+    TeamCreateView,
+    TeamDetailView
     )
 
 """
@@ -14,5 +15,5 @@ urlpatterns = [
     path("create/", TeamCreateView.as_view(), name='team-create'),
     # path("create-event/<slug:slug>/", MatchCreateEventView.as_view(), name='match-event-create'),
     # path("confirm-result/<slug:slug>/", ResultCreateView.as_view(), name='result-create'),
-    # path("<slug:slug>/", MatchDetailView.as_view(), name='match-detail'),
+    path("<int:pk>/", TeamDetailView.as_view(), name='team-detail'),
 ]

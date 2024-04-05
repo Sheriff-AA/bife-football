@@ -24,7 +24,7 @@
         <tbody>
           <tr>
           <td class="px-4 py-3">
-              <a href="#">{{ team.team_name }}
+              <a href="{% url 'teams:team-detail' team.pk %}">{{ team.team_name }}
               </a>
           </td>
           <td class="px-4 py-3">
