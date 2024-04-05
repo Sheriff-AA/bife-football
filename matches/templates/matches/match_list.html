@@ -49,7 +49,7 @@
           <td class="px-4 py-3">
               {{ result.score_hometeam }} : {{ result.score_awayteam }}</td>
           <td class="px-4 py-3 text-lg text-gray-900">{{ result.match.date|date:"F d, Y, h:i A" }}</td>
-          <td class="px-4 py-3 text-lg text-gray-900">
+          <td class="px-4 py-3 text-lg underline text-blue-900">
             <a href="{% url 'matches:match-detail' result.match.slug %}">View</a>
           </td>
           </tr>
@@ -86,7 +86,7 @@
                 </a>
             </td>
             <td class="px-3 py-3 text-lg text-gray-900">{{ fixture.date|date:"F d, Y, h:i A" }}</td>
-            <td class="px-3 py-3 text-right text-lg text-gray-900">
+            <td class="px-3 py-3 text-right text-lg underline text-blue-900">
               <a href="{% url 'matches:match-event-create' fixture.slug %}">Add event(s)</a>
             </td>
             </tr>

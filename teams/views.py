@@ -45,13 +45,12 @@ class TeamDetailView(generic.DetailView):
             WHERE rn = 1)'''
             ]
         )
-        latest_matches = Match.objects.filter(Q(home_team=self.get_object()) | Q(away_team=self.get_object()))[:10]
-        team_results = Result.objects.filter(
-            match__in=latest_matches
+        upcoming_matches = Match.objects.filter(Q(home_team=self.get_object()) | Q(away_team=self.get_object()))[:10]
+        team_results = Result.objects.filter(Q(match__home_team=self.get_object()) | Q(match__away_team=self.get_object())
             )
         context.update({
             "contracts": latest_contracts,
-            "latest_matches": latest_matches,
+            "upcoming_matches": upcoming_matches,
             "team_results": team_results
         })
 

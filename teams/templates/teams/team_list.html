@@ -33,8 +33,8 @@
           </td>
           <td class="px-4 py-3">{{ team.coach.first }}</td>
           <td class="px-4 py-3 text-lg text-gray-900">{{ team.organisation }}</td>
-          <td class="px-4 py-3 text-right text-lg text-gray-900">
-            <a href="#">View team</a>
+          <td class="px-4 py-3 text-right text-lg underline text-blue-900">
+            <a href="{% url 'teams:team-detail' team.pk %}">View team</a>
           </td>
           </tr>
         </tbody>

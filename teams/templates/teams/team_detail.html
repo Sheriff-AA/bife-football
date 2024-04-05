@@ -6,25 +6,110 @@ previous 10 results, upcoming fixtures
 {% endcomment %}
 
 <section class="text-gray-600 body-font">
-    <div class="container px-5 py-24 mx-auto">
-      <div class="flex flex-col text-center w-full mb-20">
-        <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">{{ team.team_name }} - {{ team.short_team_name }}</h1>
-        <p class="lg:w-2/3 mx-auto leading-relaxed text-base">Whatever cardigan tote bag tumblr hexagon brooklyn asymmetrical gentrify, subway tile poke farm-to-table. Franzen you probably haven't heard of them.</p>
-      </div>
-      <h1 class="sm:text-4xl text-3xl font-medium title-font mb-10 text-gray-900">Squad</h1>
-      <div class="flex flex-wrap -m-2">
-        {% for contract in contracts %}
-        <div class="p-2 lg:w-1/3 md:w-1/2 w-full">
-          <div class="h-full flex items-center border-gray-200 border p-4 rounded-lg">
-            <img alt="team" class="w-16 h-16 bg-gray-100 object-cover object-center flex-shrink-0 rounded-full mr-4" src="https://dummyimage.com/80x80">
-            <div class="flex-grow">
-              <h2 class="text-gray-900 title-font font-medium">{{ contract.player}}</h2>
-              <p class="text-gray-500">{{ contract.player.position }}</p>
-            </div>
-          </div>
+    <div class="container px-5 py-10 mx-auto">
+        <div class="flex flex-col text-center w-full mb-10">
+            <h1 class="sm:text-3xl text-2xl font-medium title-font mb-4 text-gray-900">{{ team.team_name }} - {{ team.short_team_name }}</h1>
+            <p class="lg:w-2/3 mx-auto leading-relaxed text-base">Whatever cardigan tote bag tumblr hexagon brooklyn asymmetrical gentrify, subway tile poke farm-to-table. Franzen you probably haven't heard of them.</p>
         </div>
-        {% endfor %}
-      </div>
+        <h1 class="sm:text-4xl text-3xl font-medium title-font mb-10 text-gray-900">Squad</h1>
+        <div class="flex flex-wrap -m-2">
+            {% for contract in contracts %}
+            <div class="p-2 lg:w-1/3 md:w-1/2 w-full">
+            <div class="h-full flex items-center border-blue-500 border p-4 rounded-lg">
+                <img alt="team" class="w-16 h-16 bg-gray-100 object-cover object-center flex-shrink-0 rounded-full mr-4" src="https://dummyimage.com/80x80">
+                <a href="{% url 'players:player-detail' contract.player.slug %}">
+                    <div class="flex-grow">
+                    <h2 class="text-gray-900 title-font font-medium">
+                        {{ contract.player }}</h2>
+                    <p class="text-gray-500">{{ contract.player.position }}</p>
+                    </div>
+                </a>
+            </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <h1 class="sm:text-4xl text-3xl font-medium title-font mt-10 text-gray-900">Fixtures</h1>
+        {% if upcoming_matches %}
+            <div class="lg:w-3/3 w-full mx-auto mb-10 overflow-auto">
+                <div class="flex flex-col w-full mb-5">
+                </div>
+                <table class="table-auto w-full text-left whitespace-no-wrap">
+                <thead>
+                    <tr>
+                    <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
+                    <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
+                    <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
+                    <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Venue</th>
+                    </tr>
+                </thead>
+                {% for fixture in upcoming_matches %}
+                <tbody>
+                    <tr>
+                    <td class="px-3 py-3">
+                        <a href="{% url 'matches:match-detail' fixture.slug %}">
+                            {{ fixture.home_team }}
+                        </a>
+                    </td>
+                    <td class="px-3 py-3">
+                        <a href="{% url 'matches:match-detail' fixture.slug %}">
+                            {{ fixture.away_team }}
+                        </a>
+                    </td>
+                    <td class="px-3 py-3 text-lg text-gray-900">{{ fixture.date|date:"F d, Y, h:i A" }}</td>
+                    <td class="px-3 py-3">{{ fixture.venue }}
+                    </td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+                </table>
+            </div>
+        {% else %}
+            <h1 class="sm:text-1xl font-medium text-center title-font mt-5">None at this time</h1>
+        {% endif %}
+
+        <h1 class="sm:text-4xl text-3xl font-medium title-font mt-5 text-gray-900">Results</h1>
+        {% if team_results %}
+            <div class="lg:w-3/3 w-full mx-auto overflow-auto">
+                <div class="flex flex-col w-full mb-5">
+                </div>
+                <table class="table-auto w-full text-left whitespace-no-wrap">
+                <thead>
+                    <tr>
+                    <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
+                    <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
+                    <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Scoreline</th>
+                    <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
+                    <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+                    </tr>
+                </thead>
+                {% for result in results %}
+                <tbody>
+                    <tr>
+                    <td class="px-4 py-3">
+                        <a href="{% url 'matches:match-detail' result.match.slug %}">
+                            {{ result.match.home_team }}
+                        </a>
+                    </td>
+                    <td class="px-4 py-3">
+                        <a href="{% url 'matches:match-detail' result.match.slug %}">
+                            {{ result.match.away_team }}
+                        </a>
+                    </td>
+                    <td class="px-4 py-3">
+                        {{ result.score_hometeam }} : {{ result.score_awayteam }}</td>
+                    <td class="px-4 py-3 text-lg text-gray-900">{{ result.match.date|date:"F d, Y, h:i A" }}</td>
+                    <td class="px-4 py-3 text-lg text-gray-900">
+                    <a href="{% url 'matches:match-detail' result.match.slug %}">View</a>
+                    </td>
+                    </tr>
+                </tbody>
+                {% endfor %}
+                </table>
+            </div>
+        {% else %}
+            <h1 class="sm:text-1xl font-medium text-center title-font mt-5">None at this time</h1>
+        {% endif %}
     </div>
   </section>
 
