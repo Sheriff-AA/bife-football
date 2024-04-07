@@ -1,6 +1,7 @@
 from django.shortcuts import render, reverse
 from django.views import generic
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 
 from .forms import TeamModelForm
@@ -9,10 +10,11 @@ from players.models import Team, Contract, Match, Result
 
 class TeamListView(generic.ListView):
     template_name = "teams/team_list.html"
+    paginate_by = 10
     context_object_name = "teams"
 
     def get_queryset(self):
-        queryset = Team.objects.all()
+        queryset = Team.objects.all().order_by('id')
         return queryset
 
 
