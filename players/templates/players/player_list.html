@@ -9,6 +9,17 @@
       <p class="lg:w-2/3 mx-auto leading-relaxed text-base">Players List</p>
     </div>
 
+    <form class="py-3">
+      <label for="searchBox">Search:</label><br>
+      <input id="search-box" 
+            type="text"
+            placeholder="Enter player name" 
+            name="search"
+            hx-get="{% url 'players:player-list' %}"
+            hx-trigger="keyup delay:500ms"
+            hx-target="#players-list"/>
+    </form>
+
     <div class="mb-5 border-b">
       <a
         class="text-blue-500 hover:text-blue-500" 
@@ -17,7 +28,7 @@
       >
     </div>
 
-    <div class="lg:w-3/3 w-full mx-auto overflow-auto">
+    <div id="players-list" class="lg:w-3/3 w-full mx-auto overflow-auto">
       <table class="table-auto w-full text-left whitespace-no-wrap">
         <thead>
           <tr>
@@ -28,7 +39,7 @@
             <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
           </tr>
         </thead>
-        {% for player in players %}
+        {% for player in page_obj %}
         <tbody>
           <tr>
           <td class="px-4 py-3 border">
@@ -48,6 +59,29 @@
         </tbody>
         {% endfor %}
       </table>
+      
+      <div class="pagination my-4 text-center">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+            <span class="text-blue-700">
+                <a href="?page=1">&laquo; First</a>
+                <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+            </span>
+            {% endif %}
+    
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+    
+            {% if page_obj.has_next %}
+            <span class="text-blue-700">
+                <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+            </span>
+            {% endif %}
+        </span>
+      </div>
+
     </div>
 
     <div class="flex pl-4 mt-4 lg:w-2/3 w-full mx-auto">

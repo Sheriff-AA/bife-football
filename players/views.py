@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, reverse
 from django.views import generic
+from django.core.paginator import Paginator
 from django.db.models import Sum, Count, Q
 
 from .models import Player, PlayerStat, Contract, MatchEvent
@@ -15,9 +16,22 @@ class PlayerListView(generic.ListView):
     context_object_name = "players"
 
     def get_queryset(self):
-        queryset = Player.objects.all()
+        return Player.objects.all().order_by('id')
+    
+    def get(self, request, *args, **kwargs):
+        search = request.GET.get('search')
+        qs = self.get_queryset()
+        if search:
+            qs = self.get_queryset().filter(Q(first_name__icontains=search) | Q(last_name__icontains=search))
 
-        return queryset
+        paginator = Paginator(qs, 15)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
+        if request.htmx:
+            return render(request, 'players/search_player_list.html', {'page_obj': page_obj})
+        else:
+            return render(request, 'players/player_list.html', {'page_obj': page_obj})
 
 
 class PlayerMatchesListView(generic.DetailView):

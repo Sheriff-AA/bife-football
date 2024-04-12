@@ -1,4 +1,4 @@
-<div id="fixture-list" class="lg:w-3/3 w-full mx-auto overflow-auto">
+<div id="teams-list" class="lg:w-3/3 w-full mx-auto overflow-auto">
     <table class="table-auto w-full text-left">
       <thead>
         <tr>
@@ -33,22 +33,22 @@
     <div class="pagination my-4 text-center">
         <span class="step-links">
             {% if page_obj.has_previous %}
-            <div class="text-blue-700">
-                <a href="?page=1">&laquo; first</a>
-                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            <span class="text-blue-700">
+                <a href="?page=1">&laquo; First</a>
+                <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
             {% endif %}
-            </div>
+            </span>
     
             <span class="current">
                 Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
             </span>
     
             {% if page_obj.has_next %}
-            <div>
-                <a href="?page={{ page_obj.next_page_number }}">next</a>
-                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            <span class="text-blue-700">
+                <a href="?page={{ page_obj.next_page_number }}">Next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
             {% endif %}
-            </div>
+            </span>
         </span>
     </div>
 </div>

@@ -1,0 +1,55 @@
+<div id="players-list" class="lg:w-3/3 w-full mx-auto overflow-auto">
+    <table class="table-auto w-full text-left whitespace-no-wrap">
+      <thead>
+        <tr>
+          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">First name</th>
+          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Last name</th>
+          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Age</th>
+          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Position</th>
+          <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+        </tr>
+      </thead>
+      {% for player in page_obj %}
+      <tbody>
+        <tr>
+        <td class="px-4 py-3 border">
+            <a href="{% url 'players:player-detail' player.slug %}">{{ player.first_name }}
+            </a>
+        </td>
+        <td class="px-4 py-3 border">
+            <a href="{% url 'players:player-detail' player.slug %}">{{ player.last_name }}
+            </a>
+        </td>
+        <td class="px-4 py-3 border">{{ player.age }}</td>
+        <td class="px-4 py-3 border text-lg text-gray-900">{{ player.position }}</td>
+        <td class="px-4 py-3 border text-lg underline text-blue-900">
+          <a href="{% url 'players:player-detail' player.slug %}">Details</a>
+        </td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+    
+    <div class="pagination my-4 text-center">
+      <span class="step-links">
+          {% if page_obj.has_previous %}
+          <span class="text-blue-700">
+              <a href="?page=1">&laquo; First</a>
+              <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+          </span>
+          {% endif %}
+  
+          <span class="current">
+              Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+          </span>
+  
+          {% if page_obj.has_next %}
+          <span class="text-blue-700">
+              <a href="?page={{ page_obj.next_page_number }}">Next</a>
+              <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+          </span>
+          {% endif %}
+      </span>
+    </div>
+
+  </div>
