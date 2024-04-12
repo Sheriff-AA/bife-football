@@ -14,8 +14,22 @@ class TeamListView(generic.ListView):
     context_object_name = "teams"
 
     def get_queryset(self):
-        queryset = Team.objects.all().order_by('id')
-        return queryset
+        return Team.objects.all().order_by('id')
+    
+    def get(self, request, *args, **kwargs):
+        search = request.GET.get('search')
+        qs = self.get_queryset()
+        if search:
+            qs = self.get_queryset().filter(Q(team_name__icontains=search) | Q(short_team_name__icontains=search))
+
+        paginator = Paginator(qs, 15)
+        page_number = request.GET.get("page")
+        page_obj = paginator.get_page(page_number)
+
+        if request.htmx:
+            return render(request, 'teams/search_teamlist.html', {'page_obj': page_obj})
+        else:
+            return render(request, 'teams/team_list.html', {'page_obj': page_obj})
 
 
 class TeamCreateView(generic.CreateView):
