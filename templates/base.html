@@ -15,11 +15,12 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/htmx.org@1.9.11" integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0" crossorigin="anonymous"></script>
     {% comment %} <script src="{% static 'js/htmx.min.js' %} defer"></script> {% endcomment %}
+    {% include "navbar.html" %}
   </head>
 
   <body class="bg-gray-300 antialiased">
     <div class="max-w-7xl mx-auto">
-      {% include "navbar.html" %} {% block content %} {% endblock content %}
+      {% block content %} {% endblock content %}
     </div>
     
     <script>

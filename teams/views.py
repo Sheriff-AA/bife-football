@@ -71,3 +71,11 @@ class TeamDetailView(generic.DetailView):
         })
 
         return context
+
+
+class TeamDashboardView(generic.DetailView):
+    template_name = "teams/team_dashboard.html"
+    context_object_name = "team"
+
+    def get_queryset(self):
+        return Team.objects.all()
