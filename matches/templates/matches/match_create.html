@@ -1,18 +1,19 @@
-{% extends "base.html" %} 
+{% extends "base.html" %}
+{% load tailwind_filters %}
 {% block content %}
 
-<div class="max-w-lg mx-auto">
+<div class="container p-4 mx-auto">
   <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
 
   <div class="py-5 border-t border-gray-200">
-    <h1 class="text-4xl text-gray-800">Create a new match</h1>
+    <h1 class="text-2xl font-bold mb-4">Create a new match</h1>
   </div>
 
-  <form method="post" class="">
+  <form method="post" class="max-w-sm mx-auto">
     {% csrf_token %} 
-    {{ form.as_p }}
+    {{ form|crispy }}
 
-    <button type="submit" class="w-full mt-5 text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
+    <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Create Match</button>
     </form>
   </form>
 

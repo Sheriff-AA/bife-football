@@ -25,7 +25,9 @@ MINUTES_CHOICES = [(i, f"{i}'") for i in range(1, 121)]
 
 
 class User(AbstractUser):
-    pass
+    is_coach = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
+    is_player = models.BooleanField(default=False)
 
 
 class Team(models.Model):
@@ -61,6 +63,7 @@ class Player(models.Model):
     shirt_number = models.IntegerField()
     slug = models.SlugField(null=True, blank=True, unique=True)
     age = models.IntegerField(default=0)
+    # user = models.OneToOneField("User", on_delete=models.CASCADE)
     teams = models.ManyToManyField("Team", through="Contract")
     matches = models.ManyToManyField("Match", through="PlayerStat")
     position = models.CharField(max_length=30, blank=True, choices=PLAYER_POSITION)
