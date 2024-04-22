@@ -18,7 +18,8 @@ from .forms import (
     MatchEventFormSet,
     MatchEventModelForm,
     PlayerStatFormSet,
-    PlayerStatModelForm
+    PlayerStatModelForm,
+    CustomMatchModelForm
     )
 
 
@@ -82,6 +83,21 @@ class MatchCreateView(generic.CreateView):
             match.is_fixture = False
         match.save()
         return super(MatchCreateView, self).form_valid(form)
+    
+
+class CustomMatchCreateView(generic.CreateView):
+    template_name = "matches/custom_match_create.html"
+    form_class = CustomMatchModelForm
+
+    def get_success_url(self):
+        return reverse("matches:match-list")
+    
+    def form_valid(self, form):
+        match = form.save(commit=False)
+        if match.date < timezone.now():
+            match.is_fixture = False
+        match.save()
+        return super(CustomMatchCreateView, self).form_valid(form)
     
 
 class MatchCreateEventView(generic.CreateView):

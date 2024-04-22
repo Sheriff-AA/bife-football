@@ -1,6 +1,7 @@
 from django import forms
-from players.models import Player, Match, MatchEvent, PlayerStat, Contract
+from players.models import Player, Match, MatchEvent, PlayerStat, Contract, CustomMatch
 from .widgets import DateTimePickerInput
+from django import forms
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
 from django.db.models import Avg, Count, Min, Sum, Max
@@ -20,6 +21,15 @@ class MatchModelForm(forms.ModelForm):
         #     team = Team.objects.filter(organisation=request.user)
         #     super(PlayerModelForm, self).__init__(*args, **kwargs)
         #     self.fields["teams"].queryset = team
+
+
+class CustomMatchModelForm(forms.ModelForm):
+    class Meta:
+        model = CustomMatch
+        fields = ("versus_team", "user_team", "venue", "date")
+        widgets = {
+            "date": DateTimePickerInput(),
+        }
 
 
 class MatchEventModelForm(forms.ModelForm):

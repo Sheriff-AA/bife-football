@@ -18,6 +18,26 @@
       >
     </div>
 
+    <div class="grid grid-cols-3">
+      <div>
+        <label for="publishDateMin">Match Date:</label>
+        <input type="date"  
+        id="match-date" 
+        name="match_date">
+      </div>
+      <div>
+        <label for="searchBox">Search:</label>
+        <input id="search-box" 
+            type="text"
+            placeholder="Enter team name" 
+            name="search"
+            hx-get="{% url 'matches:match-list' %}"
+            hx-trigger="keyup delay:500ms"
+            hx-target="#matches-list"/>
+      </div>
+      
+    </div>
+
     <div class="lg:w-3/3 w-full mx-auto overflow-auto">
       <div class="flex flex-col w-full mb-5">
         <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Results</h1>
