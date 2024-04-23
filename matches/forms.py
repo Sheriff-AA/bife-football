@@ -11,9 +11,9 @@ from django.contrib.auth.forms import UserCreationForm, UsernameField
 class MatchModelForm(forms.ModelForm):
     class Meta:
         model = Match
-        fields = ("home_team", "away_team", "venue", "date")
+        fields = ("home_team", "away_team", "venue", "match_date")
         widgets = {
-            "date": DateTimePickerInput()
+            "match_date": DateTimePickerInput()
         }
 
         # def __init__(self, *args, **kwargs):

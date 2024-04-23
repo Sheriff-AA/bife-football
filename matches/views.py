@@ -3,6 +3,7 @@ from django.http import HttpResponseRedirect
 from django.views import generic
 from django.utils import timezone
 from django.db.models import Q
+from django.core.paginator import Paginator
 from django.db import transaction
 
 from players.models import (
@@ -28,9 +29,33 @@ class MatchListView(generic.ListView):
     context_object_name = "matches"
 
     def get_queryset(self):
-        queryset = Match.objects.all()
-
+        queryset = Match.objects.all().order_by('id')
         return queryset
+    
+    def get(self, request, *args, **kwargs):
+        search = request.GET.get('search', None)
+        date = request.GET.get('match_date', None)
+        results = Result.objects.all().order_by('id')
+        fixtures = Match.objects.filter(is_fixture=True).order_by('id')
+        if search:
+            fixtures = fixtures.filter(Q(home_team__team_name__icontains=search) | Q(away_team__team_name__icontains=search))
+            results = results.filter(Q(match__home_team__team_name__contains=search) | Q(match__away_team__team_name__contains=search))
+        if date:
+            fixtures = fixtures.filter(Q(match_date__date=date))
+            results = results.filter(Q(match__match_date__date=date))
+
+        results_paginator = Paginator(results, 15)
+        results_page_number = request.GET.get("page")
+        results = results_paginator.get_page(results_page_number)
+
+        fixtures_paginator = Paginator(fixtures, 15)
+        fixtures_page_number = request.GET.get("page")
+        fixtures = fixtures_paginator.get_page(fixtures_page_number)
+
+        if request.htmx:
+            return render(request, 'matches/search_match_list.html', {"results": results, "fixtures": fixtures})
+        else:
+            return render(request, 'matches/match_list.html', {"results": results, "fixtures": fixtures})
 
     def get_context_data(self, **kwargs):
         context = super(MatchListView, self).get_context_data(**kwargs)
@@ -79,8 +104,6 @@ class MatchCreateView(generic.CreateView):
     
     def form_valid(self, form):
         match = form.save(commit=False)
-        if match.date < timezone.now():
-            match.is_fixture = False
         match.save()
         return super(MatchCreateView, self).form_valid(form)
     
@@ -94,8 +117,6 @@ class CustomMatchCreateView(generic.CreateView):
     
     def form_valid(self, form):
         match = form.save(commit=False)
-        if match.date < timezone.now():
-            match.is_fixture = False
         match.save()
         return super(CustomMatchCreateView, self).form_valid(form)
     

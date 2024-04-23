@@ -104,12 +104,12 @@ class Match(models.Model):
     home_team = models.ForeignKey("Team", related_name='home_matches', on_delete=models.CASCADE)
     away_team = models.ForeignKey("Team", related_name='away_matches', on_delete=models.CASCADE)
     venue = models.ForeignKey("Venue", null=True, blank=True, on_delete=models.SET_NULL)
-    date = models.DateTimeField()
+    match_date = models.DateTimeField()
     slug = models.SlugField(null=True, blank=True, unique=True)
     is_fixture = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ['home_team', 'away_team', 'date']    
+        unique_together = ['home_team', 'away_team', 'match_date']    
 
     def save(self, *args, **kwargs):
         new_slug = f"{self.home_team} vs {self.away_team}"
