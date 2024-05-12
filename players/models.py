@@ -37,7 +37,7 @@ class Team(models.Model):
     organisation = models.ForeignKey("User",
         on_delete=models.CASCADE,
         related_name='team'
-    )
+    ) # remember to filter for one organisation, a user can have multiple teams
 
     def __str__(self):
         return self.team_name
@@ -52,6 +52,8 @@ class Coach(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
     team = models.ForeignKey("Team", on_delete=models.CASCADE, related_name='coach')
+    user = models.OneToOneField("User", on_delete=models.CASCADE)
+
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -63,7 +65,7 @@ class Player(models.Model):
     shirt_number = models.IntegerField()
     slug = models.SlugField(null=True, blank=True, unique=True)
     age = models.IntegerField(default=0)
-    # user = models.OneToOneField("User", on_delete=models.CASCADE)
+    user = models.OneToOneField("User", on_delete=models.CASCADE)
     teams = models.ManyToManyField("Team", through="Contract")
     matches = models.ManyToManyField("Match", through="PlayerStat")
     position = models.CharField(max_length=30, blank=True, choices=PLAYER_POSITION)

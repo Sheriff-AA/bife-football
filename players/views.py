@@ -1,7 +1,9 @@
+import random
 from django.shortcuts import render, redirect, reverse
 from django.views import generic
 from django.core.paginator import Paginator
 from django.db.models import Sum, Count, Q
+from .mixins import PlayerOrCoachAndLoginRequiredMixin
 
 from .models import Player, PlayerStat, Contract, MatchEvent
 from .forms import PlayerModelForm, PlayerModelUpdateForm
@@ -82,7 +84,7 @@ class PlayerDetailView(generic.DetailView):
         return context
     
 
-class PlayerCreateView(generic.CreateView):
+class PlayerCreateView(PlayerOrCoachAndLoginRequiredMixin, generic.CreateView):
     template_name = "players/player_create.html"
     form_class = PlayerModelForm
 
@@ -90,8 +92,19 @@ class PlayerCreateView(generic.CreateView):
         return reverse("players:player-list")
     
     def form_valid(self, form):
-        player = form.save(commit=False)
-        player.save()
+        user = form.save(commit=False)
+        user.is_player = True
+        user.set_password(f"{random.randint(0, 100000)}")
+        user.save()
+        player = Player.objects.create(
+            user=user,
+            first_name= user.first_name,
+            last_name= user.last_name,
+            shirt_number = user.shirt_number,
+            age = user.age,
+            position = user.position
+        )
+        player.teams.add(self.request.user.team)
         return super(PlayerCreateView, self).form_valid(form)
     
 

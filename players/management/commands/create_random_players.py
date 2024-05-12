@@ -1,7 +1,7 @@
 import random
 from faker import Faker
 from django.core.management.base import BaseCommand
-from players.models import Player, Team
+from players.models import Player, Team, User
 
 class Command(BaseCommand):
     help = 'Creates random records for Player model'
@@ -16,6 +16,20 @@ class Command(BaseCommand):
         positions = ["CB","LCB","RCB","RB","LB","CM","CAM","LAM","RAM","LWB","RWB","ST","LW","RW",]
 
         for _ in range(total):
+            # Generate random user data
+            username = fake.user_name()
+            email = fake.email()
+            password = fake.password()
+
+            # Create the user
+            user = User.objects.create_user(
+                username=username,
+                email=email,
+                password=password,
+                is_player=True  # Set the user as a player
+                )
+
+
             first_name = fake.first_name()
             last_name = fake.last_name()
             shirt_number = random.randint(1, 99)
@@ -28,7 +42,8 @@ class Command(BaseCommand):
                 last_name=last_name,
                 shirt_number=shirt_number,
                 age=age,
-                position=position
+                position=position,
+                user=user
             )
 
             # Add random teams (assuming you have existing teams)
