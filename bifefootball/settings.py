@@ -26,6 +26,10 @@ SECRET_KEY = 'django-insecure-8wmy1ek-kfo**yt_j8ceuuo65)r96rl23xw1g8m-$rz4_1#7om
 DEBUG = True
 
 ALLOWED_HOSTS = []
+GET_LATEST_CONTRACTS = '''id IN (SELECT id FROM (SELECT id, ROW_NUMBER() 
+            OVER (PARTITION BY player_id ORDER BY contract_date DESC) AS rn 
+            FROM players_contract) AS subquery 
+            WHERE rn = 1)'''
 
 
 # Application definition

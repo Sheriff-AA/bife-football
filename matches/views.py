@@ -1,4 +1,5 @@
 from django.shortcuts import render, reverse, redirect, get_object_or_404
+from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.views import generic
 from django.utils import timezone
@@ -22,6 +23,9 @@ from .forms import (
     PlayerStatModelForm,
     CustomMatchModelForm
     )
+
+
+GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
 
 
 class MatchListView(generic.ListView):
@@ -261,12 +265,7 @@ class ResultCreateView(generic.CreateView):
     def get_latest_contracts(self, team):
         contracts = Contract.objects.filter(team=team)
         return contracts.extra(
-            where=[
-            '''id IN (SELECT id FROM (SELECT id, ROW_NUMBER() 
-            OVER (PARTITION BY player_id ORDER BY contract_date DESC) AS rn 
-            FROM players_contract) AS subquery 
-            WHERE rn = 1)'''
-            ]
+            where=[GET_LATEST_CONTRACTS]
         )
 
 

@@ -135,6 +135,7 @@ class Contract(models.Model):
     player = models.ForeignKey("Player", on_delete=models.CASCADE)
     team = models.ForeignKey("Team", on_delete=models.CASCADE)
     contract_date = models.DateField(default=datetime.date.today)
+    is_valid = models.BooleanField(default=True)
     
     class Meta:
         unique_together = ['player', 'team', 'contract_date']
