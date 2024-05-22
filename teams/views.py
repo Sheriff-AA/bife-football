@@ -1,12 +1,12 @@
-from django.shortcuts import render, reverse
+from django.shortcuts import render, reverse, get_object_or_404
 from django.conf import settings
 from django.views import generic
 from django.db.models import Q
 from django.core.paginator import Paginator
 
 from players.mixins import PlayerOrCoachAndLoginRequiredMixin
-from .forms import TeamModelForm
-from players.models import Team, Contract, Match, Result
+from .forms import TeamModelForm, TeamSelectForm
+from players.models import Team, Contract, Match, Player, Result
 
 GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
 
@@ -73,25 +73,57 @@ class TeamDetailView(generic.DetailView):
 
 # if the request user 
 class TeamDashboardView(generic.DetailView):
+    Model = Player
     template_name = "teams/team_dashboard.html"
     context_object_name = "team"
 
-    def get_queryset(self):
-        return Team.objects.all()
+    def get_object(self):
+        # Get the Player instance for the currently logged-in user
+        return get_object_or_404(Player, user=self.request.user)
     
+
     def get_context_data(self, **kwargs):
         context = super(TeamDashboardView, self).get_context_data(**kwargs)
-        contract = Contract.objects.filter(team=self.get_object()).order_by('-contract_date')
+
+        player = self.get_object()
+        form = TeamSelectForm(player=player)
+        selected_team = player.teams.first()
+        # team_stats = player.playerstat_set.filter(team=selected_team)
+        
+        context.update(self.get_dashboard_context(form, selected_team))
+        return context
+    
+    def get_dashboard_context(self, form, selected_team):
+        contract = Contract.objects.filter(team=selected_team).order_by('-contract_date')
         latest_contracts = contract.extra(
             where=[GET_LATEST_CONTRACTS]
         )
-        upcoming_matches = Match.objects.filter(Q(home_team=self.get_object()) | Q(away_team=self.get_object()))[:10]
-        team_results = Result.objects.filter(Q(match__home_team=self.get_object()) | Q(match__away_team=self.get_object())
+        upcoming_matches = Match.objects.filter(Q(home_team=selected_team) | Q(away_team=selected_team))[:10]
+        team_results = Result.objects.filter(Q(match__home_team=selected_team) | Q(match__away_team=selected_team)
             )
-        context.update({
+
+        return {
             "contracts": latest_contracts,
             "upcoming_matches": upcoming_matches,
-            "team_results": team_results
-        })
+            "team_results": team_results,
+            "selected_team": selected_team,
+            "form": form,
+            # "team_stats": team_stats
+        }
+    
+    def post(self, request, *args, **kwargs):
+        player = self.get_object()
+        form = TeamSelectForm(request.POST, player=player)
+        if form.is_valid():
+            selected_team = form.cleaned_data['team']
+        else:
+            selected_team = player.teams.first()
+        
+        # team_stats = player.playerstat_set.filter(team=selected_team)
 
-        return context
+        if request.headers.get('HX-Request'):
+            return render(request, 'partials/partial_team_dashboard.html', self.get_dashboard_context(form, selected_team))
+        else:
+            context = self.get_context_data()
+            context.update(self.get_dashboard_context(form, selected_team))
+            return self.render_to_response(context)
