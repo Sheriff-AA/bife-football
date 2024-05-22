@@ -6,7 +6,7 @@ from django.db.models import Sum, Count, Q
 from .mixins import PlayerOrCoachAndLoginRequiredMixin
 
 from .models import Player, PlayerStat, Contract, MatchEvent
-from .forms import PlayerModelForm, PlayerModelUpdateForm
+from .forms import PlayerModelForm, PlayerModelUpdateForm, PlayerTeamForm
 
 
 class LandingPageView(generic.TemplateView):
@@ -135,3 +135,18 @@ class PlayerDeleteView(generic.DeleteView):
 
     def get_success_url(self):
         return reverse("players:player-list")
+    
+
+class PlayerUpdateTeamsView(generic.UpdateView):
+    model = Player
+    form_class = PlayerTeamForm
+    template_name = 'player_update_teams.html'
+    
+    def form_valid(self, form):
+        player = form.save(commit=False)
+        player.teams.set(form.cleaned_data['teams'])
+        player.save()
+        return redirect('players:player-detail', pk=player.slug)
+
+    def get_success_url(self):
+        return reverse('players:player-detail', kwargs={'slug': self.object.slug})

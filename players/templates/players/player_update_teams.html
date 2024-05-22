@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Update Teams for {{ player.first_name }} {{ player.last_name }}</h1>
+<div class="max-w-lg mx-auto">
+    <form method="post" class="mt-5">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save</button>
+    </form>
+    <a href="{% url 'players:player-detail' player.slug %}">Back to Player Detail</a>
+</div>
+{% endblock %}
