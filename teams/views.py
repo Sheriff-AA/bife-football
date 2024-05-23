@@ -122,7 +122,8 @@ class TeamDashboardView(generic.DetailView):
         # team_stats = player.playerstat_set.filter(team=selected_team)
 
         if request.headers.get('HX-Request'):
-            return render(request, 'partials/partial_team_dashboard.html', self.get_dashboard_context(form, selected_team))
+            print(selected_team)
+            return render(request, 'teams/partials/partial_team_dashboard.html', self.get_dashboard_context(form, selected_team))
         else:
             context = self.get_context_data()
             context.update(self.get_dashboard_context(form, selected_team))

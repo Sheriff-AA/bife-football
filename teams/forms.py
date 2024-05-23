@@ -13,6 +13,6 @@ class TeamSelectForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         player = kwargs.pop('player', None)
-        super(TeamSelectForm, self).__init__(*args, **kwargs)
+        super(TeamSelectForm, self).__init__(*args, **kwargs)        
         if player:
             self.fields['team'].queryset = player.teams.all()

@@ -121,13 +121,19 @@
             width: calc(100% - 16rem);
         }        
     }
+    .button-container {
+      display: flex;
+      justify-content: center;
+  }
 </style>
 
 <div class="max-w-lg mx-auto">
     <form method="post" hx-post="{% url 'teams:team-dashboard' %}" hx-target="#team-stats" hx-swap="innerHTML">
     {% csrf_token %}
     {{ form|crispy }}
-    <button type="submit" class="text-white text-xs bg-blue-700 rounded-lg px-4 py-2 bg-blue-600">Switch Team</button>
+    <div class="button-container">
+      <button type="submit" class="text-white text-xs bg-blue-700 rounded-lg px-4 py-2 mb-5">Switch Team</button>
+    </div>
     </form>
 </div>
 
@@ -163,7 +169,9 @@
     </div>
     <!-- ./Header -->
     
-    {% include 'partials/partial_team_dashboard.html' %}
+    <div id="team-stats" class="grid grid-cols-1 grid-rows-1 md:grid-cols-5 overflow-x-hidden overflow-y-auto">
+      {% include 'teams/partials/partial_team_dashboard.html' %}
+    </div>
 </div>
 
 {% endblock content %}
