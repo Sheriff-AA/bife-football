@@ -30,7 +30,7 @@ class TeamListView(generic.ListView):
         page_obj = paginator.get_page(page_number)
 
         if request.htmx:
-            return render(request, 'teams/search_team_list.html', {'page_obj': page_obj})
+            return render(request, 'teams/partials/partial_team_list.html', {'page_obj': page_obj})
         else:
             return render(request, 'teams/team_list.html', {'page_obj': page_obj})
 

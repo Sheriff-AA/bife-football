@@ -57,7 +57,7 @@ class MatchListView(generic.ListView):
         fixtures = fixtures_paginator.get_page(fixtures_page_number)
 
         if request.htmx:
-            return render(request, 'matches/search_match_list.html', {"results": results, "fixtures": fixtures})
+            return render(request, 'matches/partials/partial_match_list.html', {"results": results, "fixtures": fixtures})
         else:
             return render(request, 'matches/match_list.html', {"results": results, "fixtures": fixtures})
 

@@ -31,7 +31,7 @@ class PlayerListView(generic.ListView):
         page_obj = paginator.get_page(page_number)
 
         if request.htmx:
-            return render(request, 'players/search_player_list.html', {'page_obj': page_obj})
+            return render(request, 'players/partials/partial_player_list.html', {'page_obj': page_obj})
         else:
             return render(request, 'players/player_list.html', {'page_obj': page_obj})
 

@@ -1,0 +1,52 @@
+<table class="table-auto w-full text-left">
+  <thead>
+    <tr>
+      <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Team</th>
+      <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Short name</th>
+      <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Coach</th>
+      <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Organisation</th>
+      <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+    </tr>
+  </thead>
+  {% for team in page_obj %}
+  <tbody>
+    <tr>
+    <td class="px-4 py-3">
+        <a href="{% url 'teams:team-detail' team.pk %}">{{ team.team_name }}
+        </a>
+    </td>
+    <td class="px-4 py-3">
+        <a href="#">{{ team.short_team_name }}
+        </a>
+    </td>
+    <td class="px-4 py-3">{{ team.coach.first }}</td>
+    <td class="px-4 py-3 text-lg text-gray-900">{{ team.organisation }}</td>
+    <td class="px-4 py-3 text-right text-lg underline text-blue-900">
+      <a href="{% url 'teams:team-detail' team.pk %}">View team</a>
+    </td>
+    </tr>
+  </tbody>
+  {% endfor %}
+</table>
+
+<div class="pagination my-4 text-center">
+    <span class="step-links">
+        {% if page_obj.has_previous %}
+        <span class="text-blue-700">
+            <a href="?page=1">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}">Previous</a>
+        {% endif %}
+        </span>
+
+        <span class="current">
+            Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+        </span>
+
+        {% if page_obj.has_next %}
+        <span class="text-blue-700">
+            <a href="?page={{ page_obj.next_page_number }}">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}">Last &raquo;</a>
+        {% endif %}
+        </span>
+    </span>
+</div>
