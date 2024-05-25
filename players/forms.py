@@ -15,6 +15,7 @@ class PlayerModelForm(forms.ModelForm):
         #     super(PlayerModelForm, self).__init__(*args, **kwargs)
         #     self.fields["teams"].queryset = team
 
+        
 class PlayerModelUpdateForm(forms.ModelForm):
     class Meta:
         model = Player

@@ -1,11 +1,11 @@
 import random
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.views import generic
 from django.core.paginator import Paginator
 from django.db.models import Sum, Count, Q
-from .mixins import PlayerOrCoachAndLoginRequiredMixin
+from .mixins import CoachAndLoginRequiredMixin
 
-from .models import Player, PlayerStat, Contract, MatchEvent
+from .models import Player, PlayerStat, Contract, MatchEvent, Coach
 from .forms import PlayerModelForm, PlayerModelUpdateForm, PlayerTeamForm
 
 
@@ -84,10 +84,14 @@ class PlayerDetailView(generic.DetailView):
         return context
     
 
-class PlayerCreateView(PlayerOrCoachAndLoginRequiredMixin, generic.CreateView):
+class PlayerCreateView(CoachAndLoginRequiredMixin, generic.CreateView):
     template_name = "players/player_create.html"
     form_class = PlayerModelForm
 
+    def get_object(self):
+        # Get the Coach instance for the currently logged-in user
+        return get_object_or_404(Coach, user=self.request.user)
+    
     def get_success_url(self):
         return reverse("players:player-list")
     
@@ -104,7 +108,10 @@ class PlayerCreateView(PlayerOrCoachAndLoginRequiredMixin, generic.CreateView):
             age = user.age,
             position = user.position
         )
-        player.teams.add(self.request.user.team)
+        coach = self.get_object()
+        selected_team = coach.team
+        if selected_team:
+            player.teams.add(selected_team)
         return super(PlayerCreateView, self).form_valid(form)
     
 

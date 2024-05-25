@@ -4,7 +4,7 @@ from django.views import generic
 from django.db.models import Q
 from django.core.paginator import Paginator
 
-from players.mixins import PlayerOrCoachAndLoginRequiredMixin
+from players.mixins import CoachAndLoginRequiredMixin
 from .forms import TeamModelForm, TeamSelectForm
 from players.models import Team, Contract, Match, Player, Result
 
@@ -84,10 +84,13 @@ class TeamDashboardView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(TeamDashboardView, self).get_context_data(**kwargs)
-
         player = self.get_object()
-        form = TeamSelectForm(player=player)
-        selected_team = player.teams.first()
+
+        # Get the selected team from the session, or default to the first team
+        selected_team_id = self.request.session.get('selected_team_id')
+        selected_team = player.teams.filter(id=selected_team_id).first() if selected_team_id else player.teams.first()
+        
+        form = TeamSelectForm(player=player, initial={'team': selected_team})
         # team_stats = player.playerstat_set.filter(team=selected_team)
         
         context.update(self.get_dashboard_context(form, selected_team))
@@ -116,6 +119,8 @@ class TeamDashboardView(generic.DetailView):
         form = TeamSelectForm(request.POST, player=player)
         if form.is_valid():
             selected_team = form.cleaned_data['team']
+            # Save the selected team in the session
+            self.request.session['selected_team_id'] = selected_team.id
         else:
             selected_team = player.teams.first()
         
