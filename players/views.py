@@ -88,9 +88,10 @@ class PlayerCreateView(CoachAndLoginRequiredMixin, generic.CreateView):
     template_name = "players/player_create.html"
     form_class = PlayerModelForm
 
-    def get_object(self):
-        # Get the Coach instance for the currently logged-in user
-        return get_object_or_404(Coach, user=self.request.user)
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(PlayerCreateView, self).get_form_kwargs(**kwargs)
+        kwargs.update({'user': self.request.user})
+        return kwargs
     
     def get_success_url(self):
         return reverse("players:player-list")
@@ -108,7 +109,7 @@ class PlayerCreateView(CoachAndLoginRequiredMixin, generic.CreateView):
             age = user.age,
             position = user.position
         )
-        coach = self.get_object()
+        coach = get_object_or_404(Coach, user=self.request.user)
         selected_team = coach.team
         if selected_team:
             player.teams.add(selected_team)
@@ -147,7 +148,7 @@ class PlayerDeleteView(generic.DeleteView):
 class PlayerUpdateTeamsView(generic.UpdateView):
     model = Player
     form_class = PlayerTeamForm
-    template_name = 'player_update_teams.html'
+    template_name = 'players/player_update_teams.html'
     
     def form_valid(self, form):
         player = form.save(commit=False)

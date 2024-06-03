@@ -1,5 +1,5 @@
 from django import forms
-from .models import Player, Team
+from .models import Player, Team, Coach
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 
 
@@ -7,13 +7,14 @@ class PlayerModelForm(forms.ModelForm):
     class Meta:
         model = Player
         fields =("first_name", "last_name", "shirt_number", "age", "position", "teams")
-        teams = forms.ModelChoiceField(queryset=Team.objects.all())
+    teams = forms.ModelChoiceField(queryset=Team.objects.all())
 
-        # def __init__(self, *args, **kwargs):
-        #     request = kwargs.pop("request")
-        #     team = Team.objects.filter(organisation=request.user)
-        #     super(PlayerModelForm, self).__init__(*args, **kwargs)
-        #     self.fields["teams"].queryset = team
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop("user")
+        super(PlayerModelForm, self).__init__(*args, **kwargs)
+        if user:
+            profile = Coach.objects.get(user=user)
+            self.fields['teams'].queryset = Team.objects.filter(slug=profile.team.slug)
 
         
 class PlayerModelUpdateForm(forms.ModelForm):

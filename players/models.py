@@ -5,20 +5,23 @@ import datetime
 
 
 PLAYER_POSITION = (
-        ("CB", "Centre Back"),
-        ("LCB", "Left Centre Back"),
-        ("RCB", "Right Centre Back"),
-        ("RB", "Right Back"),
-        ("LB", "Left Back"),
-        ("CM", "Center Midfield"),
-        ("CAM", "Center Attacking Midfield"),
-        ("LAM", "Left Attacking Midfield"),
-        ("RAM", "Right Attacking Midfield"),
-        ("LWB", "Left Wing Back"),
-        ("RWB", "Right Wing Back"),
-        ("ST", "Striker"),
-        ("LW", "Left Wing"),
-        ("RW", "Right Wing"),
+    ("GK", "Goalkeeper"),
+    ("CB", "Centre Back"),
+    ("LCB", "Left Centre Back"),
+    ("RCB", "Right Centre Back"),
+    ("RB", "Right Back"),
+    ("LB", "Left Back"),
+    ("CM", "Center Midfield"),
+    ("CDM", "Center Defensive Midfield"),
+    ("CAM", "Center Attacking Midfield"),
+    ("LAM", "Left Attacking Midfield"),
+    ("RAM", "Right Attacking Midfield"),
+    ("LWB", "Left Wing Back"),
+    ("RWB", "Right Wing Back"),
+    ("ST", "Striker"),
+    ("CF", "Center Forward"),
+    ("LW", "Left Wing"),
+    ("RW", "Right Wing"),
     )
 
 MINUTES_CHOICES = [(i, f"{i}'") for i in range(1, 121)]
