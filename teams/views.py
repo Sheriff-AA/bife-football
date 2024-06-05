@@ -6,7 +6,7 @@ from django.core.paginator import Paginator
 
 from players.mixins import CoachAndLoginRequiredMixin
 from .forms import TeamModelForm, TeamSelectForm
-from players.models import Team, Contract, Match, Player, Result
+from players.models import Team, Contract, Match, Player, Result, Coach
 
 GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
 
@@ -79,18 +79,26 @@ class TeamDashboardView(generic.DetailView):
 
     def get_object(self):
         # Get the Player instance for the currently logged-in user
-        return get_object_or_404(Player, user=self.request.user)
+        if self.request.user.is_player:
+            return get_object_or_404(Player, user=self.request.user)
+        if self.request.user.is_coach:
+            return get_object_or_404(Coach, user=self.request.user)
+        # if self.request.user.is_admin:
+        #     return get_object_or_404(Player, user=self.request.user)
     
 
     def get_context_data(self, **kwargs):
         context = super(TeamDashboardView, self).get_context_data(**kwargs)
-        player = self.get_object()
+        user = self.get_object()
 
         # Get the selected team from the session, or default to the first team
         selected_team_id = self.request.session.get('selected_team_id')
-        selected_team = player.teams.filter(id=selected_team_id).first() if selected_team_id else player.teams.first()
+        if self.request.user.is_player:
+            selected_team = user.teams.filter(id=selected_team_id).first() if selected_team_id else user.teams.first()
+        if self.request.user.is_coach:
+            selected_team = user.team
         
-        form = TeamSelectForm(player=player, initial={'team': selected_team})
+        form = TeamSelectForm(user=user, initial={'team': selected_team})
         # team_stats = player.playerstat_set.filter(team=selected_team)
         
         context.update(self.get_dashboard_context(form, selected_team))
@@ -115,14 +123,17 @@ class TeamDashboardView(generic.DetailView):
         }
     
     def post(self, request, *args, **kwargs):
-        player = self.get_object()
-        form = TeamSelectForm(request.POST, player=player)
+        user = self.get_object()
+        form = TeamSelectForm(request.POST, user=user)
         if form.is_valid():
             selected_team = form.cleaned_data['team']
             # Save the selected team in the session
             self.request.session['selected_team_id'] = selected_team.id
         else:
-            selected_team = player.teams.first()
+            if self.request.user.is_player:
+                selected_team = user.teams.first()
+            if self.request.user.is_coach:
+                selected_team = user.team
         
         # team_stats = player.playerstat_set.filter(team=selected_team)
 

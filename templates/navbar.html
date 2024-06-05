@@ -10,7 +10,9 @@
       <a href="{% url 'players:player-list' %}" class="mr-5 hover:text-gray-900">Players</a>
       <a href="{% url 'matches:match-list' %}" class="mr-5 hover:text-gray-900">Matches</a>
       <a href="{% url 'teams:team-list' %}" class="mr-5 hover:text-gray-900">Teams</a>
-      <a href="{% url 'teams:team-dashboard'%}" class="mr-5 hover:text-gray-900">MyTeam</a>
+      {% if request.user.is_player or request.user.is_coach %}
+      <a href="{% url 'teams:team-dashboard'%}" class="mr-5 hover:text-gray-900">Team Dashboard</a>
+      {% endif %}
     </nav>
     <button class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Login
       <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
