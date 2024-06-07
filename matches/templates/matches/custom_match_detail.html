@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="container mx-auto p-6 font-mono">
+  <div class="flex flex-col text-center w-full mb-20">
+    <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Match Details</h1>
+    <p class="lg:w-2/3 mx-auto leading-relaxed text-base">{{ match.result }}</p>
+  </div>
+
+  
+  <p class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Home Team - {{ match.user_team }}</p>
+  <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
+    <div class="w-full overflow-x-auto">
+      <table class="w-full">
+        <thead>
+          <tr class="text-md font-semibold tracking-wide text-left text-gray-900 bg-gray-100 uppercase border-b border-gray-600">
+            <th class="px-4 py-3">Name</th>
+            <th class="px-4 py-3">Age</th>
+            <th class="px-4 py-3">Rating</th>
+            <th class="px-4 py-3">Minutes played</th>
+          </tr>
+        </thead>
+        {% for player_stat in hometeam_players %}
+          <tbody class="bg-white">
+            <tr class="text-gray-700">
+              <td class="px-4 py-3 border">
+                <div class="flex items-center text-sm">
+                  <div>
+                    <p class="font-semibold text-black">
+                      {{ player_stat.player.first_name}} {{ player_stat.player.last_name}}
+                    </p>
+                    <p class="text-xs text-gray-600">{{ player_stat.player.position}}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="px-4 py-3 text-ms font-semibold border">{{ player_stat.player.age }}</td>
+              <td class="px-4 py-3 text-xs border">
+                <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-sm"> {{ player_stat.rating }} </span>
+              </td>
+              <td class="px-4 py-3 text-sm border">{{ player_stat.minutes_played }}</td>
+            </tr>
+          </tbody>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+
+
+  {% if events %}
+    <div class="py-5 border-t border-gray-200">
+        <h1 class="text-4xl text-gray-800">Match events</h1>
+    </div>
+    <div class="px-5 lg:w-3/3 w-full mx-auto overflow-auto">
+        <table class="table-auto w-full text-left whitespace-no-wrap">
+          <thead>
+            <tr>
+              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Event type</th>
+              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Player</th>
+              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Minute</th>
+              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Related player</th>
+            </tr>
+          </thead>
+          {% for event in events %}
+          <tbody>
+            <tr>
+            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.event_type }}</td>
+            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.player_contract }}</td>
+            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.minute }}'</td>
+            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.related_player }}</td>
+            </tr>
+          </tbody>
+          {% endfor %}
+        </table>
+    </div>
+  {% endif %}
+    
+</section>
+  
+{% endblock content %}

@@ -26,9 +26,9 @@ class MatchModelForm(forms.ModelForm):
 class CustomMatchModelForm(forms.ModelForm):
     class Meta:
         model = CustomMatch
-        fields = ("versus_team", "user_team", "venue", "date")
+        fields = ("versus_team", "user_team", "venue", "match_date")
         widgets = {
-            "date": DateTimePickerInput(),
+            "match_date": DateTimePickerInput(),
         }
 
 

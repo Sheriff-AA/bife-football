@@ -78,13 +78,11 @@ class TeamDashboardView(generic.DetailView):
     context_object_name = "team"
 
     def get_object(self):
-        # Get the Player instance for the currently logged-in user
+        # Get the player or coach  instance for the currently logged-in user
         if self.request.user.is_player:
             return get_object_or_404(Player, user=self.request.user)
         if self.request.user.is_coach:
             return get_object_or_404(Coach, user=self.request.user)
-        # if self.request.user.is_admin:
-        #     return get_object_or_404(Player, user=self.request.user)
     
 
     def get_context_data(self, **kwargs):

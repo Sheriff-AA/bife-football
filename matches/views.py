@@ -6,9 +6,11 @@ from django.utils import timezone
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.db import transaction
+from itertools import chain
 
 from players.models import (
     Match,
+    CustomMatch,
     Result,
     PlayerStat,
     MatchEvent,
@@ -33,41 +35,50 @@ class MatchListView(generic.ListView):
     context_object_name = "matches"
 
     def get_queryset(self):
-        queryset = Match.objects.all().order_by('id')
-        return queryset
+        match_queryset = Match.objects.all().order_by('id')
+        # custommatch_queryset = Match.objects.all().order_by('id')
+        # combined_queryset = chain(match_queryset, custommatch_queryset)
+        return match_queryset
+    
+    def manual_pagination(self, request, queryset):
+        queryset_paginator = Paginator(queryset, 15)
+        queryset_page_number = request.GET.get("page")
+        return queryset_paginator.get_page(queryset_page_number)
     
     def get(self, request, *args, **kwargs):
         search = request.GET.get('search', None)
         date = request.GET.get('match_date', None)
         results = Result.objects.all().order_by('id')
         fixtures = Match.objects.filter(is_fixture=True).order_by('id')
+        custom_match = CustomMatch.objects.filter(is_fixture=True).order_by("id")
         if search:
             fixtures = fixtures.filter(Q(home_team__team_name__icontains=search) | Q(away_team__team_name__icontains=search))
+            custom_match = custom_match.filter(Q(versus_team__team_name__icontains=search) | Q(user_team__team_name__icontains=search))
             results = results.filter(Q(match__home_team__team_name__contains=search) | Q(match__away_team__team_name__contains=search))
         if date:
             fixtures = fixtures.filter(Q(match_date__date=date))
+            custom_match = custom_match.filter(Q(match_date__date=date))
             results = results.filter(Q(match__match_date__date=date))
 
-        results_paginator = Paginator(results, 15)
-        results_page_number = request.GET.get("page")
-        results = results_paginator.get_page(results_page_number)
-
-        fixtures_paginator = Paginator(fixtures, 15)
-        fixtures_page_number = request.GET.get("page")
-        fixtures = fixtures_paginator.get_page(fixtures_page_number)
+        
+        results = self.manual_pagination(request, results)
+        fixtures = self.manual_pagination(request, fixtures)
+        custom_match = self.manual_pagination(request, custom_match)
 
         if request.htmx:
-            return render(request, 'matches/partials/partial_match_list.html', {"results": results, "fixtures": fixtures})
+            return render(request, 'matches/partials/partial_match_list.html', {"results": results, "fixtures": fixtures, "custommatches": custom_match})
         else:
-            return render(request, 'matches/match_list.html', {"results": results, "fixtures": fixtures})
+            return render(request, 'matches/match_list.html', {"results": results, "fixtures": fixtures, "custommatches": custom_match})
 
     def get_context_data(self, **kwargs):
         context = super(MatchListView, self).get_context_data(**kwargs)
         queryset = Result.objects.all()
         fixtures = Match.objects.filter(is_fixture=True)
+        custom_matches = CustomMatch.objects.filter(is_fixture=True)
         context.update({
             "results": queryset,
-            "fixtures": fixtures
+            "fixtures": fixtures,
+            "custommatches": custom_matches
         })
 
         return context
@@ -94,6 +105,27 @@ class MatchDetailView(generic.DetailView):
         context.update({
             "hometeam_players": home_team,
             "awayteam_players": away_team,
+            "events": self.get_object().matchevent_set.all()
+        })
+        return context
+
+class CustomMatchDetailView(generic.DetailView):
+    template_name = "matches/custom_match_detail.html"
+    context_object_name = "match"
+
+    def get_queryset(self):
+        queryset = CustomMatch.objects.all()
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super(CustomMatchDetailView, self).get_context_data(**kwargs)
+        user_team = PlayerStat.objects.filter(
+            match=self.get_object(),
+            player_contract__team =self.get_object().user_team
+        )
+
+        context.update({
+            "userteam_players": user_team,
             "events": self.get_object().matchevent_set.all()
         })
         return context

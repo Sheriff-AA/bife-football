@@ -75,3 +75,43 @@
     </table>
   </div>
 {% endif %}
+
+<!--Private Games-->
+{% if custommatches %}
+  <div class="lg:w-3/3 w-full mx-auto mb-10 overflow-auto">
+    <div class="flex flex-col w-full mt-20 mb-5">
+      <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Private Games</h1>
+    </div>
+    <table class="table-auto w-full text-left whitespace-no-wrap">
+      <thead>
+        <tr>
+          <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
+          <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
+          <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
+          <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+        </tr>
+      </thead>
+      {% for match in custommatches %}
+      <tbody>
+        <tr>
+        <td class="px-3 py-3">
+            <a href="#">
+                {{ match.user_team }}
+            </a>
+        </td>
+        <td class="px-3 py-3">
+            <a href="#">
+                {{ match.versus_team }}
+            </a>
+        </td>
+        <td class="px-3 py-3 text-lg text-gray-900">{{ match.match_date|date:"F d, Y, h:i A" }}</td>
+        <td class="px-3 py-3 text-right text-lg underline text-blue-900">
+          <a href="#">Add event(s)</a>
+        </td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+  </div>
+{% endif %}
+<!--Private Games-->
