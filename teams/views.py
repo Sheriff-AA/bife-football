@@ -55,7 +55,7 @@ class TeamDetailView(generic.DetailView):
     
     def get_context_data(self, **kwargs):
         context = super(TeamDetailView, self).get_context_data(**kwargs)
-        contract = Contract.objects.filter(team=self.get_object()).order_by('-contract_date')
+        contract = Contract.objects.filter(team=self.get_object(), is_valid=True).order_by('-contract_date')
         latest_contracts = contract.extra(
             where=[GET_LATEST_CONTRACTS]
         )
@@ -103,7 +103,7 @@ class TeamDashboardView(generic.DetailView):
         return context
     
     def get_dashboard_context(self, form, selected_team):
-        contract = Contract.objects.filter(team=selected_team).order_by('-contract_date')
+        contract = Contract.objects.filter(team=selected_team, is_valid=True).order_by('-contract_date')
         latest_contracts = contract.extra(
             where=[GET_LATEST_CONTRACTS]
         )

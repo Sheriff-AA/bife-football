@@ -8,6 +8,7 @@ from .views import (
     PlayerStatCreateEventView,
     CustomMatchCreateView,
     CustomMatchDetailView,
+    UpdateTeamsView,
     )
 
 """
@@ -22,6 +23,7 @@ urlpatterns = [
     path("private-game/<slug:slug>/", CustomMatchDetailView.as_view(), name='custommatch-detail'),
     path("create-event/<slug:slug>/", MatchCreateEventView.as_view(), name='match-event-create'),
     path("confirm-result/<slug:slug>/", ResultCreateView.as_view(), name='result-create'),
+    path('update-teams/', UpdateTeamsView.as_view(), name='update-teams'),
     path("create-player-stat/<slug:slug>/", PlayerStatCreateEventView.as_view(), name='player-stat-create'),
     path("<slug:slug>/", MatchDetailView.as_view(), name='match-detail'),
 ]

@@ -9,12 +9,14 @@
     <h1 class="text-2xl font-bold mb-4">Create a new match</h1>
   </div>
 
+  
   <form method="post" class="max-w-sm mx-auto">
-    {% csrf_token %} 
-    {{ form|crispy }}
-
-    <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Create Match</button>
-    </form>
+    {% csrf_token %}
+    <label><input type="radio" name="match_type" value="home" hx-get="{% url 'matches:update-teams' %}" hx-trigger="change" hx-target="#team-fields" checked> Home Game</label>
+    <label><input type="radio" name="match_type" value="away" hx-get="{% url 'matches:update-teams' %}" hx-trigger="change" hx-target="#team-fields"> Away Game</label>
+    <div id="team-fields" hx-swap="innerHTML">
+      {% include 'matches/partials/team_fields.html' %}
+    </div>
   </form>
 
 </div>

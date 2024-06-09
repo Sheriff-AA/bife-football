@@ -9,13 +9,7 @@ from django.db import transaction
 from itertools import chain
 
 from players.models import (
-    Match,
-    CustomMatch,
-    Result,
-    PlayerStat,
-    MatchEvent,
-    Player,
-    Contract,
+    Match, CustomMatch, Result, PlayerStat, MatchEvent, Player, Contract, Team,
     )
 from .forms import (
     MatchModelForm,
@@ -109,6 +103,7 @@ class MatchDetailView(generic.DetailView):
         })
         return context
 
+
 class CustomMatchDetailView(generic.DetailView):
     template_name = "matches/custom_match_detail.html"
     context_object_name = "match"
@@ -131,9 +126,36 @@ class CustomMatchDetailView(generic.DetailView):
         return context
 
 
+class UpdateTeamsView(generic.TemplateView):
+    template_name = 'matches/partials/team_fields.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_team = get_object_or_404(Player, user=self.request.user)
+        user_team = user_team.teams.first()
+        match_type = self.request.GET.get('match_type', 'home')
+        form = MatchModelForm(user_team=user_team, match_type=match_type)
+        context['form'] = form
+        return context
+    
+    def form_valid(self, form):
+        match = form.save(commit=False)
+        match.save()
+        return super(MatchCreateView, self).form_valid(form)
+    
+
 class MatchCreateView(generic.CreateView):
     template_name = "matches/match_create.html"
     form_class = MatchModelForm
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        user_team = get_object_or_404(Player, user=self.request.user)
+        # TEMPORARY
+        user_team = user_team.teams.first()
+        kwargs['user_team'] = user_team
+        kwargs['match_type'] = self.request.POST.get('match_type', 'home')
+        return kwargs
 
     def get_success_url(self):
         return reverse("matches:match-list")
@@ -180,13 +202,7 @@ class MatchCreateEventView(generic.CreateView):
             'events': match_instance.matchevent_set.all()
         })
         if self.request.POST:
-            data['formset'] = MatchEventFormSet(
-                self.request.POST or None,
-                self.request.FILES or None,
-                instance=match_instance,
-                form_kwargs={'slug': self.kwargs['slug']},
-                prefix='matchevents'
-            )
+            data['formset'] = self.get_formset(match_instance)
         else:
             data['formset'] = MatchEventFormSet(
                 queryset=MatchEvent.objects.none(),

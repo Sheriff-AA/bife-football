@@ -1,11 +1,15 @@
 from django import forms
-from players.models import Player, Match, MatchEvent, PlayerStat, Contract, CustomMatch
+from django.conf import settings
+from players.models import Player, Match, MatchEvent, PlayerStat, Contract, CustomMatch, Team
 from .widgets import DateTimePickerInput
 from django import forms
 from django.forms.models import inlineformset_factory
 from django.db.models import Q
 from django.db.models import Avg, Count, Min, Sum, Max
 from django.contrib.auth.forms import UserCreationForm, UsernameField
+
+
+GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
 
 
 class MatchModelForm(forms.ModelForm):
@@ -16,11 +20,17 @@ class MatchModelForm(forms.ModelForm):
             "match_date": DateTimePickerInput()
         }
 
-        # def __init__(self, *args, **kwargs):
-        #     request = kwargs.pop("request")
-        #     team = Team.objects.filter(organisation=request.user)
-        #     super(PlayerModelForm, self).__init__(*args, **kwargs)
-        #     self.fields["teams"].queryset = team
+    def __init__(self, *args, **kwargs):
+        user_team = kwargs.pop('user_team', None)
+        match_type = kwargs.pop('match_type', 'home')
+        super(MatchModelForm, self).__init__(*args, **kwargs)
+        if user_team:
+            if match_type == 'home':
+                self.fields['home_team'].queryset = Team.objects.filter(id=user_team.id)
+                self.fields['away_team'].queryset = Team.objects.exclude(id=user_team.id)
+            else:
+                self.fields['home_team'].queryset = Team.objects.exclude(id=user_team.id)
+                self.fields['away_team'].queryset = Team.objects.filter(id=user_team.id)
 
 
 class CustomMatchModelForm(forms.ModelForm):
@@ -40,14 +50,9 @@ class MatchEventModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         match = Match.objects.get(slug=kwargs.pop("slug"))
 
-        contract_for_teams = Contract.objects.filter(Q(team=match.home_team) | Q(team=match.away_team))
+        contract_for_teams = Contract.objects.filter(Q(is_valid=True) & (Q(team=match.home_team) | Q(team=match.away_team)))
         latest_contracts = contract_for_teams.extra(
-            where=[
-            '''id IN (SELECT id FROM (SELECT id, ROW_NUMBER() 
-            OVER (PARTITION BY player_id ORDER BY contract_date DESC) AS rn 
-            FROM players_contract) AS subquery 
-            WHERE rn = 1)'''
-            ]
+            where=[GET_LATEST_CONTRACTS]
         )
         super(MatchEventModelForm, self).__init__(*args, **kwargs)
         self.fields["player_contract"].queryset = latest_contracts
@@ -67,14 +72,9 @@ class PlayerStatModelForm(forms.ModelForm):
         match = Match.objects.get(slug=kwargs.pop("slug"))
         # Filter for players that have signed a contract for each team
         # Then filter for the latest contract for each players
-        contract_for_teams = Contract.objects.filter(Q(team=match.home_team) | Q(team=match.away_team))
+        contract_for_teams = Contract.objects.filter(Q(is_valid=True) & (Q(team=match.home_team) | Q(team=match.away_team)))
         latest_contracts = contract_for_teams.extra(
-            where=[
-            '''id IN (SELECT id FROM (SELECT id, ROW_NUMBER() 
-            OVER (PARTITION BY player_id ORDER BY contract_date DESC) AS rn 
-            FROM players_contract) AS subquery 
-            WHERE rn = 1)'''
-            ]
+            where=[GET_LATEST_CONTRACTS]
         )
         super(PlayerStatModelForm, self).__init__(*args, **kwargs)
         self.fields["player_contract"].queryset = latest_contracts
