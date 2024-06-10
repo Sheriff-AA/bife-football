@@ -2,11 +2,9 @@ from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.views import generic
-from django.utils import timezone
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.db import transaction
-from itertools import chain
 
 from players.models import (
     Match, CustomMatch, Result, PlayerStat, MatchEvent, Player, Contract, Team,
@@ -131,17 +129,13 @@ class UpdateTeamsView(generic.TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_team = get_object_or_404(Player, user=self.request.user)
-        user_team = user_team.teams.first()
+        user_team = get_object_or_404(Team, id=17)
         match_type = self.request.GET.get('match_type', 'home')
         form = MatchModelForm(user_team=user_team, match_type=match_type)
         context['form'] = form
-        return context
-    
-    def form_valid(self, form):
-        match = form.save(commit=False)
-        match.save()
-        return super(MatchCreateView, self).form_valid(form)
+        context['match_type'] = match_type
+        context['user_team'] = user_team
+        return context 
     
 
 class MatchCreateView(generic.CreateView):
@@ -150,15 +144,24 @@ class MatchCreateView(generic.CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        user_team = get_object_or_404(Player, user=self.request.user)
+        user_team = get_object_or_404(Team, id=17)
         # TEMPORARY
-        user_team = user_team.teams.first()
+        # user_team = user_team.teams.last()
         kwargs['user_team'] = user_team
         kwargs['match_type'] = self.request.POST.get('match_type', 'home')
         return kwargs
 
     def get_success_url(self):
         return reverse("matches:match-list")
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_team = get_object_or_404(Team, id=17)  
+        form = self.get_form()
+        context['form'] = form
+        context['user_team'] = user_team
+        context['match_type'] = 'home'  # Set default match_type
+        return context
     
     def form_valid(self, form):
         match = form.save(commit=False)
@@ -330,6 +333,31 @@ class PlayerStatCreateEventView(generic.CreateView):
             "slug": self.kwargs['slug']
         })
         return kwargs
+    
+    def get_context_data(self, **kwargs):
+        data = super(PlayerStatCreateEventView, self).get_context_data(**kwargs)
+        data["match"] = self.get_match_instance()
+        data['formset'] = self.get_formset(data['match'], form_kwargs={'slug': self.kwargs['slug']})
+        
+        return data
+    
+    def get_match_instance(self):
+        return get_object_or_404(self.get_queryset())
+    
+    def get_formset(self, match_instance, *args, **kwargs):
+        prefix = kwargs.pop('prefix', 'playerstats')
+        formset = PlayerStatFormSet(*args, **kwargs, prefix=prefix, instance=match_instance)
+    
+        contract_for_teams = Contract.objects.filter(Q(is_valid=True) & (Q(team=match_instance.home_team) | Q(team=match_instance.away_team)))
+        latest_contracts = contract_for_teams.extra(
+            where=[GET_LATEST_CONTRACTS]
+        )
+        
+        initial_data = [{'player_contract': contract} for contract in latest_contracts]
+        for form, initial in zip(formset.forms, initial_data):
+            form.initial.update(initial)
+
+        return formset
         
     def get_success_url(self):
         return reverse("matches:match-list")
@@ -341,7 +369,7 @@ class PlayerStatCreateEventView(generic.CreateView):
         """
         self.object = None
         match_instance = self.get_match_instance()
-        formset = self.get_formset(match_instance)
+        formset = self.get_formset(match_instance, form_kwargs={'slug': self.kwargs['slug']})
 
         return self.render_to_response(
             self.get_context_data(formset=formset))
@@ -384,16 +412,3 @@ class PlayerStatCreateEventView(generic.CreateView):
         return self.render_to_response(
             self.get_context_data(form=form, formset=formset))
     
-    def get_context_data(self, **kwargs):
-        data = super(PlayerStatCreateEventView, self).get_context_data(**kwargs)
-        data["match"] = self.get_match_instance()
-        data['formset'] = self.get_formset(data['match'], form_kwargs={'slug': self.kwargs['slug']})
-        
-        return data
-    
-    def get_match_instance(self):
-        return get_object_or_404(self.get_queryset())
-    
-    def get_formset(self, match_instance, *args, **kwargs):
-        prefix = kwargs.pop('prefix', 'playerstats')
-        return PlayerStatFormSet(*args, **kwargs, prefix=prefix, instance=match_instance)

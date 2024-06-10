@@ -17,6 +17,20 @@
     <div id="team-fields" hx-swap="innerHTML">
       {% include 'matches/partials/team_fields.html' %}
     </div>
+    <div class="mb-4">
+      <label for="id_venue" class="block text-gray-700 text-sm font-bold mb-2">Venue</label>
+      {{ form.venue }}
+    </div>
+    <div class="mb-4">
+      <label for="id_match_date" class="block text-gray-700 text-sm font-bold mb-2">Match Date</label>
+      {{ form.match_date }}
+    </div>
+
+    <div class="mt-6">
+      <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+        Save Match
+      </button>
+    </div>
   </form>
 
 </div>

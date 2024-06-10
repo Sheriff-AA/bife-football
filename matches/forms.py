@@ -3,7 +3,7 @@ from django.conf import settings
 from players.models import Player, Match, MatchEvent, PlayerStat, Contract, CustomMatch, Team
 from .widgets import DateTimePickerInput
 from django import forms
-from django.forms.models import inlineformset_factory
+from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from django.db.models import Q
 from django.db.models import Avg, Count, Min, Sum, Max
 from django.contrib.auth.forms import UserCreationForm, UsernameField
@@ -17,7 +17,10 @@ class MatchModelForm(forms.ModelForm):
         model = Match
         fields = ("home_team", "away_team", "venue", "match_date")
         widgets = {
-            "match_date": DateTimePickerInput()
+            "match_date": DateTimePickerInput(attrs={'type': 'datetime-local', 'class': 'form-input'}),
+            "venue": forms.Select(attrs={'class': 'form-select'}),
+            "home_team": forms.Select(attrs={'class': 'form-select'}),
+            "away_team": forms.Select(attrs={'class': 'form-select'}),
         }
 
     def __init__(self, *args, **kwargs):
@@ -78,7 +81,29 @@ class PlayerStatModelForm(forms.ModelForm):
         )
         super(PlayerStatModelForm, self).__init__(*args, **kwargs)
         self.fields["player_contract"].queryset = latest_contracts
+        self.fields["player_contract"].disabled = True
+
+    @staticmethod
+    def get_latest_contracts(match):
+        contract_for_teams = Contract.objects.filter(Q(is_valid=True) & (Q(team=match.home_team) | Q(team=match.away_team)))
+        return contract_for_teams.extra(
+            where=[GET_LATEST_CONTRACTS]
+        )
+        # Contract.objects.filter(
+        #     Q(is_valid=True) & 
+        #     (Q(team=match.home_team) | Q(team=match.away_team))
+        # ).order_by('player', '-date_signed').distinct('player')
+
+
+class BasePlayerStatFormSet(BaseInlineFormSet):
+    def __init__(self, *args, **kwargs):
+        self.match = kwargs['instance']
+        self.player_contracts = PlayerStatModelForm.get_latest_contracts(self.match)
+        self.extra = len(self.player_contracts)
+        super(BasePlayerStatFormSet, self).__init__(*args, **kwargs)
+        for form, contract in zip(self.forms, self.player_contracts):
+            form.initial['player_contract'] = contract
 
 
 PlayerStatFormSet = inlineformset_factory(
-    Match, PlayerStat, form=PlayerStatModelForm, extra=1, can_delete=False)
+    Match, PlayerStat, form=PlayerStatModelForm, formset=BasePlayerStatFormSet, extra=0, can_delete=False)
