@@ -9,21 +9,31 @@
     <h1 class="text-2xl font-bold mb-4">Create a new match</h1>
   </div>
 
+  <div class="max-w-lg mx-auto mb-3">
+    <label for="team_id" class="block text-sm font-medium text-black">Select Team:</label>
+    <div class="mt-1">
+      <select name="team_id" id="team_id" class="form-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md" hx-get="{% url 'matches:update-teams' %}" hx-target="#team-fields" hx-trigger="change">
+        {% for team in user_teams %}
+            <option value="{{ team.id }}" {% if team == user_team %}selected{% endif %}>{{ team.team_name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
   
   <form method="post" class="max-w-sm mx-auto">
     {% csrf_token %}
-    <label><input type="radio" name="match_type" value="home" hx-get="{% url 'matches:update-teams' %}" hx-trigger="change" hx-target="#team-fields" checked> Home Game</label>
-    <label><input type="radio" name="match_type" value="away" hx-get="{% url 'matches:update-teams' %}" hx-trigger="change" hx-target="#team-fields"> Away Game</label>
+    <label><input type="radio" name="match_type" id="home" value="home" {% if match_type == 'home' %}checked{% endif %} hx-get="{% url 'matches:update-teams' %}" hx-trigger="change" hx-target="#team-fields" checked> Home Game</label>
+    <label><input type="radio" name="match_type" id="away" value="away" {% if match_type == 'away' %}checked{% endif %} hx-get="{% url 'matches:update-teams' %}" hx-trigger="change" hx-target="#team-fields"> Away Game</label>
     <div id="team-fields" hx-swap="innerHTML">
       {% include 'matches/partials/team_fields.html' %}
     </div>
     <div class="mb-4">
-      <label for="id_venue" class="block text-gray-700 text-sm font-bold mb-2">Venue</label>
-      {{ form.venue }}
+      <label for="id_venue" class="block text-gray-700 text-sm font-bold mb-2">{% comment %}Venue{% endcomment %}</label>
+      {{ form.venue|as_crispy_field }}
     </div>
     <div class="mb-4">
-      <label for="id_match_date" class="block text-gray-700 text-sm font-bold mb-2">Match Date</label>
-      {{ form.match_date }}
+      <label for="id_match_date" class="block text-gray-700 text-sm font-bold mb-2">{% comment %}Match Date{% endcomment %}</label> 
+      {{ form.match_date|as_crispy_field }}
     </div>
 
     <div class="mt-6">
@@ -36,3 +46,15 @@
 </div>
 
 {% endblock content %}
+
+<script>
+  // Update radio button selection based on match type
+  document.addEventListener("DOMContentLoaded", function() {
+      var matchType = "{{ match_type }}";
+      if (matchType === "home") {
+          document.getElementById("home").checked = true;
+      } else if (matchType === "away") {
+          document.getElementById("away").checked = true;
+      }
+  });
+</script>

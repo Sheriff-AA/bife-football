@@ -1,8 +1,10 @@
 from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.conf import settings
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
+from django.template.loader import render_to_string
 from django.views import generic
 from django.db.models import Q
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db import transaction
 
@@ -124,43 +126,109 @@ class CustomMatchDetailView(generic.DetailView):
         return context
 
 
-class UpdateTeamsView(generic.TemplateView):
+class UserTeamMixin(LoginRequiredMixin):
+    def get_user_teams(self):
+        # Assuming the User model has a related_name 'teams' for related teams
+        user = get_object_or_404(Player, user=self.request.user)
+        return user.teams.all()
+
+    def get_selected_team(self):
+        team_id = self.request.POST.get('team_id') or self.request.GET.get('team_id')
+        user_teams = self.get_user_teams()
+        if team_id:
+            return get_object_or_404(user_teams, id=team_id)
+        return user_teams.first()
+
+
+class UpdateTeamsView(UserTeamMixin, generic.TemplateView):
     template_name = 'matches/partials/team_fields.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_team = get_object_or_404(Team, id=17)
-        match_type = self.request.GET.get('match_type', 'home')
-        form = MatchModelForm(user_team=user_team, match_type=match_type)
-        context['form'] = form
-        context['match_type'] = match_type
-        context['user_team'] = user_team
-        return context 
+        user_teams = self.get_user_teams()
+        # selected_team = self.get_selected_team()
+        # match_type = self.request.GET.get('match_type', 'home')
+        # Get selected team ID and match type from session
+        selected_team_id = self.request.session.get('selected_team_id')
+        match_type = self.request.session.get('match_type', 'home')
+        
+        # Retrieve selected team if ID is valid
+        selected_team = None
+        if selected_team_id:
+            selected_team = get_object_or_404(user_teams, id=selected_team_id)
+        
+        # Initialize form with selected team and match type
+        form = MatchModelForm(user_team=selected_team, match_type=match_type)
+        context.update({
+            'form': form,
+            'match_type': match_type,
+            'user_team': selected_team,
+            'user_teams': user_teams
+        })
+        return context
+    
+    def get(self, request, *args, **kwargs):
+        team_id = request.GET.get('team_id')
+        match_type = request.GET.get('match_type', 'home')
+        if team_id:
+            request.session['selected_team_id'] = team_id
+        request.session['match_type'] = match_type
+
+        context = self.get_context_data(**kwargs)
+        if request.htmx:
+            return self.render_to_response(context)
+        else:
+            # Return the full page if not an HTMX request
+            return super().get(request, *args, **kwargs)
     
 
-class MatchCreateView(generic.CreateView):
+class MatchCreateView(UserTeamMixin, generic.CreateView):
     template_name = "matches/match_create.html"
     form_class = MatchModelForm
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        user_team = get_object_or_404(Team, id=17)
-        # TEMPORARY
-        # user_team = user_team.teams.last()
-        kwargs['user_team'] = user_team
-        kwargs['match_type'] = self.request.POST.get('match_type', 'home')
+        # selected_team = self.get_selected_team()
+        selected_team_id = self.request.session.get('selected_team_id')
+        match_type = self.request.session.get('match_type', 'home')
+        
+        # Initialize selected team based on ID if valid
+        selected_team = None
+        if selected_team_id:
+            user_teams = self.get_user_teams()
+            selected_team = get_object_or_404(user_teams, id=selected_team_id)
+        
+        kwargs.update({
+            'user_team': selected_team,
+            'match_type': match_type
+        })
         return kwargs
+
 
     def get_success_url(self):
         return reverse("matches:match-list")
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        user_team = get_object_or_404(Team, id=17)  
+        user_teams = self.get_user_teams()
+        # selected_team = self.get_selected_team()
+        # form = self.get_form()
+        # Retrieve selected team ID and match type from session
+        selected_team_id = self.request.session.get('selected_team_id')
+        match_type = self.request.session.get('match_type', 'home')
+        
+        # Initialize selected team based on ID if valid
+        selected_team = None
+        if selected_team_id:
+            selected_team = get_object_or_404(user_teams, id=selected_team_id)
+        
         form = self.get_form()
-        context['form'] = form
-        context['user_team'] = user_team
-        context['match_type'] = 'home'  # Set default match_type
+        context.update({
+            'form': form,
+            'user_team': selected_team,
+            'user_teams': user_teams,
+            'match_type': match_type
+        })
         return context
     
     def form_valid(self, form):

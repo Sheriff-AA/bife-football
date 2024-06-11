@@ -4,14 +4,14 @@
   {% if match_type == 'home' %}
       <input type="hidden" name="home_team" value="{{ user_team.id }}">
       <div class="mb-4">
-        <label for="id_away_team" class="block text-gray-700 text-sm font-bold mb-2">Away Team</label>
-        {{ form.away_team }}
+        <label for="id_away_team" class="block text-gray-700 text-sm font-bold mb-2">{% comment %}Away Team{% endcomment %}</label>
+        {{ form.away_team|as_crispy_field }}
       </div>
   {% elif match_type == 'away' %}
       <input type="hidden" name="away_team" value="{{ user_team.id }}">
       <div class="mb-4">
-        <label for="id_home_team" class="block text-gray-700 text-sm font-bold mb-2">Home Team</label>
-        {{ form.home_team }}
+        <label for="id_home_team" class="block text-gray-700 text-sm font-bold mb-2">{% comment %}Home Team{% endcomment %}</label>
+        {{ form.home_team|as_crispy_field }}
       </div>
   {% endif %}
 </div>
