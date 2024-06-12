@@ -7,6 +7,7 @@ from .views import (
     PlayerDeleteView,
     PlayerMatchesListView,
     PlayerUpdateTeamsView,
+    TeamSelectView,
     )
 
 """
@@ -17,6 +18,7 @@ app_name = "players"
 urlpatterns = [
     path("", PlayerListView.as_view(), name='player-list'),
     path("create/", PlayerCreateView.as_view(), name='player-create'),
+    path('select-team/', TeamSelectView.as_view(), name='team-select'),
     path("<slug:slug>/", PlayerDetailView.as_view(), name='player-detail'),
     path("<slug:slug>/update", PlayerUpdateView.as_view(), name='player-update'),
     path('<slug:slug>/update_teams/', PlayerUpdateTeamsView.as_view(), name='player-update-teams'),

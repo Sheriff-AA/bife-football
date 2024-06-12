@@ -9,9 +9,23 @@
     <h1 class="text-4xl text-gray-800">Create a new player</h1>
   </div>
 
+  <div class="max-w-lg mx-auto mb-3">
+    <form id="team-select-form" method="post" action="{% url 'players:team-select' %}" class="mt-5">
+      {% csrf_token %}
+      <label for="team" class="block text-sm font-medium text-black">Select Team:</label>
+      <div class="mt-1">
+        <select id="team" class="form-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md" name="team" onblur="document.getElementById('team-select-form').submit();">
+          {% for team in coach_teams %}
+            <option value="{{ team.id }} {% if team.id == coach_team_id or forloop.first %}selected{% endif %}">{{ team.team_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </form>
+  </div>
+
   <form method="post"class="mt-5">
     {% csrf_token %} {{ form|crispy }}
-    <button type="submit" class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
+    <button type="submit" class="w-full text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md mb-10">Submit</button>
     </form>
   </form>
 
