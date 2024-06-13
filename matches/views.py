@@ -4,10 +4,9 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.template.loader import render_to_string
 from django.views import generic
 from django.db.models import Q
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
-from django.db import transaction
 
+from .mixins import SessionDefaultsMixin, UserTeamMixin
 from players.models import (
     Match, CustomMatch, Result, PlayerStat, MatchEvent, Player, Contract, Team,
     )
@@ -126,28 +125,18 @@ class CustomMatchDetailView(generic.DetailView):
         return context
 
 
-class UserTeamMixin(LoginRequiredMixin):
-    def get_user_teams(self):
-        # Assuming the User model has a related_name 'teams' for related teams
-        user = get_object_or_404(Player, user=self.request.user)
-        return user.teams.all()
-
-    def get_selected_team(self):
-        team_id = self.request.POST.get('team_id') or self.request.GET.get('team_id')
-        user_teams = self.get_user_teams()
-        if team_id:
-            return get_object_or_404(user_teams, id=team_id)
-        return user_teams.first()
-
-
-class UpdateTeamsView(UserTeamMixin, generic.TemplateView):
+class UpdateTeamsView(SessionDefaultsMixin, UserTeamMixin, generic.TemplateView):
     template_name = 'matches/partials/team_fields.html'
 
+    def dispatch(self, request, *args, **kwargs):
+        response = self.set_session_defaults(request)
+        if response:
+            return response
+        return super().dispatch(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user_teams = self.get_user_teams()
-        # selected_team = self.get_selected_team()
-        # match_type = self.request.GET.get('match_type', 'home')
         # Get selected team ID and match type from session
         selected_team_id = self.request.session.get('selected_team_id')
         match_type = self.request.session.get('match_type', 'home')
@@ -182,9 +171,15 @@ class UpdateTeamsView(UserTeamMixin, generic.TemplateView):
             return super().get(request, *args, **kwargs)
     
 
-class MatchCreateView(UserTeamMixin, generic.CreateView):
+class MatchCreateView(SessionDefaultsMixin, UserTeamMixin, generic.CreateView):
     template_name = "matches/match_create.html"
     form_class = MatchModelForm
+
+    def dispatch(self, request, *args, **kwargs):
+        response = self.set_session_defaults(request)
+        if response:
+            return response
+        return super().dispatch(request, *args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -211,8 +206,6 @@ class MatchCreateView(UserTeamMixin, generic.CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         user_teams = self.get_user_teams()
-        # selected_team = self.get_selected_team()
-        # form = self.get_form()
         # Retrieve selected team ID and match type from session
         selected_team_id = self.request.session.get('selected_team_id')
         match_type = self.request.session.get('match_type', 'home')
