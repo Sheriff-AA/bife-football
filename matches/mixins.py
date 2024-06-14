@@ -18,7 +18,7 @@ class UserTeamMixin(LoginRequiredMixin):
     def get_user_teams(self):
         # Assuming the User model has a related_name 'teams' for related teams
         user = get_object_or_404(Player, user=self.request.user)
-        return user.teams.all()
+        return user.teams.filter(contract__is_valid=True)
 
     def get_selected_team(self):
         team_id = self.request.POST.get('team_id') or self.request.GET.get('team_id')

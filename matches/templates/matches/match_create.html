@@ -43,16 +43,14 @@
     </div>
   </form>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      document.getElementById('team_id').addEventListener('change', function() {
+        document.getElementById('home').checked = true;
+      });
+    });
+  </script>
+
 </div>
 
 {% endblock content %}
-
-<script>
-  document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('team_id').addEventListener('change', function() {
-      document.getElementById('home').checked = true;
-      document.getElementById('away').checked = false;
-      console.log("document.getElementById('home')")
-    });
-  });
-</script>

@@ -56,7 +56,7 @@ previous 10 results, upcoming fixtures
                             {{ fixture.away_team }}
                         </a>
                     </td>
-                    <td class="px-3 py-3 text-lg text-gray-900">{{ fixture.date|date:"F d, Y, h:i A" }}</td>
+                    <td class="px-3 py-3 text-lg text-gray-900">{{ fixture.match_date|date:"F d, Y, h:i A" }}</td>
                     <td class="px-3 py-3">{{ fixture.venue }}
                     </td>
                     </tr>
@@ -83,7 +83,7 @@ previous 10 results, upcoming fixtures
                     <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
                     </tr>
                 </thead>
-                {% for result in results %}
+                {% for result in team_results %}
                 <tbody>
                     <tr>
                     <td class="px-4 py-3">
@@ -98,9 +98,9 @@ previous 10 results, upcoming fixtures
                     </td>
                     <td class="px-4 py-3">
                         {{ result.score_hometeam }} : {{ result.score_awayteam }}</td>
-                    <td class="px-4 py-3 text-lg text-gray-900">{{ result.match.date|date:"F d, Y, h:i A" }}</td>
+                    <td class="px-4 py-3 text-lg text-gray-900">{{ result.match.match_date|date:"F d, Y, h:i A" }}</td>
                     <td class="px-4 py-3 text-lg text-gray-900">
-                    <a href="{% url 'matches:match-detail' result.match.slug %}">View</a>
+                    <a class="px-4 py-3 text-lg underline text-blue-900" href="{% url 'matches:match-detail' result.match.slug %}">View</a>
                     </td>
                     </tr>
                 </tbody>

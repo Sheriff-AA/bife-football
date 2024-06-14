@@ -24,9 +24,9 @@
             <a href="#" class="text-gray-200 block rounded-lg text-center font-medium leading-6 px-6 py-3 bg-gray-900 hover:bg-black hover:text-white">Plays for <span class="font-bold">{{ contract.team }}</span></a>
           </div>
           <div class="flex justify-between items-center my-5 px-6">
-              <a href="" class="text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-150 ease-in font-medium text-sm text-center w-full py-3">{{ stats.goals }} Goal(s)</a>
-              <a href="" class="text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-150 ease-in font-medium text-sm text-center w-full py-3">{{ stats.assists }} Assist(s)</a>
-              <a href="" class="text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-150 ease-in font-medium text-sm text-center w-full py-3">{{ stats.games }} Game(s)</a>
+              <a href="#" class="text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-150 ease-in font-medium text-sm text-center w-full py-3">{{ stats.goals }} Goal(s)</a>
+              <a href="#" class="text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-150 ease-in font-medium text-sm text-center w-full py-3">{{ stats.assists }} Assist(s)</a>
+              <a href="{% url 'players:player-matches' player.slug%}" class="text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-150 ease-in font-medium text-sm text-center w-full py-3">{{ stats.games }} Game(s)</a>
               <a href="" class="text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded transition duration-150 ease-in font-medium text-sm text-center w-full py-3">{{ stats.minutes_played }} minutes played</a>
           </div>
 

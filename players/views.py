@@ -67,7 +67,7 @@ class PlayerDetailView(generic.DetailView):
     
     def get_context_data(self, **kwargs):
         context = super(PlayerDetailView, self).get_context_data(**kwargs)
-        contract = Contract.objects.filter(player=self.get_object()).order_by('-contract_date').first()
+        contract = Contract.objects.filter(is_valid=True, player=self.get_object()).first()
         latest_events = MatchEvent.objects.filter(player_contract=contract).order_by('-timestamp')[:5]
         queryset = PlayerStat.objects.filter(
             player=self.get_object()
@@ -97,9 +97,9 @@ class PlayerCreateView(CoachAndLoginRequiredMixin, generic.CreateView):
     def get_context_data(self, **kwargs):
         context = super(PlayerCreateView, self).get_context_data(**kwargs)
         coach = get_object_or_404(Coach, user=self.request.user)
-        context['coach_teams'] = Team.objects.filter(coach=coach)
-        context['coach_team_id'] = self.get_selected_team_id()
-        print(context['coach_team_id'])
+        context = {'coach_teams': Team.objects.filter(coach=coach),
+        'coach_team_id': self.get_selected_team_id()
+        }
 
         return context
 
@@ -147,7 +147,6 @@ class TeamSelectView(CoachAndLoginRequiredMixin, generic.View):
     def post(self, request, *args, **kwargs):
         selected_team_id = request.POST.get('team')
         request.session['coach_team_id'] = selected_team_id
-        print(selected_team_id)
         return redirect('players:player-create')
     
 
