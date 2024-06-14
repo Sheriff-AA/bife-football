@@ -114,7 +114,8 @@ class Match(models.Model):
     is_fixture = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ['home_team', 'away_team', 'match_date']    
+        unique_together = ['home_team', 'away_team', 'match_date']
+        ordering = ['match_date']    
 
     def save(self, *args, **kwargs):
         new_slug = f"{self.home_team} vs {self.away_team}"
@@ -170,6 +171,9 @@ class MatchEvent(models.Model):
     is_second_yellow_card = models.BooleanField(default=False)
     is_direct_red_card = models.BooleanField(default=False)
 
+    class Meta:
+        ordering = ['minute']
+
     def __str__(self):
         return f"{self.event_type} - Match: {self.match}"
     
@@ -184,7 +188,8 @@ class CustomMatch(models.Model):
     is_home = models.BooleanField(default=True)
 
     class Meta:
-        unique_together = ['versus_team','user_team', 'match_date']    
+        unique_together = ['versus_team','user_team', 'match_date']
+        ordering = ['match_date']   
 
     def save(self, *args, **kwargs):
         if self.is_home:
