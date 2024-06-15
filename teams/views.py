@@ -59,13 +59,14 @@ class TeamDetailView(generic.DetailView):
         latest_contracts = contract.extra(
             where=[GET_LATEST_CONTRACTS]
         )
-        upcoming_matches = Match.objects.filter(Q(home_team=self.get_object()) | Q(away_team=self.get_object()))[:10]
-        team_results = Result.objects.filter(Q(match__home_team=self.get_object()) | Q(match__away_team=self.get_object())
-            )
+        upcoming_matches = Match.objects.filter(Q(home_team=self.get_object()) | Q(away_team=self.get_object()))[:5]
+        team_results = Result.objects.filter(Q(match__home_team=self.get_object()) | Q(match__away_team=self.get_object()))[:5]
+
         context.update({
             "contracts": latest_contracts,
             "upcoming_matches": upcoming_matches,
-            "team_results": team_results
+            "team_results": team_results,
+            "selected_team": self.get_object()
         })
 
         return context
@@ -108,7 +109,7 @@ class TeamDashboardView(generic.DetailView):
             where=[GET_LATEST_CONTRACTS]
         )
         upcoming_matches = Match.objects.filter(Q(home_team=selected_team) | Q(away_team=selected_team)).order_by('match_date')[:5]
-        team_results = Result.objects.filter(Q(match__home_team=selected_team) | Q(match__away_team=selected_team)).order_by('match__match_date')[:5]
+        team_results = Result.objects.filter(Q(match__home_team=selected_team) | Q(match__away_team=selected_team)).order_by('-match__match_date')[:5]
 
         return {
             "contracts": latest_contracts,
@@ -141,3 +142,25 @@ class TeamDashboardView(generic.DetailView):
             context = self.get_context_data()
             context.update(self.get_dashboard_context(form, selected_team))
             return self.render_to_response(context)
+        
+
+class TeamMatchesView(generic.DetailView):
+    template_name = "teams/team_matches.html"
+    context_object_name = "team"
+
+    def get_queryset(self):
+        return Team.objects.all()
+    
+    def get_context_data(self, **kwargs):
+        context = super(TeamMatchesView, self).get_context_data(**kwargs)
+        team = Team.objects.get(slug=self.kwargs['slug'])
+        matches = Match.objects.filter(Q(home_team=team) | Q(away_team=team)).order_by('match_date')
+        results = Result.objects.filter(Q(match__home_team=team) | Q(match__away_team=team)).order_by('-match__match_date')
+
+        context = {"matches": matches,
+                   "results": results,
+                   "selected_team": team
+                   }
+
+        return context
+    
