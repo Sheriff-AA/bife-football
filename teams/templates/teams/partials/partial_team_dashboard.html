@@ -150,6 +150,15 @@
                             <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{{ result.match.away_team }}</td>
                         {% endif %}
                         <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                            {% if result.score_hometeam == result.score_awayteam %}
+                                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-gray-500"> D </span>
+                            {% elif result.match.home_team == selected_team and result.score_hometeam > result.score_awayteam %}
+                                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-green-500"> W </span>
+                            {% elif result.match.away_team == selected_team and result.score_awayteam > result.score_hometeam %}
+                                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-green-500"> W </span>
+                            {% else %}
+                                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-red-500"> L </span>
+                            {% endif %}
                         {{ result.score_hometeam}} - {{ result.score_awayteam }}
                         </td>
                     </tr>

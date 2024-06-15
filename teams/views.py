@@ -107,9 +107,8 @@ class TeamDashboardView(generic.DetailView):
         latest_contracts = contract.extra(
             where=[GET_LATEST_CONTRACTS]
         )
-        upcoming_matches = Match.objects.filter(Q(home_team=selected_team) | Q(away_team=selected_team))[:5]
-        team_results = Result.objects.filter(Q(match__home_team=selected_team) | Q(match__away_team=selected_team)
-            )
+        upcoming_matches = Match.objects.filter(Q(home_team=selected_team) | Q(away_team=selected_team)).order_by('match_date')[:5]
+        team_results = Result.objects.filter(Q(match__home_team=selected_team) | Q(match__away_team=selected_team)).order_by('match__match_date')[:5]
 
         return {
             "contracts": latest_contracts,
