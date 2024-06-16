@@ -7,50 +7,49 @@
             <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Fixtures and Results of {{ selected_team }}</h1>
         </div>
 
-        <table class="table-auto w-full text-left whitespace-no-wrap">
-        <thead>
-            <tr>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Scoreline</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
-            <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
-            </tr>
-        </thead>
-        {% for result in results %}
-        <tbody>
-            <tr>
-            <td class="px-4 py-3">
-                <a href="{% url 'matches:match-detail' result.match.slug %}">
-                    {{ result.match.home_team }}
-                </a>
-            </td>
-            <td class="px-4 py-3">
-                <a href="{% url 'matches:match-detail' result.match.slug %}">
-                    {{ result.match.away_team }}
-                </a>
-            </td>
-            <td class="px-4 py-3">
-            {% if result.score_hometeam == result.score_awayteam %}
-                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-gray-500"> D </span>
-            {% elif result.match.home_team == selected_team and result.score_hometeam > result.score_awayteam %}
-                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-green-500"> W </span>
-            {% elif result.match.away_team == selected_team and result.score_awayteam > result.score_hometeam %}
-                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-green-500"> W </span>
-            {% else %}
-                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-red-500"> L </span>
-            {% endif %}
-                {{ result.score_hometeam }} : {{ result.score_awayteam }}</td>
-            <td class="px-4 py-3 text-lg text-gray-900">{{ result.match.match_date|date:"F d, Y, h:i A" }}</td>
-            <td class="px-4 py-3 text-lg underline text-blue-900">
-            <a href="{% url 'matches:match-detail' result.match.slug %}">View</a>
-            </td>
-            </tr>
-        </tbody>
-        {% endfor %}
-        </table>
+        <div class = "mb-5">
+            <button name="list_type" id="fixtures-btn" value="fixtures" hx-get="{% url 'teams:team-matches' selected_team.slug %}" hx-trigger="click" hx-target="#matches-list" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 hover:text-black rounded text-base mt-4 md:mt-0 mr-5">Fixtures</button>
+            <button name="list_type" id="results-btn" value="results" hx-get="{% url 'teams:team-matches' selected_team.slug %}" hx-trigger="click" hx-target="#matches-list" class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 hover:text-black rounded text-base mt-4 md:mt-0">Results</button>
+        </div>
 
+        <div id="matches-list" hx-swap="innerHTML">
+            {% include 'teams/partials/partial_team_matches_list.html' %}
+        </div>  
     </div>
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const fixturesBtn = document.getElementById("fixtures-btn");
+        const resultsBtn = document.getElementById("results-btn");
+
+        function updateButtonStyles(listType) {
+            if (listType === "fixtures") {
+                fixturesBtn.classList.add("bg-blue-500", "text-white");
+                fixturesBtn.classList.remove("bg-gray-100");
+                resultsBtn.classList.remove("bg-blue-500", "text-white");
+                resultsBtn.classList.add("bg-gray-100");
+            } else if (listType === "results") {
+                resultsBtn.classList.add("bg-blue-500", "text-white");
+                resultsBtn.classList.remove("bg-gray-100");
+                fixturesBtn.classList.remove("bg-blue-500", "text-white");
+                fixturesBtn.classList.add("bg-gray-100");
+            }
+        }
+
+        // Initialize button styles based on the initial list_type
+        const initialListType = "{{ list_type }}";
+        updateButtonStyles(initialListType);
+
+        // Add event listeners to update styles when buttons are clicked
+        fixturesBtn.addEventListener("click", function() {
+            updateButtonStyles("fixtures");
+        });
+
+        resultsBtn.addEventListener("click", function() {
+            updateButtonStyles("results");
+        });
+    });
+</script>
 
 {% endblock content %}

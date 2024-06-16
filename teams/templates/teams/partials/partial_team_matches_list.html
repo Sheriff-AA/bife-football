@@ -1,0 +1,76 @@
+{% if list_type == "results" %}
+    <table class="table-auto w-full text-left whitespace-no-wrap">
+        <thead>
+            <tr>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Scoreline</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
+            <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+            </tr>
+        </thead>
+        {% for result in match_list %}
+        <tbody>
+            <tr>
+            <td class="px-4 py-3">
+                <a href="{% url 'matches:match-detail' result.match.slug %}">
+                    {{ result.match.home_team }}
+                </a>
+            </td>
+            <td class="px-4 py-3">
+                <a href="{% url 'matches:match-detail' result.match.slug %}">
+                    {{ result.match.away_team }}
+                </a>
+            </td>
+            <td class="px-4 py-3">
+            {% if result.score_hometeam == result.score_awayteam %}
+                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-gray-500"> D </span>
+            {% elif result.match.home_team == selected_team and result.score_hometeam > result.score_awayteam %}
+                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-green-500"> W </span>
+            {% elif result.match.away_team == selected_team and result.score_awayteam > result.score_hometeam %}
+                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-green-500"> W </span>
+            {% else %}
+                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-red-500"> L </span>
+            {% endif %}
+                {{ result.score_hometeam }} : {{ result.score_awayteam }}</td>
+            <td class="px-4 py-3 text-lg text-gray-900">{{ result.match.match_date|date:"F d, Y, h:i A" }}</td>
+            <td class="px-4 py-3 text-lg underline text-blue-900">
+            <a href="{% url 'matches:match-detail' result.match.slug %}">View</a>
+            </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+
+{% elif list_type == "fixtures" %}
+    <table class="table-auto w-full text-left whitespace-no-wrap">
+        <thead>
+            <tr>
+            <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
+            <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
+            <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
+            <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+            </tr>
+        </thead>
+        {% for fixture in match_list %}
+        <tbody>
+            <tr>
+            <td class="px-3 py-3">
+                <a href="{% url 'matches:match-detail' fixture.slug %}">
+                    {{ fixture.home_team }}
+                </a>
+            </td>
+            <td class="px-3 py-3">
+                <a href="{% url 'matches:match-detail' fixture.slug %}">
+                    {{ fixture.away_team }}
+                </a>
+            </td>
+            <td class="px-3 py-3 text-lg text-gray-900">{{ fixture.match_date|date:"F d, Y, h:i A" }}</td>
+            <td class="px-3 py-3 text-right text-lg underline text-blue-900">
+            <a href="{% url 'matches:match-event-create' fixture.slug %}">Add event(s)</a>
+            </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+{% endif %}

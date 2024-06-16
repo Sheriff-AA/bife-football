@@ -1,3 +1,5 @@
+from typing import Any
+from django.db.models.query import QuerySet
 from django.shortcuts import render, reverse, get_object_or_404
 from django.conf import settings
 from django.views import generic
@@ -149,18 +151,33 @@ class TeamMatchesView(generic.DetailView):
     context_object_name = "team"
 
     def get_queryset(self):
-        return Team.objects.all()
+        return Team.objects.filter(slug=self.kwargs['slug'])
+    
     
     def get_context_data(self, **kwargs):
         context = super(TeamMatchesView, self).get_context_data(**kwargs)
-        team = Team.objects.get(slug=self.kwargs['slug'])
-        matches = Match.objects.filter(Q(home_team=team) | Q(away_team=team)).order_by('match_date')
-        results = Result.objects.filter(Q(match__home_team=team) | Q(match__away_team=team)).order_by('-match__match_date')
+        list_type = self.request.GET.get("list_type", "results")
+        team = self.get_object()
 
-        context = {"matches": matches,
-                   "results": results,
-                   "selected_team": team
-                   }
+        if list_type == "fixtures":
+            match_list = Match.objects.filter(Q(home_team=team) | Q(away_team=team)).order_by('match_date')
+        else:
+            match_list = Result.objects.filter(Q(match__home_team=team) | Q(match__away_team=team)).order_by('-match__match_date')
+
+        context.update({"match_list": match_list,
+                   "selected_team": team,
+                   "list_type": list_type
+                   })
 
         return context
+    
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(**kwargs)
+        if self.request.htmx:
+            return render(request, "teams/partials/partial_team_matches_list.html", context)
+        else:
+            # Return the full page if not an HTMX request
+            return super().get(request, *args, **kwargs)
+
     
