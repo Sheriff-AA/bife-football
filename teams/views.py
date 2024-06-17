@@ -1,5 +1,6 @@
 from typing import Any
 from django.db.models.query import QuerySet
+from django.db.models import Subquery
 from django.shortcuts import render, reverse, get_object_or_404
 from django.conf import settings
 from django.views import generic
@@ -8,7 +9,7 @@ from django.core.paginator import Paginator
 
 from players.mixins import CoachAndLoginRequiredMixin
 from .forms import TeamModelForm, TeamSelectForm
-from players.models import Team, Contract, Match, Player, Result, Coach
+from players.models import Team, Contract, Match, Player, Result, Coach, PlayerStat
 
 GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
 
@@ -113,12 +114,26 @@ class TeamDashboardView(generic.DetailView):
         upcoming_matches = Match.objects.filter(Q(home_team=selected_team) | Q(away_team=selected_team)).order_by('match_date')[:5]
         team_results = Result.objects.filter(Q(match__home_team=selected_team) | Q(match__away_team=selected_team)).order_by('-match__match_date')[:5]
 
+        player_stats = PlayerStat.objects.filter(match__in=Subquery(team_results.values("match")[:3]), player_contract__team=selected_team)
+
+        # Group player stats by match
+        matches_stats = {}
+        for stat in player_stats:
+            match_id = stat.match.id
+            if match_id not in matches_stats:
+                matches_stats[match_id] = {
+                    'match': stat.match,
+                    'player_stats': []
+                }
+            matches_stats[match_id]['player_stats'].append(stat)
+
         return {
             "contracts": latest_contracts,
             "upcoming_matches": upcoming_matches,
             "team_results": team_results,
             "selected_team": selected_team,
             "form": form,
+            "matches_stats": matches_stats.values()
             # "team_stats": team_stats
         }
     
