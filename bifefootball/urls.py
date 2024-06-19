@@ -19,6 +19,15 @@ from django.urls import path, include
 
 from players.views import LandingPageView
 
+from django.contrib.auth.views import (
+    LoginView, 
+    LogoutView, 
+    PasswordResetView,
+    PasswordResetDoneView,
+    PasswordResetConfirmView,
+    PasswordResetCompleteView,
+    )
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', LandingPageView.as_view(), name="landing-page"),
