@@ -1,5 +1,5 @@
 from django import forms
-from .models import Player, Team, Coach
+from .models import Player, Team, User
 from django.contrib.auth.forms import UserCreationForm, UsernameField
 
 
@@ -30,3 +30,10 @@ class PlayerTeamForm(forms.ModelForm):
         super(PlayerTeamForm, self).__init__(*args, **kwargs)
         if self.instance:
             self.fields['teams'].initial = self.instance.teams.all()
+
+
+class OrganizationUserCreationForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = {"username",}
+        fields_classes = {'username': UsernameField}

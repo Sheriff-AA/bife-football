@@ -1,5 +1,15 @@
 asgiref==3.7.2
+crispy-tailwind==1.0.3
 Django==4.2.10
+django-crispy-forms==2.1
+django-htmx==1.17.3
+django-seed==0.3.1
+django-tailwind==3.6.0
+Faker==24.4.0
+psycopg2==2.9.9
+python-dateutil==2.9.0.post0
+six==1.16.0
 sqlparse==0.4.4
+toposort==1.10
 typing-extensions==4.10.0
 tzdata==2024.1
