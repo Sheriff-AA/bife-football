@@ -7,7 +7,7 @@ from django.views import generic
 from django.db.models import Q
 from django.core.paginator import Paginator
 
-from players.mixins import CoachAndLoginRequiredMixin
+from players.mixins import CoachRequiredMixin
 from .forms import TeamModelForm, TeamSelectForm
 from players.models import Team, Contract, Match, Player, Result, Coach, PlayerStat
 

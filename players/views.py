@@ -4,7 +4,7 @@ from django.views import generic
 from faker import Faker
 from django.core.paginator import Paginator
 from django.db.models import Sum, Count, Q
-from .mixins import CoachAndLoginRequiredMixin
+from .mixins import CoachRequiredMixin
 
 from .models import Player, PlayerStat, Contract, MatchEvent, Coach, Team, User
 from .forms import PlayerModelForm, PlayerModelUpdateForm, PlayerTeamForm, OrganizationUserCreationForm
@@ -93,7 +93,7 @@ class PlayerDetailView(generic.DetailView):
         return context
     
 
-class PlayerCreateView(CoachAndLoginRequiredMixin, generic.CreateView):
+class PlayerCreateView(CoachRequiredMixin, generic.CreateView):
     template_name = "players/player_create.html"
     form_class = PlayerModelForm
 
@@ -151,7 +151,7 @@ class PlayerCreateView(CoachAndLoginRequiredMixin, generic.CreateView):
         return super(PlayerCreateView, self).form_valid(form)
 
 
-class TeamSelectView(CoachAndLoginRequiredMixin, generic.View):
+class TeamSelectView(CoachRequiredMixin, generic.View):
     def post(self, request, *args, **kwargs):
         selected_team_id = request.POST.get('team')
         request.session['coach_team_id'] = selected_team_id
