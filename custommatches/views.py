@@ -82,7 +82,7 @@ class CstmMatchCreateEventView(generic.CreateView):
             data['formset'] = self.get_formset(match_instance)
         else:
             data['formset'] = CustomMatchEventFormSet(
-                queryset=CustomMatch.objects.none(),
+                queryset=CstmMatchEvent.objects.none(),
                 instance=match_instance,
                 form_kwargs={'slug': self.kwargs['slug']},
                 prefix='matchevents'
