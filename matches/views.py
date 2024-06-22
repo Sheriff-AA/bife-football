@@ -8,15 +8,15 @@ from django.core.paginator import Paginator
 
 from .mixins import SessionDefaultsMixin, UserTeamMixin
 from players.models import (
-    Match, CustomMatch, Result, PlayerStat, MatchEvent, Player, Contract, Team,
+    Match, Result, PlayerStat, MatchEvent, Player, Contract, Team,
     )
+from custommatches.models import CustomMatch
 from .forms import (
     MatchModelForm,
     MatchEventFormSet,
     MatchEventModelForm,
     PlayerStatFormSet,
     PlayerStatModelForm,
-    CustomMatchModelForm
     )
 
 
@@ -98,28 +98,6 @@ class MatchDetailView(generic.DetailView):
         context.update({
             "hometeam_players": home_team,
             "awayteam_players": away_team,
-            "events": self.get_object().matchevent_set.all()
-        })
-        return context
-
-
-class CustomMatchDetailView(generic.DetailView):
-    template_name = "matches/custom_match_detail.html"
-    context_object_name = "match"
-
-    def get_queryset(self):
-        queryset = CustomMatch.objects.all()
-        return queryset
-    
-    def get_context_data(self, **kwargs):
-        context = super(CustomMatchDetailView, self).get_context_data(**kwargs)
-        user_team = PlayerStat.objects.filter(
-            match=self.get_object(),
-            player_contract__team =self.get_object().user_team
-        )
-
-        context.update({
-            "userteam_players": user_team,
             "events": self.get_object().matchevent_set.all()
         })
         return context
@@ -228,20 +206,7 @@ class MatchCreateView(SessionDefaultsMixin, UserTeamMixin, generic.CreateView):
         match = form.save(commit=False)
         match.save()
         return super(MatchCreateView, self).form_valid(form)
-    
-
-class CustomMatchCreateView(generic.CreateView):
-    template_name = "matches/custom_match_create.html"
-    form_class = CustomMatchModelForm
-
-    def get_success_url(self):
-        return reverse("matches:match-list")
-    
-    def form_valid(self, form):
-        match = form.save(commit=False)
-        match.save()
-        return super(CustomMatchCreateView, self).form_valid(form)
-    
+ 
 
 class MatchCreateEventView(generic.CreateView):
     template_name = "matches/match_event_create.html"

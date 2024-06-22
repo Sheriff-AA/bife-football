@@ -1,12 +1,12 @@
 from django import forms
 from django.conf import settings
-from players.models import Player, Match, MatchEvent, PlayerStat, Contract, CustomMatch, Team
-from .widgets import DateTimePickerInput
 from django import forms
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from django.db.models import Q
-from django.db.models import Avg, Count, Min, Sum, Max
 from django.contrib.auth.forms import UserCreationForm, UsernameField
+
+from players.models import Player, Match, MatchEvent, PlayerStat, Contract, Team
+from .widgets import DateTimePickerInput
 
 
 GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
@@ -34,15 +34,6 @@ class MatchModelForm(forms.ModelForm):
             else:
                 self.fields['home_team'].queryset = Team.objects.exclude(id=user_team.id)
                 self.fields['away_team'].queryset = Team.objects.filter(id=user_team.id)
-
-
-class CustomMatchModelForm(forms.ModelForm):
-    class Meta:
-        model = CustomMatch
-        fields = ("versus_team", "user_team", "venue", "match_date")
-        widgets = {
-            "match_date": DateTimePickerInput(),
-        }
 
 
 class MatchEventModelForm(forms.ModelForm):

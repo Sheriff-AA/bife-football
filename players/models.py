@@ -26,6 +26,16 @@ PLAYER_POSITION = (
 
 MINUTES_CHOICES = [(i, f"{i}'") for i in range(1, 121)]
 
+EVENT_CHOICES = (
+        ('GOAL', 'Goal'),
+        ('ASSIST', 'Assist'),
+        ('YELLOW_CARD', 'Yellow Card'),
+        ('RED_CARD', 'Red Card'),
+        ('SUBSTITUTION', 'Substitution'),
+        ('HALFTIME', 'Halftime'),
+        ('FULLTIME', 'Fulltime'),
+    )
+
 
 class User(AbstractUser):
     is_coach = models.BooleanField(default=False)
@@ -150,16 +160,6 @@ class Contract(models.Model):
 
 
 class MatchEvent(models.Model):
-    EVENT_CHOICES = (
-        ('GOAL', 'Goal'),
-        ('ASSIST', 'Assist'),
-        ('YELLOW_CARD', 'Yellow Card'),
-        ('RED_CARD', 'Red Card'),
-        ('SUBSTITUTION', 'Substitution'),
-        ('HALFTIME', 'Halftime'),
-        ('FULLTIME', 'Fulltime'),
-    )
-
     match = models.ForeignKey('Match', on_delete=models.CASCADE)
     event_type = models.CharField(max_length=20, choices=EVENT_CHOICES)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -177,29 +177,3 @@ class MatchEvent(models.Model):
     def __str__(self):
         return f"{self.event_type} - Match: {self.match}"
     
-
-class CustomMatch(models.Model):
-    versus_team = models.CharField(max_length=40)
-    user_team = models.ForeignKey("Team", related_name='custom_matches', on_delete=models.CASCADE)
-    venue = models.ForeignKey("Venue", null=True, blank=True, on_delete=models.SET_NULL)
-    match_date = models.DateTimeField()
-    slug = models.SlugField(null=True, blank=True, unique=True)
-    is_fixture = models.BooleanField(default=True)
-    is_home = models.BooleanField(default=True)
-
-    class Meta:
-        unique_together = ['versus_team','user_team', 'match_date']
-        ordering = ['match_date']   
-
-    def save(self, *args, **kwargs):
-        if self.is_home:
-            new_slug =  f"{self.user_team} vs {self.versus_team}"
-        else:
-            new_slug = f"{self.versus_team} vs {self.user_team}"
-        unique_slugify(self,new_slug)
-        super().save(*args, **kwargs)
-
-    def __str__(self):
-        if self.is_home:
-            return f"{self.user_team} vs {self.versus_team}" 
-        return f"{self.versus_team} vs {self.user_team}"

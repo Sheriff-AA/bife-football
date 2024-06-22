@@ -6,8 +6,6 @@ from .views import (
     MatchCreateEventView,
     ResultCreateView,
     PlayerStatCreateEventView,
-    CustomMatchCreateView,
-    CustomMatchDetailView,
     UpdateTeamsView,
     )
 
@@ -19,8 +17,6 @@ app_name = "matches"
 urlpatterns = [
     path("", MatchListView.as_view(), name='match-list'),
     path("create/", MatchCreateView.as_view(), name='match-create'),
-    path("create-custom/", CustomMatchCreateView.as_view(), name='custom-match-create'),
-    path("private-game/<slug:slug>/", CustomMatchDetailView.as_view(), name='custommatch-detail'),
     path("create-event/<slug:slug>/", MatchCreateEventView.as_view(), name='match-event-create'),
     path("confirm-result/<slug:slug>/", ResultCreateView.as_view(), name='result-create'),
     path('update-teams/', UpdateTeamsView.as_view(), name='update-teams'),
