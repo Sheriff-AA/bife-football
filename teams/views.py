@@ -10,6 +10,7 @@ from django.core.paginator import Paginator
 from players.mixins import CoachRequiredMixin
 from .forms import TeamModelForm, TeamSelectForm
 from players.models import Team, Contract, Match, Player, Result, Coach, PlayerStat
+from custommatches.models import CustomMatch, CstmMatchResult
 
 GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
 
@@ -111,7 +112,7 @@ class TeamDashboardView(generic.DetailView):
         latest_contracts = contract.extra(
             where=[GET_LATEST_CONTRACTS]
         )
-        upcoming_matches = Match.objects.filter(Q(home_team=selected_team) | Q(away_team=selected_team)).order_by('match_date')[:5]
+        upcoming_matches = Match.objects.filter(Q(home_team=selected_team) | Q(away_team=selected_team), is_fixture=True).order_by('match_date')[:5]
         team_results = Result.objects.filter(Q(match__home_team=selected_team) | Q(match__away_team=selected_team)).order_by('-match__match_date')[:5]
 
         player_stats = PlayerStat.objects.filter(match__in=Subquery(team_results.values("match")[:3]), player_contract__team=selected_team)
@@ -175,14 +176,17 @@ class TeamMatchesView(generic.DetailView):
         team = self.get_object()
 
         if list_type == "fixtures":
-            match_list = Match.objects.filter(Q(home_team=team) | Q(away_team=team)).order_by('match_date')
+            match_list = Match.objects.filter((Q(home_team=team) | Q(away_team=team)), is_fixture=True).order_by('match_date')
+            custommatch_list = CustomMatch.objects.filter(Q(user_team=team), is_fixture=True).order_by('match_date')
         else:
             match_list = Result.objects.filter(Q(match__home_team=team) | Q(match__away_team=team)).order_by('-match__match_date')
+            custommatch_list = CstmMatchResult.objects.filter(Q(custom_match__user_team=team)).order_by('-custom_match__match_date')
 
         context.update({"match_list": match_list,
-                   "selected_team": team,
-                   "list_type": list_type
-                   })
+                        "custommatch_list": custommatch_list,
+                        "selected_team": team,
+                        "list_type": list_type
+                        })
 
         return context
     

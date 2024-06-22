@@ -26,3 +26,5 @@ Consider developing a dedicated mobile app for even greater accessibility.
 User Accounts and Roles:
 Implement user accounts with different roles (players, coaches, admins) to manage access and permissions.
 Allow coaches to input match data, analyze statistics, and track player progress.
+
+Be able to make custom matches add events for the opposition team?

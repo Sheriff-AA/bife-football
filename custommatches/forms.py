@@ -10,6 +10,7 @@ from matches.widgets import DateTimePickerInput
 
 GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
 
+
 class CstmMatchModelForm(forms.ModelForm):
     class Meta:
         model = CustomMatch

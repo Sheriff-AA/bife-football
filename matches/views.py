@@ -10,7 +10,7 @@ from .mixins import SessionDefaultsMixin, UserTeamMixin
 from players.models import (
     Match, Result, PlayerStat, MatchEvent, Player, Contract, Team,
     )
-from custommatches.models import CustomMatch
+from custommatches.models import CustomMatch, CstmMatchResult
 from .forms import (
     MatchModelForm,
     MatchEventFormSet,
@@ -42,34 +42,41 @@ class MatchListView(generic.ListView):
         search = request.GET.get('search', None)
         date = request.GET.get('match_date', None)
         results = Result.objects.all().order_by('-match__match_date')
+        custom_results = CstmMatchResult.objects.all().order_by('-custom_match__match_date')
         fixtures = Match.objects.filter(is_fixture=True).order_by('match_date')
         custom_match = CustomMatch.objects.filter(is_fixture=True).order_by("match_date")
         if search:
             fixtures = fixtures.filter(Q(home_team__team_name__icontains=search) | Q(away_team__team_name__icontains=search))
-            custom_match = custom_match.filter(Q(versus_team__team_name__icontains=search) | Q(user_team__team_name__icontains=search))
+            custom_match = custom_match.filter(Q(versus_team__icontains=search) | Q(user_team__team_name__icontains=search))
             results = results.filter(Q(match__home_team__team_name__contains=search) | Q(match__away_team__team_name__contains=search))
+            custom_results = custom_results.filter(Q(custom_match__user_team__team_name__contains=search) | Q(custom_match__versus_team__icontains=search))
         if date:
             fixtures = fixtures.filter(Q(match_date__date=date))
-            custom_match = custom_match.filter(Q(match_date__date=date))
+            custom_match = custom_match.filter(Q(custom_match_date__date=date))
             results = results.filter(Q(match__match_date__date=date))
+            custom_results = custom_results.filter(Q(custom_match__match_date__date=date))
 
         
         results = self.manual_pagination(request, results)
+        custom_results = self.manual_pagination(request, custom_results)
         fixtures = self.manual_pagination(request, fixtures)
         custom_match = self.manual_pagination(request, custom_match)
 
-        if request.htmx:
-            return render(request, 'matches/partials/partial_match_list.html', {"results": results, "fixtures": fixtures, "custommatches": custom_match})
-        else:
-            return render(request, 'matches/match_list.html', {"results": results, "fixtures": fixtures, "custommatches": custom_match})
+        context = {"results": results, "fixtures": fixtures, "custommatches": custom_match, "customresults": custom_results}
+
+        template_name = 'matches/partials/partial_match_list.html' if request.htmx else 'matches/match_list.html'
+
+        return render(request, template_name, context)
 
     def get_context_data(self, **kwargs):
         context = super(MatchListView, self).get_context_data(**kwargs)
-        queryset = Result.objects.all().order_by('-match__match_date')
+        results = Result.objects.all().order_by('-match__match_date')
+        custom_results = CstmMatchResult.objects.all().order_by('-custom_match__match_date')
         fixtures = Match.objects.filter(is_fixture=True).order_by('match_date')
         custom_matches = CustomMatch.objects.filter(is_fixture=True).order_by('match_date')
         context.update({
-            "results": queryset,
+            "results": results,
+            "customresults": custom_results,
             "fixtures": fixtures,
             "custommatches": custom_matches
         })
@@ -98,7 +105,7 @@ class MatchDetailView(generic.DetailView):
         context.update({
             "hometeam_players": home_team,
             "awayteam_players": away_team,
-            "events": self.get_object().matchevent_set.all()
+            "events": self.get_object().matchevent_set.all().order_by('minute')
         })
         return context
 

@@ -8,7 +8,7 @@
   </div>
 
   
-  <p class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Home Team - {{ match.user_team }}</p>
+  <p class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Team - {{ match.user_team }}</p>
   <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
     <div class="w-full overflow-x-auto">
       <table class="w-full">
@@ -20,7 +20,7 @@
             <th class="px-4 py-3">Minutes played</th>
           </tr>
         </thead>
-        {% for player_stat in hometeam_players %}
+        {% for player_stat in userteam_players %}
           <tbody class="bg-white">
             <tr class="text-gray-700">
               <td class="px-4 py-3 border">

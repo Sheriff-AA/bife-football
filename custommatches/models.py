@@ -69,7 +69,7 @@ class CstmMatchEvent(models.Model):
 class CstmMatchResult(models.Model):
     custom_match = models.OneToOneField(CustomMatch, on_delete=models.CASCADE)
     score_userteam = models.IntegerField()
-    score_versusteam = models.IntegerField()
+    score_versusteam = models.IntegerField(verbose_name='Opposition Score?')
 
     def __str__(self):
         if self.custom_match.is_home:

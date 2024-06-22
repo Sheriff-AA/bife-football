@@ -4,8 +4,8 @@ from django.views import generic
 from faker import Faker
 from django.core.paginator import Paginator
 from django.db.models import Sum, Count, Q
-from .mixins import CoachRequiredMixin
 
+from .mixins import CoachRequiredMixin
 from .models import Player, PlayerStat, Contract, MatchEvent, Coach, Team, User
 from .forms import PlayerModelForm, PlayerModelUpdateForm, PlayerTeamForm, OrganizationUserCreationForm
 

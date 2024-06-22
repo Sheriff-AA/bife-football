@@ -280,7 +280,11 @@
                         </td>
                         <td class="px-4 py-3 text-sm">{{ contract.player.age }}</td>
                         <td class="px-4 py-3 text-xs">
-                        <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100"> Approved </span>
+                        {% if contract.is_valid %}
+                            <span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100"> Valid </span>
+                        {% else %}
+                            <span class="px-2 py-1 font-semibold leading-tight text-red-700 bg-green-100 rounded-full dark:bg-red-700 dark:text-red-100"> Valid </span>
+                        {% endif %}
                         </td>
                         <td class="px-4 py-3 text-sm">{{ contract.contract_date}}</td>
                     </tr>
@@ -290,10 +294,6 @@
                 {% endif %}
                 </tbody>
             </table>
-            </div>
-            <div class="grid px-4 py-3 text-xs font-semibold tracking-wide text-gray-500 uppercase border-t dark:border-gray-700 bg-gray-50 sm:grid-cols-9 dark:text-gray-400 dark:bg-gray-800">
-            <span class="flex items-center col-span-3"> Showing 21-30 of 100 </span>
-            <span class="col-span-2"></span>
             </div>
         </div>
     </div>

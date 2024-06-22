@@ -42,6 +42,66 @@
         {% endfor %}
     </table>
 
+    {% if custommatch_list %}
+    <table class="table-auto w-full text-left whitespace-no-wrap">
+        <thead>
+          <tr>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Scoreline</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
+            <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+          </tr>
+        </thead>
+        {% for result in custommatch_list %}
+        <tbody>
+          <tr>
+            {% if match.is_home %}
+                <td class="px-3 py-3">
+                <a href="{% url 'custommatches:custommatch-detail' result.custom_match.slug %}">{{ result.custom_match.user_team }}</a>
+                </td>
+                <td class="px-3 py-3">
+                <a href="#">{{ result.custom_match.versus_team }}</a>
+                </td>
+                <td class="px-4 py-3">
+                    {% if result.score_userteam == result.score_versusteam %}
+                        <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-gray-500"> D </span>
+                    {% elif result.score_userteam > result.score_versusteam %}
+                        <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-green-500"> W </span>
+                    {% else %}
+                        <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-red-500"> L </span>
+                        {{ result.score_userteam }} : {{ result.score_versusteam }}
+                    {% endif %}
+                </td>
+            {% else %}
+                <td class="px-3 py-3">
+                <a href="#">{{ result.custom_match.versus_team }}</a>
+                </td>
+                <td class="px-3 py-3">
+                <a href="{% url 'custommatches:custommatch-detail' result.custom_match.slug %}">{{ result.custom_match.user_team }}</a>
+                </td>
+                <td class="px-4 py-3">
+                    {% if result.score_userteam == result.score_versusteam %}
+                        <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-gray-500"> D </span>
+                    {% elif result.score_userteam > result.score_versusteam %}
+                        <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-green-500"> W </span>
+                    {% else %}
+                        <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-red-500"> L </span>
+                    {% endif %}
+                        {{ result.score_versusteam }} : {{ result.score_userteam }}
+                </td>
+            {% endif %}
+            <td class="px-4 py-3 text-lg text-gray-900">
+                {{ result.custom_match.match_date|date:"F d, Y, h:i A" }}</td>
+            <td class="px-4 py-3 text-lg underline text-blue-900">
+                <a href="{% url 'custommatches:custommatch-detail' result.custom_match.slug %}">View</a>
+            </td>
+          </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+    {% endif %}
+
 {% elif list_type == "fixtures" %}
     <table class="table-auto w-full text-left whitespace-no-wrap">
         <thead>
@@ -73,4 +133,42 @@
         </tbody>
         {% endfor %}
     </table>
+
+    {% if custommatch_list %}
+    <table class="table-auto w-full text-left whitespace-no-wrap">
+        <thead>
+            <tr>
+            <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
+            <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
+            <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
+            <th class="px-3 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+            </tr>
+        </thead>
+        {% for fixture in custommatch_list %}
+        <tbody>
+            <tr>
+            {% if fixture.is_home %}
+                <td class="px-3 py-3">
+                  <a href="{% url 'custommatches:custommatch-detail' fixture.slug %}">{{ fixture.user_team }}</a>
+                </td>
+                <td class="px-3 py-3">
+                  <a href="#">{{ fixture.versus_team }}</a>
+                </td>
+            {% else %}
+                <td class="px-3 py-3">
+                  <a href="#">{{ fixture.versus_team }}</a>
+                </td>
+                <td class="px-3 py-3">
+                  <a href="{% url 'custommatches:custommatch-detail' fixture.slug %}">{{ fixture.user_team }}</a>
+                </td>
+            {% endif %}
+            <td class="px-3 py-3 text-lg text-gray-900">{{ fixture.match_date|date:"F d, Y, h:i A" }}</td>
+            <td class="px-3 py-3 text-right text-lg underline text-blue-900">
+            <a href="#">Add event(s)</a>
+            </td>
+            </tr>
+        </tbody>
+        {% endfor %}
+    </table>
+    {% endif %}
 {% endif %}

@@ -4,10 +4,9 @@ from django.db.models import Q
 from django.conf import settings
 from django.views import generic
 
-from matches.mixins import SessionDefaultsMixin
 from players.models import Contract
 from .models import CustomMatch, CstmMatchPlayerStat, CstmMatchResult, CstmMatchEvent
-from .forms import CstmMatchModelForm, CustomMatchEventFormSet, CstmMatchPlayerStatModelForm, CstmMatchPlayerStatFormSet, CstmMatchResult, CstmMatchEventModelForm
+from .forms import CstmMatchModelForm, CustomMatchEventFormSet, CstmMatchPlayerStatModelForm, CstmMatchPlayerStatFormSet, CstmCreateResultForm, CstmMatchEventModelForm
 
 GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
 
@@ -145,8 +144,7 @@ class CstmMatchCreateEventView(generic.CreateView):
 
 class CstmResultCreateView(generic.CreateView):
     template_name = "custommatches/cstmmatch_create_result.html"
-    context_object_name = "match"
-    form_class = CstmMatchResult
+    form_class = CstmCreateResultForm
 
     def get_queryset(self):
         queryset = CustomMatch.objects.filter(slug=self.kwargs['slug'])
@@ -158,9 +156,9 @@ class CstmResultCreateView(generic.CreateView):
     def form_valid(self, form):
         match_instance = self.get_object()
         CstmMatchResult.objects.create(
-            match=match_instance, 
-            score_userteam=self.calculate_score(match_instance.user_team),
-            score_versusteam=form.score_versusteam
+            custom_match=match_instance, 
+            score_userteam = self.calculate_score(match_instance.user_team),
+            score_versusteam = form.cleaned_data['score_versusteam']
             )
         
         return redirect("custommatches:custom-playerstat-create", slug=match_instance.slug)
@@ -170,7 +168,8 @@ class CstmResultCreateView(generic.CreateView):
         data = super(CstmResultCreateView, self).get_context_data(**kwargs)
         match_instance = self.get_object()
         data = {'match': match_instance,
-                'userteam_score': self.calculate_score(match_instance.user_team)
+                'userteam_score': self.calculate_score(match_instance.user_team),
+                'form': CstmCreateResultForm()
                 }
         return data
     
@@ -178,7 +177,7 @@ class CstmResultCreateView(generic.CreateView):
         player_contracts = self.get_latest_contracts(team)
         goal_events = CstmMatchEvent.objects.filter(
             player_contract__in=player_contracts,
-            match=self.get_object(),
+            custom_match=self.get_object(),
             event_type="GOAL",
         )
         return goal_events.count()
