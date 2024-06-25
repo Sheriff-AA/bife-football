@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+from decouple import config
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,16 +21,20 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8wmy1ek-kfo**yt_j8ceuuo65)r96rl23xw1g8m-$rz4_1#7om'
+SECRET_KEY = config('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DJANGO_DEBUG', cast=bool)
 
-ALLOWED_HOSTS = []
-GET_LATEST_CONTRACTS = '''id IN (SELECT id FROM (SELECT id, ROW_NUMBER() 
-            OVER (PARTITION BY player_id ORDER BY contract_date DESC) AS rn 
-            FROM players_contract) AS subquery 
-            WHERE rn = 1)'''
+ALLOWED_HOSTS = [
+    'web-app-domain.com',
+]
+
+if DEBUG:
+    ALLOWED_HOSTS += [
+        '127.0.0.1',
+    ]
+
 
 
 # Application definition
@@ -148,3 +153,10 @@ AUTH_USER_MODEL = 'players.User'
 
 CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
 CRISPY_TEMPLATE_PACK = 'tailwind'
+
+
+# APPLICATION VARIABLES
+GET_LATEST_CONTRACTS = '''id IN (SELECT id FROM (SELECT id, ROW_NUMBER() 
+            OVER (PARTITION BY player_id ORDER BY contract_date DESC) AS rn 
+            FROM players_contract) AS subquery 
+            WHERE rn = 1)'''
