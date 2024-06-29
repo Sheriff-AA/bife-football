@@ -14,3 +14,7 @@ toposort==1.10
 typing-extensions==4.10.0
 tzdata==2024.1
 python-decouple
+django-allauth[socialaccount]
+django-allauth-ui
+django-widget-tweaks
+slippers

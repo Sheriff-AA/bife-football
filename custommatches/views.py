@@ -5,16 +5,16 @@ from django.conf import settings
 from django.views import generic
 
 from players.models import Contract
-from .models import CustomMatch, CstmMatchPlayerStat, CstmMatchResult, CstmMatchEvent
-from .forms import CstmMatchModelForm, CustomMatchEventFormSet, CstmMatchPlayerStatModelForm, CstmMatchPlayerStatFormSet, CstmCreateResultForm, CstmMatchEventModelForm
+from .models import CustomMatch, CustomMatchPlayerStat, CustomMatchResult, CustomMatchEvent
+from .forms import CustomMatchModelForm, CustomMatchEventFormSet, CustomMatchPlayerStatModelForm, CustomMatchPlayerStatFormSet, CustomCreateResultForm, CustomMatchEventModelForm
 
 GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
 
 
 # Create your views here.
-class CstmMatchCreateView(generic.CreateView):
+class CustomMatchCreateView(generic.CreateView):
     template_name = "custommatches/cstmmatch_create.html"
-    form_class = CstmMatchModelForm
+    form_class = CustomMatchModelForm
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -30,10 +30,10 @@ class CstmMatchCreateView(generic.CreateView):
         match = form.save(commit=False)
         # match.is_home = form.cleaned_data['is_home']
         match.save()
-        return super(CstmMatchCreateView, self).form_valid(form)
+        return super(CustomMatchCreateView, self).form_valid(form)
     
 
-class CstmMatchDetailView(generic.DetailView):
+class CustomMatchDetailView(generic.DetailView):
     template_name = "custommatches/cstmmatch_detail.html"
     context_object_name = "match"
 
@@ -42,22 +42,22 @@ class CstmMatchDetailView(generic.DetailView):
         return queryset
     
     def get_context_data(self, **kwargs):
-        context = super(CstmMatchDetailView, self).get_context_data(**kwargs)
-        user_team = CstmMatchPlayerStat.objects.filter(
+        context = super(CustomMatchDetailView, self).get_context_data(**kwargs)
+        user_team = CustomMatchPlayerStat.objects.filter(
             custom_match=self.get_object(),
             player_contract__team =self.get_object().user_team
         )
 
         context.update({
             "userteam_players": user_team,
-            "events": self.get_object().cstmmatchevent_set.all()
+            "events": self.get_object().custommatchevent_set.all()
         })
         return context
 
 
-class CstmMatchCreateEventView(generic.CreateView):
+class CustomMatchCreateEventView(generic.CreateView):
     template_name = "custommatches/cstmmatch_create_event.html"
-    form_class = CstmMatchEventModelForm
+    form_class = CustomMatchEventModelForm
 
     def get_queryset(self):
         return CustomMatch.objects.filter(slug=self.kwargs['slug'])
@@ -75,13 +75,13 @@ class CstmMatchCreateEventView(generic.CreateView):
         match_instance = self.get_queryset().get()
         data.update({
             'match': match_instance,
-            'events': match_instance.cstmmatchevent_set.all()
+            'events': match_instance.custommatchevent_set.all()
         })
         if self.request.POST:
             data['formset'] = self.get_formset(match_instance)
         else:
             data['formset'] = CustomMatchEventFormSet(
-                queryset=CstmMatchEvent.objects.none(),
+                queryset=CustomMatchEvent.objects.none(),
                 instance=match_instance,
                 form_kwargs={'slug': self.kwargs['slug']},
                 prefix='matchevents'
@@ -142,9 +142,9 @@ class CstmMatchCreateEventView(generic.CreateView):
         return self.render_to_response(self.get_context_data(form=form, formset=formset))    
 
 
-class CstmResultCreateView(generic.CreateView):
+class CustomResultCreateView(generic.CreateView):
     template_name = "custommatches/cstmmatch_create_result.html"
-    form_class = CstmCreateResultForm
+    form_class = CustomCreateResultForm
 
     def get_queryset(self):
         queryset = CustomMatch.objects.filter(slug=self.kwargs['slug'])
@@ -155,7 +155,7 @@ class CstmResultCreateView(generic.CreateView):
     
     def form_valid(self, form):
         match_instance = self.get_object()
-        CstmMatchResult.objects.create(
+        CustomMatchResult.objects.create(
             custom_match=match_instance, 
             score_userteam = self.calculate_score(match_instance.user_team),
             score_versusteam = form.cleaned_data['score_versusteam']
@@ -165,17 +165,17 @@ class CstmResultCreateView(generic.CreateView):
         
     
     def get_context_data(self, **kwargs):
-        data = super(CstmResultCreateView, self).get_context_data(**kwargs)
+        data = super(CustomResultCreateView, self).get_context_data(**kwargs)
         match_instance = self.get_object()
         data = {'match': match_instance,
                 'userteam_score': self.calculate_score(match_instance.user_team),
-                'form': CstmCreateResultForm()
+                'form': CustomCreateResultForm()
                 }
         return data
     
     def calculate_score(self, team):
         player_contracts = self.get_latest_contracts(team)
-        goal_events = CstmMatchEvent.objects.filter(
+        goal_events = CustomMatchEvent.objects.filter(
             player_contract__in=player_contracts,
             custom_match=self.get_object(),
             event_type="GOAL",
@@ -189,22 +189,22 @@ class CstmResultCreateView(generic.CreateView):
         )
 
 
-class CstmMatchPlayerStatCreateEventView(generic.CreateView):
+class CustomMatchPlayerStatCreateEventView(generic.CreateView):
     template_name = "custommatches/cstmmatch_create_playerstats.html"
-    form_class = CstmMatchPlayerStatModelForm
+    form_class = CustomMatchPlayerStatModelForm
 
     def get_queryset(self):
         return CustomMatch.objects.filter(slug=self.kwargs['slug'])
     
     def get_form_kwargs(self, **kwargs):
-        kwargs = super(CstmMatchPlayerStatCreateEventView, self).get_form_kwargs(**kwargs)
+        kwargs = super(CustomMatchPlayerStatCreateEventView, self).get_form_kwargs(**kwargs)
         kwargs.update({
             "slug": self.kwargs['slug']
         })
         return kwargs
     
     def get_context_data(self, **kwargs):
-        data = super(CstmMatchPlayerStatCreateEventView, self).get_context_data(**kwargs)
+        data = super(CustomMatchPlayerStatCreateEventView, self).get_context_data(**kwargs)
         data["match"] = self.get_match_instance()
         data['formset'] = self.get_formset(data['match'], form_kwargs={'slug': self.kwargs['slug']})
         
@@ -215,7 +215,7 @@ class CstmMatchPlayerStatCreateEventView(generic.CreateView):
     
     def get_formset(self, match_instance, *args, **kwargs):
         prefix = kwargs.pop('prefix', 'playerstats')
-        formset = CstmMatchPlayerStatFormSet(*args, **kwargs, prefix=prefix, instance=match_instance)
+        formset = CustomMatchPlayerStatFormSet(*args, **kwargs, prefix=prefix, instance=match_instance)
     
         contract_for_teams = Contract.objects.filter(Q(is_valid=True) & (Q(team=match_instance.user_team)))
         latest_contracts = contract_for_teams.extra(

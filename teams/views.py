@@ -10,7 +10,7 @@ from django.core.paginator import Paginator
 from players.mixins import CoachRequiredMixin
 from .forms import TeamModelForm, TeamSelectForm
 from players.models import Team, Contract, Match, Player, Result, Coach, PlayerStat
-from custommatches.models import CustomMatch, CstmMatchResult
+from custommatches.models import CustomMatch, CustomMatchResult
 
 GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
 
@@ -180,7 +180,7 @@ class TeamMatchesView(generic.DetailView):
             custommatch_list = CustomMatch.objects.filter(Q(user_team=team), is_fixture=True).order_by('match_date')
         else:
             match_list = Result.objects.filter(Q(match__home_team=team) | Q(match__away_team=team)).order_by('-match__match_date')
-            custommatch_list = CstmMatchResult.objects.filter(Q(custom_match__user_team=team)).order_by('-custom_match__match_date')
+            custommatch_list = CustomMatchResult.objects.filter(Q(custom_match__user_team=team)).order_by('-custom_match__match_date')
 
         context.update({"match_list": match_list,
                         "custommatch_list": custommatch_list,

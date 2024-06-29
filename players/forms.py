@@ -32,8 +32,8 @@ class PlayerTeamForm(forms.ModelForm):
             self.fields['teams'].initial = self.instance.teams.all()
 
 
-class OrganizationUserCreationForm(UserCreationForm):
-    class Meta:
-        model = User
-        fields = {"username",}
-        fields_classes = {'username': UsernameField}
+# class OrganizationUserCreationForm(UserCreationForm):
+#     class Meta:
+#         model = User
+#         fields = {"username",}
+#         fields_classes = {'username': UsernameField}

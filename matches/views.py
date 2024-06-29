@@ -10,7 +10,7 @@ from .mixins import SessionDefaultsMixin, UserTeamMixin
 from players.models import (
     Match, Result, PlayerStat, MatchEvent, Player, Contract, Team,
     )
-from custommatches.models import CustomMatch, CstmMatchResult
+from custommatches.models import CustomMatch, CustomMatchResult
 from .forms import (
     MatchModelForm,
     MatchEventFormSet,
@@ -42,7 +42,7 @@ class MatchListView(generic.ListView):
         search = request.GET.get('search', None)
         date = request.GET.get('match_date', None)
         results = Result.objects.all().order_by('-match__match_date')
-        custom_results = CstmMatchResult.objects.all().order_by('-custom_match__match_date')
+        custom_results = CustomMatchResult.objects.all().order_by('-custom_match__match_date')
         fixtures = Match.objects.filter(is_fixture=True).order_by('match_date')
         custom_match = CustomMatch.objects.filter(is_fixture=True).order_by("match_date")
         if search:
@@ -71,7 +71,7 @@ class MatchListView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super(MatchListView, self).get_context_data(**kwargs)
         results = Result.objects.all().order_by('-match__match_date')
-        custom_results = CstmMatchResult.objects.all().order_by('-custom_match__match_date')
+        custom_results = CustomMatchResult.objects.all().order_by('-custom_match__match_date')
         fixtures = Match.objects.filter(is_fixture=True).order_by('match_date')
         custom_matches = CustomMatch.objects.filter(is_fixture=True).order_by('match_date')
         context.update({

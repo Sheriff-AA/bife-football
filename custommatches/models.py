@@ -31,7 +31,7 @@ class CustomMatch(models.Model):
         return f"{self.versus_team} vs {self.user_team}"
     
 
-class CstmMatchPlayerStat(models.Model):
+class CustomMatchPlayerStat(models.Model):
     player = models.ForeignKey(Player, related_name="custom_stats", on_delete=models.CASCADE)
     player_contract = models.ForeignKey(Contract, related_name="custom_stats", on_delete=models.CASCADE)
     custom_match = models.ForeignKey(CustomMatch, on_delete=models.CASCADE)
@@ -47,7 +47,7 @@ class CstmMatchPlayerStat(models.Model):
         return f"{self.player} in {self.custom_match}"
     
 
-class CstmMatchEvent(models.Model):
+class CustomMatchEvent(models.Model):
     custom_match = models.ForeignKey(CustomMatch, on_delete=models.CASCADE)
     event_type = models.CharField(max_length=20, choices=EVENT_CHOICES)
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -66,7 +66,7 @@ class CstmMatchEvent(models.Model):
         return f"{self.event_type} - Match: {self.custom_match}"
     
 
-class CstmMatchResult(models.Model):
+class CustomMatchResult(models.Model):
     custom_match = models.OneToOneField(CustomMatch, on_delete=models.CASCADE)
     score_userteam = models.IntegerField()
     score_versusteam = models.IntegerField(verbose_name='Opposition Score?')

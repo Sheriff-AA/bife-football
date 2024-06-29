@@ -1,8 +1,8 @@
 from django.contrib import admin
-from .models import CustomMatch, CstmMatchEvent, CstmMatchPlayerStat, CstmMatchResult
+from .models import CustomMatch, CustomMatchEvent, CustomMatchPlayerStat, CustomMatchResult
 
 # Register your models here.
 admin.site.register(CustomMatch)
-admin.site.register(CstmMatchEvent)
-admin.site.register(CstmMatchPlayerStat)
-admin.site.register(CstmMatchResult)
+admin.site.register(CustomMatchEvent)
+admin.site.register(CustomMatchPlayerStat)
+admin.site.register(CustomMatchResult)

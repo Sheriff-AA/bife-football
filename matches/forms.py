@@ -3,9 +3,8 @@ from django.conf import settings
 from django import forms
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from django.db.models import Q
-from django.contrib.auth.forms import UserCreationForm, UsernameField
 
-from players.models import Player, Match, MatchEvent, PlayerStat, Contract, Team
+from players.models import Match, MatchEvent, PlayerStat, Contract, Team
 from .widgets import DateTimePickerInput
 
 

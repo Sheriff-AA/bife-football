@@ -7,19 +7,11 @@ from django.db.models import Sum, Count, Q
 
 from .mixins import CoachRequiredMixin
 from .models import Player, PlayerStat, Contract, MatchEvent, Coach, Team, User
-from .forms import PlayerModelForm, PlayerModelUpdateForm, PlayerTeamForm, OrganizationUserCreationForm
+from .forms import PlayerModelForm, PlayerModelUpdateForm, PlayerTeamForm
 
 
 class LandingPageView(generic.TemplateView):
     template_name = "landing_page.html"
-
-
-class SignupView(generic.CreateView):
-    template_name = "registration/signup.html"
-    form_class = OrganizationUserCreationForm
-
-    def get_success_url(self):
-        return reverse("login")
 
 
 class PlayerListView(generic.ListView):

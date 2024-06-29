@@ -17,16 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
-from players.views import LandingPageView, SignupView
-
-from django.contrib.auth.views import (
-    LoginView, 
-    LogoutView, 
-    PasswordResetView,
-    PasswordResetDoneView,
-    PasswordResetConfirmView,
-    PasswordResetCompleteView,
-    )
+from players.views import LandingPageView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -34,12 +25,6 @@ urlpatterns = [
     path("matches/", include("matches.urls", namespace="matches")),
     path("players/", include("players.urls", namespace="players")),
     path("teams/", include("teams.urls", namespace="teams")),
+    path('accounts/', include('allauth.urls')),
     path("custommatches/", include("custommatches.urls", namespace="custommatches")),
-    path('signup/', SignupView.as_view(), name='signup'),
-    path('reset-password/', PasswordResetView.as_view(), name='reset-password'),
-    path('password-reset-done/', PasswordResetDoneView.as_view(), name='password_reset_done'),
-    path('password-reset-confirm/<uidb64>/<token>/', PasswordResetConfirmView.as_view(), name='password_reset_confirm'),
-    path('password-reset-complete/', PasswordResetCompleteView.as_view(), name='password_reset_complete'),
-    path('login/', LoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
 ]
