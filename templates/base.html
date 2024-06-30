@@ -6,19 +6,16 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title>BIFE FOOTBALL</title>
-    {% comment %}
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet" />
-    {% endcomment %}
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="stylesheet" href="" />
+    {% include 'css.html' %}
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.11" integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0" crossorigin="anonymous"></script>
-    {% comment %} <script src="{% static 'js/htmx.min.js' %} defer"></script> {% endcomment %}
     {% include "navbar.html" %}
   </head>
 
   <body class="bg-gray-300 antialiased">
+    {% include 'js.html' %}
     <div class="max-w-7xl mx-auto">
       {% block content %} {% endblock content %}
     </div>
