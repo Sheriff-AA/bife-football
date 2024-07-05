@@ -1,6 +1,10 @@
 # ignore vendor statc files
 staticfiles/vendors
 
+# Dependency directories
+node_modules/
+jspm_packages/
+
 # Ignore local cdn files
 local-cdn/
 
