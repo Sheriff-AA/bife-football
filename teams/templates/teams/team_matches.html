@@ -25,15 +25,19 @@
 
         function updateButtonStyles(listType) {
             if (listType === "fixtures") {
-                fixturesBtn.classList.add("bg-blue-500", "text-white");
+                fixturesBtn.classList.add("bg-blue-900", "text-white");
                 fixturesBtn.classList.remove("bg-gray-100");
-                resultsBtn.classList.remove("bg-blue-500", "text-white");
+                fixturesBtn.classList.remove("hover:bg-gray-200");
+                resultsBtn.classList.remove("bg-blue-900", "text-white");
                 resultsBtn.classList.add("bg-gray-100");
+                resultsBtn.classList.add("hover:bg-gray-200");
             } else if (listType === "results") {
-                resultsBtn.classList.add("bg-blue-500", "text-white");
+                resultsBtn.classList.add("bg-blue-900", "text-white");
                 resultsBtn.classList.remove("bg-gray-100");
-                fixturesBtn.classList.remove("bg-blue-500", "text-white");
+                resultsBtn.classList.remove("hover:bg-gray-200");
+                fixturesBtn.classList.remove("bg-blue-900", "text-white");
                 fixturesBtn.classList.add("bg-gray-100");
+                fixturesBtn.classList.add("hover:bg-gray-200");
             }
         }
 

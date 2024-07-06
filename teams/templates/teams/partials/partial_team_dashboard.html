@@ -16,29 +16,27 @@
         </a>
         </li>
         <li>
-        <a href="#" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
+        <a href="{% url 'matches:match-create' %}" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
             <span class="inline-flex justify-center items-center ml-4">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
             </span>
-            <span class="ml-2 text-sm tracking-wide truncate">Board</span>
-            <span class="hidden md:block px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-blue-500 bg-indigo-50 rounded-full">New</span>
+            <span class="ml-2 text-sm tracking-wide truncate">New Match</span>
         </a>
         </li>
         <li>
-        <a href="#" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
+        <a href="{% url 'custommatches:custommatch-create' %}" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
             <span class="inline-flex justify-center items-center ml-4">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"></path></svg>
             </span>
-            <span class="ml-2 text-sm tracking-wide truncate">Messages</span>
+            <span class="ml-2 text-sm tracking-wide truncate">New Custom Match</span>
         </a>
         </li>
         <li>
-        <a href="#" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
+        <a href="{% url 'players:player-create' %}" class="relative flex flex-row items-center h-11 focus:outline-none hover:bg-blue-800 dark:hover:bg-gray-600 text-white-600 hover:text-white-800 border-l-4 border-transparent hover:border-blue-500 dark:hover:border-gray-800 pr-6">
             <span class="inline-flex justify-center items-center ml-4">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
             </span>
-            <span class="ml-2 text-sm tracking-wide truncate">Notifications</span>
-            <span class="hidden md:block px-2 py-0.5 ml-auto text-xs font-medium tracking-wide text-red-500 bg-red-50 rounded-full">1.2k</span>
+            <span class="ml-2 text-sm tracking-wide truncate">New Player</span>
         </a>
         </li>
         <li class="px-5 hidden md:block">
@@ -70,14 +68,13 @@
     </div>
 </div>
 
-{% comment %} fixed flex flex-col top-14 left-0 w-14 hover:w-64 md:w-64 bg-blue-900 dark:bg-gray-900 h-full text-white transition-all duration-300 border-none z-10 sidebar {% endcomment %}
 <!-- ./Sidebar -->
 
 <!-- Main -->
 <div class="flex flex-col h-full ml-14 md:ml-64 md:w-full col-span-4">
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 p-4 gap-4">
-        <div class="bg-blue-500 dark:bg-gray-800 shadow-lg rounded-md flex items-center justify-between p-3 border-b-4 border-blue-600 dark:border-gray-600 text-white font-medium group">
+        <div class="bg-blue-900 shadow-lg rounded-md flex items-center justify-between p-3 border-b-4 border-blue-600 dark:border-gray-600 text-white font-medium group">
             <div class="flex justify-center items-center w-14 h-14 bg-white rounded-full transition-all duration-300 transform group-hover:rotate-12">
             <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="stroke-current text-blue-800 dark:text-gray-800 transform transition-transform duration-500 ease-in-out"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
             </div>
@@ -86,7 +83,7 @@
             <p>Players</p>
             </div>
         </div>
-        <div class="bg-blue-500 dark:bg-gray-800 shadow-lg rounded-md flex items-center justify-between p-3 border-b-4 border-blue-600 dark:border-gray-600 text-white font-medium group">
+        <div class="bg-blue-900 shadow-lg rounded-md flex items-center justify-between p-3 border-b-4 border-blue-600 dark:border-gray-600 text-white font-medium group">
             <div class="flex justify-center items-center w-14 h-14 bg-white rounded-full transition-all duration-300 transform group-hover:rotate-12">
             <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="stroke-current text-blue-800 dark:text-gray-800 transform transition-transform duration-500 ease-in-out"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
             </div>
@@ -95,7 +92,7 @@
             <p>Games Played</p>
             </div>
         </div>
-        <div class="bg-blue-500 dark:bg-gray-800 shadow-lg rounded-md flex items-center justify-between p-3 border-b-4 border-blue-600 dark:border-gray-600 text-white font-medium group">
+        <div class="bg-blue-900 shadow-lg rounded-md flex items-center justify-between p-3 border-b-4 border-blue-600 dark:border-gray-600 text-white font-medium group">
             <div class="flex justify-center items-center w-14 h-14 bg-white rounded-full transition-all duration-300 transform group-hover:rotate-12">
             <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="stroke-current text-blue-800 dark:text-gray-800 transform transition-transform duration-500 ease-in-out"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
             </div>
@@ -104,7 +101,7 @@
             <p>Sales</p>
             </div>
         </div>
-        <div class="bg-blue-500 dark:bg-gray-800 shadow-lg rounded-md flex items-center justify-between p-3 border-b-4 border-blue-600 dark:border-gray-600 text-white font-medium group">
+        <div class="bg-blue-900 shadow-lg rounded-md flex items-center justify-between p-3 border-b-4 border-blue-600 dark:border-gray-600 text-white font-medium group">
             <div class="flex justify-center items-center w-14 h-14 bg-white rounded-full transition-all duration-300 transform group-hover:rotate-12">
             <svg width="30" height="30" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="stroke-current text-blue-800 dark:text-gray-800 transform transition-transform duration-500 ease-in-out"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
             </div>
@@ -119,14 +116,14 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 p-4 gap-4">
 
         <!-- Previous 5 Results -->
-        <div class="relative flex flex-col min-w-0 mb-4 lg:mb-0 break-words bg-gray-50 dark:bg-gray-800 w-full shadow-lg rounded">
+        <div class="relative flex flex-col min-w-0 mb-4 lg:mb-0 break-words bg-gray-200 w-full shadow-lg rounded">
             <div class="rounded-t mb-0 px-0 border-0">
             <div class="flex flex-wrap items-center px-4 py-2">
                 <div class="relative w-full max-w-full flex-grow flex-1">
                 <h3 class="font-semibold text-base text-gray-900 dark:text-gray-50">Previous 5 Games</h3>
                 </div>
                 <div class="relative w-full max-w-full flex-grow flex-1 text-right">
-                <a href="{% url 'teams:team-matches' selected_team.slug %}?list_type=results" class="bg-blue-500 dark:bg-gray-100 text-white active:bg-blue-600 dark:text-gray-800 dark:active:text-gray-700 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">See all</a>
+                <a href="{% url 'teams:team-matches' selected_team.slug %}?list_type=results" class="bg-blue-900 text-white active:bg-blue-600 dark:text-gray-800 dark:active:text-gray-700 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">See all</a>
                 </div>
             </div>
             <div class="block w-full overflow-x-auto">
@@ -173,14 +170,14 @@
         <!-- ./Previous 5 Results -->
     
         <!-- Fixtures. Next 5 Games -->
-        <div class="relative flex flex-col min-w-0 break-words bg-gray-50 dark:bg-gray-800 w-full shadow-lg rounded">
+        <div class="relative flex flex-col min-w-0 break-words bg-gray-200 w-full shadow-lg rounded">
             <div class="rounded-t mb-0 px-0 border-0">
             <div class="flex flex-wrap items-center px-4 py-2">
                 <div class="relative w-full max-w-full flex-grow flex-1">
                 <h3 class="font-semibold text-base text-gray-900 dark:text-gray-50">Fixtures</h3>
                 </div>
                 <div class="relative w-full max-w-full flex-grow flex-1 text-right">
-                <a href="{% url 'teams:team-matches' selected_team.slug %}?list_type=fixtures" class="bg-blue-500 dark:bg-gray-100 text-white active:bg-blue-600 dark:text-gray-800 dark:active:text-gray-700 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">See all</a>
+                <a href="{% url 'teams:team-matches' selected_team.slug %}?list_type=fixtures" class="bg-blue-900 dark:bg-gray-100 text-white active:bg-blue-600 dark:text-gray-800 dark:active:text-gray-700 text-xs font-bold uppercase px-3 py-1 rounded outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150" type="button">See all</a>
                 </div>
             </div>
             <div class="block w-full">
@@ -232,7 +229,7 @@
         </div>
         {% for match_data in matches_stats %}
             <div>
-                <div class="rounded bg-gray-200 dark:bg-gray-800 p-3">
+                <div class="rounded bg-gray-200 p-3">
                     <div class="flex justify-between py-1 text-black dark:text-white">
                         <h3 class="text-sm font-semibold">{{ match_data.match }}</h3>
                     </div>
@@ -250,7 +247,7 @@
                     </div>
                 </div>
             </div>
-            {% endfor %}
+        {% endfor %}
     </div>
     <!-- ./Prev 3 Games Summaries -->
 
@@ -302,7 +299,7 @@
             </div>
         </div>
     </div>
-    <!-- ./Client Table -->
+    <!-- ./Players in the team -->
 </div>
 <!-- ./Main -->
 

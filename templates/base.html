@@ -11,10 +11,10 @@
     <link rel="stylesheet" href="" />
     {% include 'css.html' %}
     {% comment %} <script src="https://cdn.tailwindcss.com"></script> {% endcomment %}
-    {% include "navbar.html" %}
   </head>
 
   <body class="bg-gray-300 antialiased">
+    {% include "navbar.html" %}
     {% include 'js.html' %}
     <div class="max-w-7xl mx-auto">
       {% block content %} {% endblock content %}

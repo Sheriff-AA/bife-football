@@ -127,7 +127,7 @@
   }
 </style>
 
-<div class="max-w-lg mx-auto">
+<div class="max-w-lg mt-5 mx-auto">
   <form method="post" hx-post="{% url 'teams:team-dashboard' %}" hx-target="#team-stats" hx-swap="innerHTML">
   {% csrf_token %}
   {{ form|crispy }}
@@ -137,7 +137,7 @@
   </form>
 </div>
 
-<div class="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white overflow-hidden">
+<div class="min-h-screen flex flex-col flex-auto flex-shrink-0 antialiased bg-white dark:bg-gray-700 text-black dark:text-white overflow-hidden mb-10">
 
   <!-- Header -->
   {% comment %} <div class="flex items-center justify-between h-14 text-white z-10 h-full">

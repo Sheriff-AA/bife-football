@@ -26,14 +26,6 @@
       </div>
     </form>
 
-    <div class="mb-5 border-b">
-      <a
-        class="text-blue-500 hover:text-blue-500" 
-        href="{% url 'players:player-create' %}"
-        >Add new player</a
-      >
-    </div>
-
     <div id="players-list" class="lg:w-3/3 w-full mx-auto overflow-auto">
       {% include 'players/partials/partial_player_list.html' %}
     </div>
