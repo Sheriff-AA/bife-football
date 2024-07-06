@@ -1,5 +1,5 @@
 <!-- Sidebar -->
-<div class="flex flex-col col-span-1 left-0 w-14 absolute mt-0 md:w-44 lg:w-full h-full md:relative bg-blue-900 dark:bg-gray-900 text-white border-none z-10">
+<div class="flex flex-col top-14 w-12 md:w-64 h-lvh bg-blue-900 transition-all dark:bg-gray-900 text-white border-none z-30 sidebar px-1 py-1">
     <div class="overflow-y-auto overflow-x-hidden flex flex-col justify-between flex-grow">
     <ul class="flex flex-col py-4 space-y-1">
         <li class="px-5 hidden md:block">
@@ -69,10 +69,12 @@
     <p class="px-5 py-5 hidden md:block text-center text-xs">Copyright @2024</p>
     </div>
 </div>
+
+{% comment %} fixed flex flex-col top-14 left-0 w-14 hover:w-64 md:w-64 bg-blue-900 dark:bg-gray-900 h-full text-white transition-all duration-300 border-none z-10 sidebar {% endcomment %}
 <!-- ./Sidebar -->
 
 <!-- Main -->
-<div class="ml-14 md:ml-0 h-full md:w-full col-span-4">
+<div class="flex flex-col h-full ml-14 md:ml-64 md:w-full col-span-4">
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 p-4 gap-4">
         <div class="bg-blue-500 dark:bg-gray-800 shadow-lg rounded-md flex items-center justify-between p-3 border-b-4 border-blue-600 dark:border-gray-600 text-white font-medium group">
@@ -225,27 +227,30 @@
         <div class="md:col-span-2 xl:col-span-3">
             <h3 class="text-lg font-semibold">Stats of recent games</h3>
         </div>
-        {% for match_data in matches_stats %}
         <div class="md:col-span-2 xl:col-span-1">
-            <div class="rounded bg-gray-200 dark:bg-gray-800 p-3">
-                <div class="flex justify-between py-1 text-black dark:text-white">
-                    <h3 class="text-sm font-semibold">{{ match_data.match }}</h3>
-                </div>
-                <div class="text-sm text-black dark:text-gray-50 mt-2">
-                    {% for stats in match_data.player_stats %}  
-                        <div class="bg-white dark:bg-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded mt-1 border-b border-gray-100 dark:border-gray-900 cursor-pointer">
-                        {{ stats.player }} | {{ stats.minutes_played }} minute(s) played
-                        <div class="text-gray-500 dark:text-gray-200 mt-2 flex justify-between items-start">
-                            <span class="text-xs flex items-center">
-                            Rating: {{ stats.rating }} | Goals: {{ stats.goals }}
-                            </span>
-                        </div>
-                        </div>
-                    {% endfor %}
+            
+        </div>
+        {% for match_data in matches_stats %}
+            <div>
+                <div class="rounded bg-gray-200 dark:bg-gray-800 p-3">
+                    <div class="flex justify-between py-1 text-black dark:text-white">
+                        <h3 class="text-sm font-semibold">{{ match_data.match }}</h3>
+                    </div>
+                    <div class="text-sm text-black dark:text-gray-50 mt-2">
+                        {% for stats in match_data.player_stats %}  
+                            <div class="bg-white dark:bg-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 p-2 rounded mt-1 border-b border-gray-100 dark:border-gray-900 cursor-pointer">
+                            {{ stats.player }} | {{ stats.minutes_played }} minute(s) played
+                            <div class="text-gray-500 dark:text-gray-200 mt-2 flex justify-between items-start">
+                                <span class="text-xs flex items-center">
+                                Rating: {{ stats.rating }} | Goals: {{ stats.goals }}
+                                </span>
+                            </div>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
-        </div>
-        {% endfor %}
+            {% endfor %}
     </div>
     <!-- ./Prev 3 Games Summaries -->
 
