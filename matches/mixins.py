@@ -1,6 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.shortcuts import render
+from django.contrib import messages
 from django.shortcuts import get_object_or_404
-from players.models import Player
+from players.models import Player, Coach, Team
 
 
 class SessionDefaultsMixin:
@@ -16,10 +18,16 @@ class SessionDefaultsMixin:
 
 class UserTeamMixin(LoginRequiredMixin):
     def get_user_teams(self):
-        # Assuming the User model has a related_name 'teams' for related teams
-        user = get_object_or_404(Player, user=self.request.user)
-        return user.teams.filter(contract__is_valid=True)
-
+        request_user=self.request.user
+        if hasattr(request_user, 'coach'):
+            # user = get_object_or_404(Coach, user=request_user)
+            # return Team.objects.filter(id=user.team.id)
+            return request_user.coach.team.all()
+        else:
+            messages.error(self.request, "Action not permitted!")
+            return render(self.request, 'landing_page')
+        
+    
     def get_selected_team(self):
         team_id = self.request.POST.get('team_id') or self.request.GET.get('team_id')
         user_teams = self.get_user_teams()

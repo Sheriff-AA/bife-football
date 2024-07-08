@@ -15,6 +15,13 @@
 
   <body class="bg-gray-300 antialiased">
     {% include "navbar.html" %}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
     {% include 'js.html' %}
     <div class="max-w-7xl mx-auto">
       {% block content %} {% endblock content %}

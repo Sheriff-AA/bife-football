@@ -3,8 +3,10 @@ from django.http import HttpResponseRedirect
 from django.db.models import Q
 from django.conf import settings
 from django.views import generic
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from players.models import Contract
+from players.mixins import PlayerRequiredMixin, CoachRequiredMixin
 from .models import CustomMatch, CustomMatchPlayerStat, CustomMatchResult, CustomMatchEvent
 from .forms import CustomMatchModelForm, CustomMatchEventFormSet, CustomMatchPlayerStatModelForm, CustomMatchPlayerStatFormSet, CustomCreateResultForm, CustomMatchEventModelForm
 
@@ -12,7 +14,7 @@ GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
 
 
 # Create your views here.
-class CustomMatchCreateView(generic.CreateView):
+class CustomMatchCreateView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateView):
     template_name = "custommatches/cstmmatch_create.html"
     form_class = CustomMatchModelForm
 
@@ -28,7 +30,6 @@ class CustomMatchCreateView(generic.CreateView):
     
     def form_valid(self, form):
         match = form.save(commit=False)
-        # match.is_home = form.cleaned_data['is_home']
         match.save()
         return super(CustomMatchCreateView, self).form_valid(form)
     
@@ -55,7 +56,7 @@ class CustomMatchDetailView(generic.DetailView):
         return context
 
 
-class CustomMatchCreateEventView(generic.CreateView):
+class CustomMatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateView):
     template_name = "custommatches/cstmmatch_create_event.html"
     form_class = CustomMatchEventModelForm
 
@@ -142,7 +143,7 @@ class CustomMatchCreateEventView(generic.CreateView):
         return self.render_to_response(self.get_context_data(form=form, formset=formset))    
 
 
-class CustomResultCreateView(generic.CreateView):
+class CustomResultCreateView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateView):
     template_name = "custommatches/cstmmatch_create_result.html"
     form_class = CustomCreateResultForm
 
@@ -189,7 +190,7 @@ class CustomResultCreateView(generic.CreateView):
         )
 
 
-class CustomMatchPlayerStatCreateEventView(generic.CreateView):
+class CustomMatchPlayerStatCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateView):
     template_name = "custommatches/cstmmatch_create_playerstats.html"
     form_class = CustomMatchPlayerStatModelForm
 

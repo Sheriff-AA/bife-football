@@ -4,9 +4,11 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.template.loader import render_to_string
 from django.views import generic
 from django.db.models import Q
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 
 from .mixins import SessionDefaultsMixin, UserTeamMixin
+from players.mixins import CoachRequiredMixin
 from players.models import (
     Match, Result, PlayerStat, MatchEvent, Player, Contract, Team,
     )
@@ -110,7 +112,7 @@ class MatchDetailView(generic.DetailView):
         return context
 
 
-class UpdateTeamsView(SessionDefaultsMixin, UserTeamMixin, generic.TemplateView):
+class UpdateTeamsView(CoachRequiredMixin, SessionDefaultsMixin, UserTeamMixin, generic.TemplateView):
     template_name = 'matches/partials/team_fields.html'
 
     def dispatch(self, request, *args, **kwargs):
@@ -156,7 +158,7 @@ class UpdateTeamsView(SessionDefaultsMixin, UserTeamMixin, generic.TemplateView)
             return super().get(request, *args, **kwargs)
     
 
-class MatchCreateView(SessionDefaultsMixin, UserTeamMixin, generic.CreateView):
+class MatchCreateView(CoachRequiredMixin, SessionDefaultsMixin, UserTeamMixin, generic.CreateView):
     template_name = "matches/match_create.html"
     form_class = MatchModelForm
 
@@ -215,7 +217,7 @@ class MatchCreateView(SessionDefaultsMixin, UserTeamMixin, generic.CreateView):
         return super(MatchCreateView, self).form_valid(form)
  
 
-class MatchCreateEventView(generic.CreateView):
+class MatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateView):
     template_name = "matches/match_event_create.html"
     form_class = MatchEventModelForm
 
@@ -304,7 +306,7 @@ class MatchCreateEventView(generic.CreateView):
         return self.render_to_response(self.get_context_data(form=form, formset=formset))    
 
 
-class ResultCreateView(generic.CreateView):
+class ResultCreateView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateView):
     template_name = "matches/result_create.html"
     context_object_name = "match"
     fields = []
@@ -353,7 +355,7 @@ class ResultCreateView(generic.CreateView):
         )
 
 
-class PlayerStatCreateEventView(generic.CreateView):
+class PlayerStatCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateView):
     template_name = "matches/player_stats_create.html"
     form_class = PlayerStatModelForm
 

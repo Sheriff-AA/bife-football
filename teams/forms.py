@@ -15,7 +15,7 @@ class TeamSelectForm(forms.Form):
         user = kwargs.pop('user', None)
         super(TeamSelectForm, self).__init__(*args, **kwargs) 
         # Check if obj is an instance of the Player or Coach model       
-        if isinstance(user, Player):
-            self.fields['team'].queryset = user.teams.filter(contract__is_valid=True)
-        if isinstance(user, Coach):
-            self.fields['team'].queryset = Team.objects.filter(slug=user.team.slug)
+        if hasattr(user, 'player'):
+            self.fields['team'].queryset = user.player.teams.filter(contract__is_valid=True)
+        if hasattr(user, 'coach'):
+            self.fields['team'].queryset = Team.objects.filter(slug=user.coach.team.slug)

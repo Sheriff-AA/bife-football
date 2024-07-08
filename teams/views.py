@@ -3,11 +3,13 @@ from django.db.models.query import QuerySet
 from django.db.models import Subquery
 from django.shortcuts import render, reverse, get_object_or_404
 from django.conf import settings
+from django.contrib import messages
 from django.views import generic
 from django.db.models import Q
 from django.core.paginator import Paginator
 
-from players.mixins import CoachRequiredMixin
+from players.mixins import CoachRequiredMixin, PlayerRequiredMixin
+from matches.mixins import  UserTeamMixin
 from .forms import TeamModelForm, TeamSelectForm
 from players.models import Team, Contract, Match, Player, Result, Coach, PlayerStat
 from custommatches.models import CustomMatch, CustomMatchResult
@@ -76,30 +78,31 @@ class TeamDetailView(generic.DetailView):
         return context
 
 
-# if the request user 
 class TeamDashboardView(generic.DetailView):
-    Model = Player
+    model = Player
     template_name = "teams/team_dashboard.html"
     context_object_name = "team"
 
     def get_object(self):
         # Get the player or coach  instance for the currently logged-in user
-        if self.request.user.is_player:
-            return get_object_or_404(Player, user=self.request.user)
-        if self.request.user.is_coach:
-            return get_object_or_404(Coach, user=self.request.user)
+        # if self.request.user.is_player:
+        #     return get_object_or_404(Player, user=self.request.user)
+        # if self.request.user.is_coach:
+        #     return get_object_or_404(Coach, user=self.request.user)
+        return self.request.user
     
 
     def get_context_data(self, **kwargs):
-        context = super(TeamDashboardView, self).get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
         user = self.get_object()
-
-        # Get the selected team from the session, or default to the first team
+        self.ensure_default_team_in_session(user)
         selected_team_id = self.request.session.get('selected_team_id')
-        if self.request.user.is_player:
-            selected_team = user.teams.filter(id=selected_team_id).first() if selected_team_id else user.teams.first()
-        if self.request.user.is_coach:
-            selected_team = user.team
+
+        if hasattr(user, 'player'):
+            selected_team = self.get_valid_team(user.player.teams, selected_team_id)
+        elif hasattr(user, 'coach'):
+            selected_team = user.coach.team
+
         
         form = TeamSelectForm(user=user, initial={'team': selected_team})
         # team_stats = player.playerstat_set.filter(team=selected_team)
@@ -107,11 +110,26 @@ class TeamDashboardView(generic.DetailView):
         context.update(self.get_dashboard_context(form, selected_team))
         return context
     
+    def ensure_default_team_in_session(self, user):
+        if 'selected_team_id' not in self.request.session:
+            if hasattr(user, 'player'):
+                first_team = user.player.teams.first()
+            elif hasattr(user, 'coach'):
+                first_team = user.coach.team
+            self.request.session['selected_team_id'] = first_team.id
+    
+    def get_valid_team(self, teams, selected_team_id):
+        # Ensure the selected team exists and belongs to the user
+        if selected_team_id:
+            selected_team = teams.filter(id=selected_team_id).first()
+            if selected_team:
+                return selected_team
+        # Default to the first team if the selected team is invalid
+        return teams.first()
+    
     def get_dashboard_context(self, form, selected_team):
         contract = Contract.objects.filter(team=selected_team, is_valid=True).order_by('-contract_date')
-        latest_contracts = contract.extra(
-            where=[GET_LATEST_CONTRACTS]
-        )
+        latest_contracts = contract.extra(where=[GET_LATEST_CONTRACTS])
         upcoming_matches = Match.objects.filter(Q(home_team=selected_team) | Q(away_team=selected_team), is_fixture=True).order_by('match_date')[:5]
         team_results = Result.objects.filter(Q(match__home_team=selected_team) | Q(match__away_team=selected_team)).order_by('-match__match_date')[:5]
 
@@ -146,15 +164,14 @@ class TeamDashboardView(generic.DetailView):
             # Save the selected team in the session
             self.request.session['selected_team_id'] = selected_team.id
         else:
-            if self.request.user.is_player:
-                selected_team = user.teams.first()
-            if self.request.user.is_coach:
-                selected_team = user.team
+            if hasattr(user, 'player'):
+                selected_team = self.get_valid_team(user.player.teams, None)
+            if hasattr(user, 'player'):
+                selected_team = user.coach.team
         
         # team_stats = player.playerstat_set.filter(team=selected_team)
 
         if request.headers.get('HX-Request'):
-            print(selected_team)
             return render(request, 'teams/partials/partial_team_dashboard.html', self.get_dashboard_context(form, selected_team))
         else:
             context = self.get_context_data()

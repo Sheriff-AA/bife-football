@@ -1,4 +1,5 @@
 from django.contrib.auth.mixins import AccessMixin
+from django.contrib import messages
 from django.shortcuts import redirect
 
 
@@ -6,6 +7,7 @@ class CoachRequiredMixin(AccessMixin):
     """Verify that the current user is authenticated and is a coach"""
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_authenticated or not request.user.is_coach:
+            messages.error(self.request, "User is not a coach")
             return redirect("players:player-list")
         return super().dispatch(request, *args, **kwargs)
     

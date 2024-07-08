@@ -1,11 +1,13 @@
 from django import forms
 from django.conf import settings
+from django.shortcuts import render
+from django.contrib import messages
 from django.forms.models import inlineformset_factory, BaseInlineFormSet
 from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from .models import CustomMatch, CustomMatchEvent, CustomMatchPlayerStat, CustomMatchResult
-from players.models import Contract, Player
+from players.models import Contract, Coach
 from matches.widgets import DateTimePickerInput
 
 GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
@@ -21,9 +23,13 @@ class CustomMatchModelForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         request_user = kwargs.pop('user')
-        user = get_object_or_404(Player, user=request_user)
-        super(CustomMatchModelForm, self).__init__(*args, **kwargs)
-        self.fields['user_team'].queryset = user.teams.filter(contract__is_valid=True)
+        if hasattr(request_user, 'coach'):
+            user = get_object_or_404(Coach, user=request_user)
+            super(CustomMatchModelForm, self).__init__(*args, **kwargs)
+            self.fields['user_team'].queryset = user.team.all()
+        else:
+            messages.error(self.request, "User is not a coach")
+            return render(self.request, 'landing_page')
 
 
 class CustomMatchEventModelForm(forms.ModelForm):
