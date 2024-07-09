@@ -1,11 +1,14 @@
 import random
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.views import generic
+from django.core.exceptions import PermissionDenied
+from django.contrib import messages
 from faker import Faker
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 from django.db.models import Sum, Count, Q
 
-from .mixins import CoachRequiredMixin
+from .mixins import CoachRequiredMixin, AdminRequiredMixin
 from .models import Player, PlayerStat, Contract, MatchEvent, Coach, Team, User
 from .forms import PlayerModelForm, PlayerModelUpdateForm, PlayerTeamForm
 
@@ -66,8 +69,9 @@ class PlayerDetailView(generic.DetailView):
         return Player.objects.all()
     
     def get_context_data(self, **kwargs):
+        request_user = self.request.user
         context = super(PlayerDetailView, self).get_context_data(**kwargs)
-        contract = Contract.objects.filter(is_valid=True, player=self.get_object()).first()
+        contract = Contract.objects.filter(is_valid=True, player=self.get_object()).order_by('-contract_date').first()
         latest_events = MatchEvent.objects.filter(player_contract=contract).order_by('-timestamp')[:5]
         queryset = PlayerStat.objects.filter(
             player=self.get_object()
@@ -81,11 +85,22 @@ class PlayerDetailView(generic.DetailView):
             "contract": contract,
             "latest_events": latest_events
         })
-
+        if hasattr(request_user, 'coach'):
+            coach_team = Team.objects.get(coach__user=request_user)
+            if contract.team  ==  coach_team:
+                player_obj = Player.objects.get(id=contract.player.id, teams=coach_team)
+                if not player_obj.teams.filter(coach__user=self.request.user).exists():
+                    messages.error(self.request, "Player not part of team")
+                context["is_coach_player"] = True
+            else:
+                context["is_coach_player"] = False
+        else:
+            messages.error(self.request, "Player not part of team")
+            context["is_coach_player"] = False
         return context
     
 
-class PlayerCreateView(CoachRequiredMixin, generic.CreateView):
+class PlayerCreateView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateView):
     template_name = "players/player_create.html"
     form_class = PlayerModelForm
 
@@ -98,20 +113,26 @@ class PlayerCreateView(CoachRequiredMixin, generic.CreateView):
         context = super(PlayerCreateView, self).get_context_data(**kwargs)
         coach = get_object_or_404(Coach, user=self.request.user)
         context = {'coach_teams': Team.objects.filter(coach=coach),
-        'coach_team_id': self.get_selected_team_id()
+        'coach_team_id': self.get_selected_team_id(),
+        'form': PlayerModelForm(user=self.request.user)
         }
 
         return context
 
     def get_selected_team_id(self):
         selected_team_id = self.request.session.get('coach_team_id')
+        request_user = self.request.user
 
         if selected_team_id is None:
-            coach = get_object_or_404(Coach, user=self.request.user)
-            teams = Team.objects.filter(coach=coach)
-            if teams.exists():
-                selected_team_id = teams.first().id
-                self.request.session['coach_team_id'] = selected_team_id
+            if hasattr(request_user, 'coach'):
+                coach = get_object_or_404(Coach, user=request_user)
+                teams = Team.objects.filter(coach=coach)
+                if teams.exists():
+                    selected_team_id = teams.first().id
+                    self.request.session['coach_team_id'] = selected_team_id
+            else:
+                messages.error(self.request, "Action not permitted! Must be a coach")
+                return render(self.request, 'landing_page')
 
         return selected_team_id
     
@@ -143,29 +164,36 @@ class PlayerCreateView(CoachRequiredMixin, generic.CreateView):
         return super(PlayerCreateView, self).form_valid(form)
 
 
-class TeamSelectView(CoachRequiredMixin, generic.View):
+class TeamSelectView(LoginRequiredMixin, CoachRequiredMixin, generic.View):
     def post(self, request, *args, **kwargs):
         selected_team_id = request.POST.get('team')
         request.session['coach_team_id'] = selected_team_id
         return redirect('players:player-create')
     
 
-class PlayerUpdateView(generic.UpdateView):
+class PlayerUpdateView(LoginRequiredMixin, CoachRequiredMixin, generic.UpdateView):
     template_name = "players/player_update.html"
     form_class = PlayerModelUpdateForm
     context_object_name = "player"
 
     def get_queryset(self):
-        user = self.request.user
-        # initial queryset of players for entire team       
-        return Player.objects.all()
-        # return Player.objects.filter(teams=user)
-    
+        player = Player.objects.filter(slug=self.kwargs.get('slug'))
+        return player
+        
+    def get_object(self, queryset=None):
+        """
+        Override get_object to ensure the coach is part of the player's team.
+        """
+        obj = Player.objects.get(slug=self.kwargs.get('slug'))
+        if not obj.teams.filter(coach__user=self.request.user).exists():
+            raise PermissionDenied("You do not have permission to update this player.")
+        return obj
+        
     def get_success_url(self):
-        return reverse("players:player-list")
+        return reverse("players:player-detail", kwargs={'slug': self.object.slug})
     
 
-class PlayerDeleteView(generic.DeleteView):
+class PlayerDeleteView(LoginRequiredMixin, CoachRequiredMixin, generic.DeleteView):
     template_name = "players/player_delete.html"
     context_object_name = "player"
     
@@ -179,7 +207,7 @@ class PlayerDeleteView(generic.DeleteView):
         return reverse("players:player-list")
     
 
-class PlayerUpdateTeamsView(generic.UpdateView):
+class PlayerUpdateTeamsView(LoginRequiredMixin, CoachRequiredMixin, generic.UpdateView):
     model = Player
     form_class = PlayerTeamForm
     template_name = 'players/player_update_teams.html'
@@ -188,7 +216,7 @@ class PlayerUpdateTeamsView(generic.UpdateView):
         player = form.save(commit=False)
         player.teams.set(form.cleaned_data['teams'])
         player.save()
-        return redirect('players:player-detail', pk=player.slug)
+        return redirect('players:player-detail', slug=player.slug)
 
     def get_success_url(self):
         return reverse('players:player-detail', kwargs={'slug': self.object.slug})

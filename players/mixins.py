@@ -6,8 +6,8 @@ from django.shortcuts import redirect
 class CoachRequiredMixin(AccessMixin):
     """Verify that the current user is authenticated and is a coach"""
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or not request.user.is_coach:
-            messages.error(self.request, "User is not a coach")
+        if not request.user.is_authenticated or not hasattr(request.user, 'coach'):
+            messages.error(self.request, "Action not permitted by user")
             return redirect("players:player-list")
         return super().dispatch(request, *args, **kwargs)
     

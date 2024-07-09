@@ -3,9 +3,11 @@
 {% block content %}
 
 <div class="max-w-lg mx-auto">
-  <a class="hover:text-blue-500 mt-3" href="{% url 'players:player-list'%}"> Go back to plyers list</a>
+  <div class="flex justify-center mt-10">
+    <a class="text-blue-800" href="{% url 'players:player-list'%}">Back to player list</a>
+  </div>
 
-  <div class="py-5 border-t border-gray-200">
+  <div class="flex justify-center py-5 border-gray-200">
     <h1 class="text-4xl text-gray-800">Create a new player</h1>
   </div>
 
@@ -14,9 +16,9 @@
       {% csrf_token %}
       <label for="team" class="block text-sm font-medium text-black">Select Team:</label>
       <div class="mt-1">
-        <select id="team" class="form-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md" name="team" onblur="document.getElementById('team-select-form').submit();">
+        <select id="team" class="form-select block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 rounded-md" name="team" onchange="document.getElementById('team-select-form').submit();">
           {% for team in coach_teams %}
-            <option value="{{ team.id }} {% if team.id == coach_team_id or forloop.first %}selected{% endif %}">{{ team.team_name }}</option>
+            <option value="{{ team.id }}" {% if team.id == coach_team_id or forloop.first %}selected{% endif %}>{{ team.team_name }}</option>
           {% endfor %}
         </select>
       </div>
