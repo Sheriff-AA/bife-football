@@ -1,10 +1,11 @@
 {% extends "account/login.html" %}
+{% load static %}
 {% load i18n %}
 {% load allauth_ui %}
 {% load widget_tweaks %}
 {% block content %}
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://unpkg.com/htmx.org@1.9.11" integrity="sha384-0gxUXCCR8yv9FM2b+U3FDbsKthCI66oH5IA9fHppQq9DDMHuMauqq1ZHBpJxQ0J0" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="{% static 'vendors/tailwind-out.css' %}" />
+<script src="{% static 'vendors/htmx.min.js' %}"></script>
     {% include "navbar.html" %}
     {% trans "Sign In" as heading %}
     {% #container heading=heading  %}
@@ -38,3 +39,4 @@
     {% endif %}
     {% /container %}
 {% endblock content %}
+<div class="mb-20"></div>

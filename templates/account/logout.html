@@ -1,7 +1,11 @@
 {% extends "account/logout.html" %}
 {% load i18n %}
+{% load static %}
 {% load allauth_ui %}
 {% block content %}
+<link rel="stylesheet" href="{% static 'vendors/tailwind-out.css' %}" />
+<script src="{% static 'vendors/htmx.min.js' %}"></script>
+    {% include "navbar.html" %}
     {% trans "Sign Out" as heading %}
     {% trans "Are you sure you want to sign out?" as subheading %}
     {% url 'account_logout' as url %}
@@ -13,3 +17,4 @@
     {% /form %}
     {% /container %}
 {% endblock content %}
+<div class="mb-20"></div>

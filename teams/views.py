@@ -1,5 +1,5 @@
 from typing import Any
-from django.db.models.query import QuerySet
+# from django.db.models.query import QuerySet
 from django.db.models import Subquery
 from django.shortcuts import render, reverse, get_object_or_404
 from django.conf import settings
@@ -7,9 +7,9 @@ from django.contrib import messages
 from django.views import generic
 from django.db.models import Q
 from django.core.paginator import Paginator
+from django.contrib.auth.mixins import LoginRequiredMixin
 
-from players.mixins import CoachRequiredMixin, PlayerRequiredMixin
-from matches.mixins import  UserTeamMixin
+from players.mixins import PlayerorCoachRequiredMixin, CoachRequiredMixin
 from .forms import TeamModelForm, TeamSelectForm
 from players.models import Team, Contract, Match, Player, Result, Coach, PlayerStat
 from custommatches.models import CustomMatch, CustomMatchResult
@@ -41,7 +41,7 @@ class TeamListView(generic.ListView):
             return render(request, 'teams/team_list.html', {'page_obj': page_obj})
 
 
-class TeamCreateView(generic.CreateView):
+class TeamCreateView(CoachRequiredMixin, generic.CreateView):
     template_name = "teams/team_create.html"
     form_class = TeamModelForm
 
@@ -78,7 +78,7 @@ class TeamDetailView(generic.DetailView):
         return context
 
 
-class TeamDashboardView(generic.DetailView):
+class TeamDashboardView(LoginRequiredMixin, PlayerorCoachRequiredMixin, generic.DetailView):
     model = Player
     template_name = "teams/team_dashboard.html"
     context_object_name = "team"

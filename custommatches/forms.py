@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from .models import CustomMatch, CustomMatchEvent, CustomMatchPlayerStat, CustomMatchResult
-from players.models import Contract, Coach
+from players.models import Contract, Coach, Team
 from matches.widgets import DateTimePickerInput
 
 GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
@@ -24,9 +24,9 @@ class CustomMatchModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         request_user = kwargs.pop('user')
         if hasattr(request_user, 'coach'):
-            user = get_object_or_404(Coach, user=request_user)
+            coach = get_object_or_404(Coach, user=request_user)
             super(CustomMatchModelForm, self).__init__(*args, **kwargs)
-            self.fields['user_team'].queryset = user.team.all()
+            self.fields['user_team'].queryset = Team.objects.filter(slug=coach.team.slug)
         else:
             messages.error(self.request, "User is not a coach")
             return render(self.request, 'landing_page')

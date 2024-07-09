@@ -140,10 +140,10 @@ class PlayerCreateView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateVie
         return reverse("players:player-list")
     
     def form_valid(self, form):
-        fake = Faker()
+        # fake = Faker()
         random_password = f"{random.randint(0, 100000)}"
         user = User.objects.create_user(
-            username=fake.user_name(),  # Generate a random username
+            username=form.cleaned_data.get('username'), 
             first_name=form.cleaned_data.get('first_name'),
             last_name=form.cleaned_data.get('last_name'),
             password=random_password

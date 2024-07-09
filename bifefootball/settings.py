@@ -143,6 +143,10 @@ ACCOUNT_AUTHENTICATION_METHOD="username"
 ACCOUNT_EMAIL_SUBJECT_PREFIX="[STAGEPLAY] "
 # ACCOUNT_EMAIL_REQUIRED=True
 
+ACCOUNT_FORMS = {
+'signup': 'organizations.forms.CustomSignupForm',
+}
+
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',

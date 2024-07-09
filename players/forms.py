@@ -3,6 +3,8 @@ from .models import Player, Team, User
 
 
 class PlayerModelForm(forms.ModelForm):
+    username = forms.CharField(max_length=20, required=True, label="Player's Username")
+
     class Meta:
         model = Player
         fields =("first_name", "last_name", "shirt_number", "age", "position")

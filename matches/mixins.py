@@ -20,9 +20,8 @@ class UserTeamMixin(LoginRequiredMixin):
     def get_user_teams(self):
         request_user=self.request.user
         if hasattr(request_user, 'coach'):
-            # user = get_object_or_404(Coach, user=request_user)
-            # return Team.objects.filter(id=user.team.id)
-            return request_user.coach.team.all()
+            coach = get_object_or_404(Coach, user=request_user)
+            return Team.objects.filter(slug=coach.team.slug)
         else:
             messages.error(self.request, "Action not permitted!")
             return render(self.request, 'landing_page')
