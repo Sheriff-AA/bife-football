@@ -84,11 +84,6 @@ class TeamDashboardView(LoginRequiredMixin, PlayerorCoachRequiredMixin, generic.
     context_object_name = "team"
 
     def get_object(self):
-        # Get the player or coach  instance for the currently logged-in user
-        # if self.request.user.is_player:
-        #     return get_object_or_404(Player, user=self.request.user)
-        # if self.request.user.is_coach:
-        #     return get_object_or_404(Coach, user=self.request.user)
         return self.request.user
     
 

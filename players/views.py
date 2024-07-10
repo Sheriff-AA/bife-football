@@ -90,12 +90,12 @@ class PlayerDetailView(generic.DetailView):
             if contract.team  ==  coach_team:
                 player_obj = Player.objects.get(id=contract.player.id, teams=coach_team)
                 if not player_obj.teams.filter(coach__user=self.request.user).exists():
-                    messages.error(self.request, "Player not part of team")
+                    messages.error(self.request, "Player is not part of your team")
                 context["is_coach_player"] = True
             else:
                 context["is_coach_player"] = False
         else:
-            messages.error(self.request, "Player not part of team")
+            messages.error(self.request, "View details only")
             context["is_coach_player"] = False
         return context
     
