@@ -2,58 +2,82 @@
 {% block content %}
 
 <div class="container p-6 mx-auto">
-    <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
+  <div class="flex justify-center mt-5 mb-5">
+    <a class="text-blue-800 hover:text-blue-200 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
+  </div>
 
-    <div class="py-5 border-t border-gray-200">
-    <h1 class="text-4xl text-gray-800">Create player stats for {{ match }}</h1>
+    <div class="flex justify-center py-5 border-gray-200">
+        <h1 class="text-4xl text-gray-800">Create player stats for {{ match }}</h1>
     </div>
 
     <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ formset.management_form }}
-    <script type="text/html" id="playerstats-template">
-        <tr id="playerstats-__prefix__" class="hide_all">
-            {% for fields in formset.empty_form.hidden_fields %}
-                {{ fields }}
-            {% endfor %}
-        
-            {% for fields in formset.empty_form.visible_fields %}
-                <td class="px-7 py-2 border">{{fields}}</td>
-            {% endfor %}
-        </tr>
-    </script>
-
-    <table class="mb-5 table-auto w-full text-left whitespace-no-wrap">
-        <thead>
-            <tr>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Player</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Goals</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Assists</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Minutes played</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Player rating</th>
-            </tr>
-        </thead>
-
-        <tbody id="item-playerstats">
-            {% for form in formset %}
-            {{ form.management_form }}
-            <tr id="playerstats-{{ forloop.counter0 }}" class="hide_all">
-                {{ form.id }}
-                {% for field in form.visible_fields %}
-                <td class="px-7 py-2 rounded-tr rounded-br border">
-                    {{ field }}
-                </td>
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <script type="text/html" id="playerstats-template">
+            <tr id="playerstats-__prefix__" class="hide_all">
+                {% for fields in formset.empty_form.hidden_fields %}
+                    {{ fields }}
+                {% endfor %}
+            
+                {% for fields in formset.empty_form.visible_fields %}
+                    <td class="px-7 py-2 border">{{fields}}</td>
                 {% endfor %}
             </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+        </script>
+
+        <table class="mb-5 table-auto w-full text-left whitespace-no-wrap">
+            <thead>
+                <tr>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Player</th>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Goals</th>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Assists</th>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Minutes played</th>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Player rating</th>
+                </tr>
+            </thead>
+
+            <tbody id="item-playerstats">
+                {% for form in formset %}
+                {{ form.management_form }}
+                <tr id="playerstats-{{ forloop.counter0 }}" class="hide_all">
+                    {{ form.id }}
+                    {% for field in form.visible_fields %}
+                    <td class="px-7 py-2 rounded-tr rounded-br border">
+                        {{ field }}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
 
-    <a href="#" id="add-playerstats-button" class="mt-10 text-white bg-gray-500 hover:bg-gray-600 px-3 py-2 rounded-md add-playerstats">Add More</a>
+        <a href="#" id="add-playerstats-button" class="mt-10 text-white bg-gray-500 hover:bg-gray-600 px-3 py-2 rounded-md add-playerstats">Add More</a>
 
-    <button type="submit" class="w-full mt-5 text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
+        <button type="submit" class="w-full mt-5 text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
     </form>
+
+    {% if form.errors %}
+            <div class="errors">
+                <h2>There are errors in the form, edit accordingly:</h2>
+                <ul class="flex justify-center">
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <li class="flex text-center px-4">
+                                {% if field.label == "Player contract" %}
+                                {% else %}
+                                <strong>{{ field.label }}: </strong>
+                                {{ field.errors|striptags }}
+                                {% endif %}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+    {% endif %}
 
     
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

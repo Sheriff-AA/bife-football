@@ -2,6 +2,7 @@ from django.shortcuts import render, reverse, redirect, get_object_or_404
 from django.conf import settings
 from django.http import HttpResponseRedirect, HttpResponse
 from django.template.loader import render_to_string
+from django.contrib import messages
 from django.views import generic
 from django.db.models import Q
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -107,7 +108,7 @@ class MatchDetailView(generic.DetailView):
         context.update({
             "hometeam_players": home_team,
             "awayteam_players": away_team,
-            "events": self.get_object().matchevent_set.all().order_by('minute')
+            "events": self.get_object().match_events.all().order_by('minute')
         })
         return context
 
@@ -235,12 +236,19 @@ class MatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.Creat
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
         match_instance = self.get_queryset().get()
+        request_user = self.request.user
         data.update({
             'match': match_instance,
-            'events': match_instance.matchevent_set.all()
+            'events': match_instance.match_events.all()
         })
         if self.request.POST:
             data['formset'] = self.get_formset(match_instance)
+            if hasattr(request_user, 'admin'):
+                # messages.error(self.request, "Admin allowed")
+                data["can_add_event"] = True
+            else:
+                # messages.error(self.request, "View details only")
+                data["can_add_event"] = False
         else:
             data['formset'] = MatchEventFormSet(
                 queryset=MatchEvent.objects.none(),
@@ -248,6 +256,12 @@ class MatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.Creat
                 form_kwargs={'slug': self.kwargs['slug']},
                 prefix='matchevents'
             )
+            if hasattr(request_user, 'admin'):
+                # messages.error(self.request, "Admin allowed")
+                data["can_add_event"] = True
+            else:
+                # messages.error(self.request, "View details only")
+                data["can_add_event"] = False
         return data
 
     def get(self, request, *args, **kwargs):
@@ -291,11 +305,14 @@ class MatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.Creat
         """
         match_events = formset.save(commit=False)
         for match_event in match_events:
-            match_event.save()
             if match_event.event_type == "FULLTIME":
+                instance.match_events.filter(event_type="FULLTIME").delete()
                 instance.is_fixture = False
                 instance.save()
+                match_event.save()
                 return redirect("matches:result-create", slug=instance.slug)
+            else:
+                match_event.save()
         return HttpResponseRedirect(self.get_success_url())
 
     def form_invalid(self, form, formset):

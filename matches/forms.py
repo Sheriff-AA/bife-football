@@ -41,7 +41,8 @@ class MatchEventModelForm(forms.ModelForm):
         fields = "__all__"
 
     def __init__(self, *args, **kwargs):
-        match = Match.objects.get(slug=kwargs.pop("slug"))
+        slug = kwargs.pop('slug')
+        match = Match.objects.get(slug=slug)
 
         contract_for_teams = Contract.objects.filter(Q(is_valid=True) & (Q(team=match.home_team) | Q(team=match.away_team)))
         latest_contracts = contract_for_teams.extra(
@@ -50,6 +51,10 @@ class MatchEventModelForm(forms.ModelForm):
         super(MatchEventModelForm, self).__init__(*args, **kwargs)
         self.fields["player_contract"].queryset = latest_contracts
         self.fields["related_player"].queryset = latest_contracts
+
+        # for field_name in self.fields:
+        #     if field_name == "player_contract":
+        #         self.fields[field_name].required = True
 
 
 MatchEventFormSet = inlineformset_factory(
@@ -72,6 +77,9 @@ class PlayerStatModelForm(forms.ModelForm):
         super(PlayerStatModelForm, self).__init__(*args, **kwargs)
         self.fields["player_contract"].queryset = latest_contracts
         self.fields["player_contract"].disabled = True
+
+        for field_name in self.fields:
+            self.fields[field_name].required = True
 
     @staticmethod
     def get_latest_contracts(match):

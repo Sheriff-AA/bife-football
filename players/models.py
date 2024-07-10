@@ -160,7 +160,7 @@ class Contract(models.Model):
 
 
 class MatchEvent(models.Model):
-    match = models.ForeignKey('Match', on_delete=models.CASCADE)
+    match = models.ForeignKey('Match', on_delete=models.CASCADE, related_name='match_events')
     event_type = models.CharField(max_length=20, choices=EVENT_CHOICES)
     timestamp = models.DateTimeField(auto_now_add=True)
     minute = models.PositiveSmallIntegerField(choices=MINUTES_CHOICES)

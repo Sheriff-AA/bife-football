@@ -2,12 +2,14 @@
 {% block content %}
 
 <div class="w-2/3 mx-auto">
-  <div class="border-b border-gray-200">
-    <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}">Go back to match list</a>
+  <div class="flex justify-center mt-5 mb-5">
+    <a class="text-blue-800 hover:text-blue-200 mt-3" href="{% url 'matches:match-list'%}">Go back to match list</a>
   </div>
 
-  <h1 class="text-4xl py-5 text-gray-800">
-    Confirm result of '{{ match }}' match?</h1>
+  <div class="flex justify-center">
+    <h1 class="text-4xl py-5 text-gray-800">
+      Confirm result of '{{ match }}' match?</h1>
+  </div>
   <h1 class="text-2xl text-red-500 mt-3 flex justify-center items-center">
     Result: {{ match.home_team }} {{ hometeam_score }} : {{ awayteam_score }} {{ match.away_team }}</h1>
     
