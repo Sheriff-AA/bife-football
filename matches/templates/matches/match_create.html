@@ -3,9 +3,11 @@
 {% block content %}
 
 <div class="container p-4 mx-auto">
-  <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
+  <div class="flex justify-center mt-5 mb-5">
+    <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
+  </div>
 
-  <div class="py-5 border-t border-gray-200">
+  <div class="flex justify-center py-5">
     <h1 class="text-2xl font-bold mb-4">Create a new match</h1>
   </div>
 
@@ -22,11 +24,17 @@
   
   <form method="post" class="max-w-sm mx-auto">
     {% csrf_token %}
-    <label><input type="radio" name="match_type" id="home" value="home" {% if match_type == 'home' %}checked{% endif %} hx-get="{% url 'matches:update-teams' %}" hx-trigger="change" hx-target="#team-fields"> Home Game</label>
-    <label><input type="radio" name="match_type" id="away" value="away" {% if match_type == 'away' %}checked{% endif %} hx-get="{% url 'matches:update-teams' %}" hx-trigger="change" hx-target="#team-fields"> Away Game</label>
+    <label>
+      <input type="radio" name="match_type" id="home" value="home" {% if match_type == 'home' %}checked{% endif %} hx-get="{% url 'matches:update-teams' %}" hx-trigger="change" hx-target="#team-fields"> Home Game
+    </label>
+    <label>
+      <input type="radio" name="match_type" id="away" value="away" {% if match_type == 'away' %}checked{% endif %} hx-get="{% url 'matches:update-teams' %}" hx-trigger="change" hx-target="#team-fields"> Away Game
+    </label>
+
     <div id="team-fields" hx-swap="innerHTML">
       {% include 'matches/partials/team_fields.html' %}
     </div>
+    
     <div class="mb-4">
       <label for="id_venue" class="block text-gray-700 text-sm font-bold mb-2">{% comment %}Venue{% endcomment %}</label>
       {{ form.venue|as_crispy_field }}

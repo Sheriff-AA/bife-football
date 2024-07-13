@@ -11,6 +11,7 @@ from django.db.models import Sum, Count, Q
 from .mixins import CoachRequiredMixin, AdminRequiredMixin
 from .models import Player, PlayerStat, Contract, MatchEvent, Coach, Team, User
 from .forms import PlayerModelForm, PlayerModelUpdateForm, PlayerTeamForm
+from custommatches.models import CustomMatchPlayerStat, CustomMatchEvent
 
 
 class LandingPageView(generic.TemplateView):
@@ -50,12 +51,13 @@ class PlayerMatchesListView(generic.DetailView):
         return queryset
     
     def get_context_data(self, **kwargs):
+        player = Player.objects.get(slug=self.kwargs['slug'])
         context = super(PlayerMatchesListView, self).get_context_data(**kwargs)
-        queryset = PlayerStat.objects.filter(
-            player=self.get_object()
-            )
+        queryset = PlayerStat.objects.filter(player=self.get_object())
+        custom_qs = CustomMatchPlayerStat.objects.filter(player=player)
         context.update({
-            "stats": queryset
+            "stats": queryset,
+            "custom_qs": custom_qs
         })
 
         return context
@@ -70,21 +72,32 @@ class PlayerDetailView(generic.DetailView):
     
     def get_context_data(self, **kwargs):
         request_user = self.request.user
+        player = Player.objects.get(slug=self.kwargs['slug'])
         context = super(PlayerDetailView, self).get_context_data(**kwargs)
         contract = Contract.objects.filter(is_valid=True, player=self.get_object()).order_by('-contract_date').first()
         latest_events = MatchEvent.objects.filter(player_contract=contract).order_by('-timestamp')[:5]
-        queryset = PlayerStat.objects.filter(
-            player=self.get_object()
-            )
-        context.update({
-            "stats": queryset.aggregate(
+        custom_events = CustomMatchEvent.objects.filter(player_contract=contract).order_by('-timestamp')[:5]
+        queryset = PlayerStat.objects.filter(player=self.get_object())
+        custom_qs = CustomMatchPlayerStat.objects.filter(player=player)
+
+        custom_stats = custom_qs.aggregate(
                 goals = Sum('goals', default=0),
                 assists = Sum('assists', default=0),
                 minutes_played = Sum('minutes_played', default=0),
-                games = Count("match")),
+                games = Count("custom_match")),
+        
+        context.update({
+            "stats": queryset.aggregate(
+                goals = Sum('goals', default=0) + custom_stats[0]["goals"],
+                assists = Sum('assists', default=0) + custom_stats[0]["assists"],
+                minutes_played = Sum('minutes_played', default=0) + custom_stats[0]["minutes_played"],
+                games = Count("match") + custom_stats[0]["games"]
+                ),
             "contract": contract,
-            "latest_events": latest_events
+            "latest_events": latest_events,
+            "custom_events": custom_events
         })
+
         if hasattr(request_user, 'coach'):
             coach_team = Team.objects.get(coach__user=request_user)
             if contract.team  ==  coach_team:
@@ -97,6 +110,7 @@ class PlayerDetailView(generic.DetailView):
         else:
             messages.error(self.request, "View details only")
             context["is_coach_player"] = False
+        
         return context
     
 

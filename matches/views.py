@@ -239,7 +239,7 @@ class MatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.Creat
         request_user = self.request.user
         data.update({
             'match': match_instance,
-            'events': match_instance.match_events.all()
+            'events': match_instance.match_events.all().order_by('minute')
         })
         if self.request.POST:
             data['formset'] = self.get_formset(match_instance)

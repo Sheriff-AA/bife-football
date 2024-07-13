@@ -3,9 +3,12 @@
 {% block content %}
 
 <div class="container p-4 mx-auto">
-  <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
 
-  <div class="py-5 border-t border-gray-200">
+  <div class="flex justify-center mt-5 mb-5">
+    <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
+  </div>
+
+  <div class="flex justify-center py-5">
     <h1 class="text-2xl font-bold mb-4">Create a custom match</h1>
   </div>
 

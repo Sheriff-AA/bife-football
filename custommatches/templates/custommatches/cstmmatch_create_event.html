@@ -2,88 +2,120 @@
 {% block content %}
 
 <div class="container p-6 mx-auto">
-    <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
-
-    <div class="py-5 border-t border-gray-200">
-    <h1 class="text-4xl text-gray-800">Create match event(s) for {{ match }}</h1>
+    <div class="flex justify-center mt-5 mb-5">
+        <a class="text-blue-800 hover:text-blue-100 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
     </div>
 
-    <form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ formset.management_form }}
-    <script type="text/html" id="matchevents-template">
-        <tr id="matchevents-__prefix__" class="hide_all">
-            {% for fields in formset.empty_form.hidden_fields %}
-                {{ fields }}
-            {% endfor %}
-        
-            {% for fields in formset.empty_form.visible_fields %}
-                <td class="px-7 py-2 border">{{fields}}</td>
-            {% endfor %}
-        </tr>
-    </script>
+    <div class="flex justify-center py-5">
+        <h1 class="text-4xl text-gray-800">Match Event(s) for {{ match }}</h1>
+    </div>
 
-    <table class="mb-5 table-auto w-full text-left whitespace-no-wrap">
-        <thead>
-            <tr>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Event Type</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Minute</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Player</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Related Player</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Own Goal?</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Penalty?</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Second Yellow Card?</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Straight Red Card?</th>
-            </tr>
-        </thead>
+    {% if can_add_event and match.is_fixture %}
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ formset.management_form }}
+            <script type="text/html" id="matchevents-template">
+                <tr id="matchevents-__prefix__" class="hide_all">
+                    {% for fields in formset.empty_form.hidden_fields %}
+                        {{ fields }}
+                    {% endfor %}
+                
+                    {% for fields in formset.empty_form.visible_fields %}
+                        <td class="px-7 py-2 border">{{fields}}</td>
+                    {% endfor %}
+                </tr>
+            </script>
 
-        <tbody id="item-matchevents">
-            {% for form in formset %}
-            {{ form.management_form }}
-            <tr id="matchevents-{{ forloop.counter0 }}" class="hide_all">
-                {{ form.id }}
-                {% for field in form.visible_fields %}
-                <td class="px-7 py-2 rounded-tr rounded-br border">
-                    {{ field }}
-                </td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            <table class="mb-5 table-auto w-full text-left whitespace-no-wrap">
+                <thead>
+                    <tr>
+                    <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Event Type</th>
+                    <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Minute</th>
+                    <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Player</th>
+                    <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Related Player</th>
+                    <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Own Goal?</th>
+                    <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Penalty?</th>
+                    <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Second Yellow Card?</th>
+                    <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Straight Red Card?</th>
+                    </tr>
+                </thead>
+
+                <tbody id="item-matchevents">
+                    {% for form in formset %}
+                    {{ form.management_form }}
+                    <tr id="matchevents-{{ forloop.counter0 }}" class="hide_all">
+                        {{ form.id }}
+                        {% for field in form.visible_fields %}
+                        <td class="px-7 py-2 rounded-tr rounded-br border">
+                            {{ field }}
+                        </td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
 
 
-    <a href="#" id="add-matchevents-button" class="mt-10 text-white bg-gray-500 hover:bg-gray-600 px-3 py-2 rounded-md add-matchevents">Add More</a>
+            <a href="#" id="add-matchevents-button" class="mt-10 text-white bg-gray-500 hover:bg-gray-600 px-3 py-2 rounded-md add-matchevents">Add More</a>
 
-    <button type="submit" class="w-full mt-5 text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
-    </form>
+            <button type="submit" class="w-full mt-5 text-white bg-blue-500 hover:bg-blue-600 px-3 py-2 rounded-md">Submit</button>
+        </form>
 
-    {% if events %}
+        {% if form.errors %}
+            <div class="errors">
+                <h2>There are errors in the form, edit accordingly:</h2>
+                <ul class="flex justify-center">
+                    {% for field in form %}
+                        {% if field.errors %}
+                            <li class="flex text-center px-4">
+                                {% if field.label == "Custom match" %}
+                                {% else %}
+                                <strong>{{ field.label }}: </strong>
+                                {{ field.errors|striptags }}
+                                {% endif %}
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+    {% else %}
+        <h1 class="sm:text-1xl font-medium text-center title-font mt-5 mb-10">You cannot add events to this match!</h1>
+    {% endif %}
+
     <div class="py-5 border-t border-gray-200">
         <h1 class="text-4xl text-gray-800">Match events</h1>
     </div>
-    <div class="px-5 lg:w-3/3 w-full mx-auto overflow-auto">
-        <table class="table-auto w-full text-left whitespace-no-wrap">
-          <thead>
-            <tr>
-              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Event type</th>
-              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Player</th>
-              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Minute</th>
-              <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Related player</th>
-            </tr>
-          </thead>
-          {% for event in events %}
-          <tbody>
-            <tr>
-            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.event_type }}</td>
-            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.player_contract.player }}</td>
-            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.minute }}'</td>
-            <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.related_player }}</td>
-            </tr>
-          </tbody>
-          {% endfor %}
-        </table>
-    </div>
+
+    {% if events %}
+        <div class="px-5 lg:w-3/3 w-full mx-auto overflow-auto">
+            <table class="table-auto w-full text-left whitespace-no-wrap">
+            <thead>
+                <tr>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Event type</th>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Player</th>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Minute</th>
+                <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Related player</th>
+                </tr>
+            </thead>
+            {% for event in events %}
+            <tbody>
+                <tr>
+                <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.event_type }}</td>
+                <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.player_contract.player }}</td>
+                <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.minute }}'</td>
+                <td class="px-4 py-3 rounded-tl rounded-bl">{{ event.related_player }}</td>
+                </tr>
+            </tbody>
+            {% endfor %}
+            </table>
+        </div>
+    {% else %}
+        <h1 class="sm:text-1xl font-medium text-center title-font mt-5">None at this time...</h1>
     {% endif %}
 
     

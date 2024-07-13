@@ -70,6 +70,9 @@ class CustomMatchPlayerStatModelForm(forms.ModelForm):
         self.fields["player_contract"].queryset = latest_contracts
         self.fields["player_contract"].disabled = True
 
+        for field_name in self.fields:
+            self.fields[field_name].required = True
+
     @staticmethod
     def get_latest_contracts(match):
         contract_for_teams = Contract.objects.filter(Q(is_valid=True) & (Q(team=match.user_team)))

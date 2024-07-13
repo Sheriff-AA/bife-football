@@ -48,7 +48,7 @@ class CustomMatchPlayerStat(models.Model):
     
 
 class CustomMatchEvent(models.Model):
-    custom_match = models.ForeignKey(CustomMatch, on_delete=models.CASCADE)
+    custom_match = models.ForeignKey(CustomMatch, on_delete=models.CASCADE, related_name='match_events')
     event_type = models.CharField(max_length=20, choices=EVENT_CHOICES)
     timestamp = models.DateTimeField(auto_now_add=True)
     minute = models.PositiveSmallIntegerField(choices=MINUTES_CHOICES)

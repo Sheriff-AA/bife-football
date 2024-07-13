@@ -162,6 +162,34 @@
                         </td>
                     </tr>
                     {% endfor %}
+
+                    {% for result in custom_results %}
+                    <tr class="text-gray-700 dark:text-gray-100">
+                        {% if result.custom_match.is_home %}
+                            <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">{{ result.custom_match.user_team }}</th>
+                            <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{{ result.custom_match.versus_team }}</td>
+                        {% else %}
+                            <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">{{ result.custom_match.versus_team }}</td>
+                            <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{{ result.custom_match.user_team }}</th>
+                        {% endif %}
+                        <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                            {% if result.score_userteam == result.score_versusteam %}
+                                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-gray-500"> D </span>
+                            {% elif result.score_userteam > result.score_versusteam %}
+                                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-green-500"> W </span>
+                            {% else %}
+                                <span class="px-2 py-1 mx-2 font-semibold leading-tight text-white bg-red-500"> L </span>
+                            {% endif %}
+
+                            {% if result.custom_match.is_home %}
+                                {{ result.score_userteam}} - {{ result.score_versusteam }}
+                            {% else %}
+                                {{ result.score_versusteam}} - {{ result.score_userteam }}
+                            {% endif %}
+
+                        </td>
+                    </tr>
+                    {% endfor %}
                 </tbody>
                 </table>
             </div>
@@ -192,24 +220,42 @@
                     </thead>
                     <tbody>
                         {% for match in upcoming_matches %}
-                        <tr class="text-gray-700 dark:text-gray-100">
-                        {% if match.home_team == selected_team %}
-                            <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">{{ match.home_team.short_team_name }}</th>
-                        {% else %}
-                            <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{{ match.home_team.short_team_name }}</td>
-                        {% endif %}
-                        {% if match.away_team == selected_team %}
-                            <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">{{ match.away_team.short_team_name }}</th>
-                        {% else %}
-                            <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{{ match.away_team.short_team_name }}</td>
-                        {% endif %}
-                        <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                            {{ match.match_date|date:"F d, Y" }}
-                        </td>
-                        <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
-                            {{ match.venue }}
-                        </td>
-                        </tr>
+                            <tr class="text-gray-700 dark:text-gray-100">
+                            {% if match.home_team == selected_team %}
+                                <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">{{ match.home_team.short_team_name }}</th>
+                            {% else %}
+                                <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{{ match.home_team.short_team_name }}</td>
+                            {% endif %}
+                            {% if match.away_team == selected_team %}
+                                <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">{{ match.away_team.short_team_name }}</th>
+                            {% else %}
+                                <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{{ match.away_team.short_team_name }}</td>
+                            {% endif %}
+                            <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                                {{ match.match_date|date:"F d, Y" }}
+                            </td>
+                            <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                                {{ match.venue }}
+                            </td>
+                            </tr>
+                        {% endfor %}
+
+                        {% for match in custom_matches %}
+                            <tr class="text-gray-700 dark:text-gray-100">
+                            {% if match.is_home %}
+                                <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">{{ match.user_team.short_team_name }}</th>
+                                <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{{ match.versus_team }}</td>
+                            {% else %}
+                                <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4 text-left">{{ match.versus_team }}</td>
+                                <th class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">{{ match.user_team.short_team_name }}</th>
+                            {% endif %}
+                            <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                                {{ match.match_date|date:"F d, Y" }}
+                            </td>
+                            <td class="border-t-0 px-4 align-middle border-l-0 border-r-0 text-xs whitespace-nowrap p-4">
+                                {{ match.venue }}
+                            </td>
+                            </tr>
                         {% endfor %}
                     </tbody>
                 </table>                

@@ -13,8 +13,8 @@
       <table class="table-auto w-full text-left whitespace-no-wrap">
         <thead>
           <tr>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
-            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Player Team</th>
+            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Opposition's Team</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Scoreline</th>
             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
             <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
@@ -42,6 +42,31 @@
           </tr>
         </tbody>
         {% endfor %}
+
+        {% if custom_qs %}
+          {% for stat in custom_qs %}
+          <tbody>
+            <tr>
+            <td class="px-4 py-3">
+                <a href="{% url 'custommatches:custommatch-detail' stat.custom_match.slug %}">
+                    {{ stat.custom_match.user_team }}
+                </a>
+            </td>
+            <td class="px-4 py-3">
+                <a href="{% url 'custommatches:custommatch-detail' stat.custom_match.slug %}">
+                    {{ stat.custom_match.versus_team }}
+                </a>
+            </td>
+            <td class="px-4 py-3">
+                {{ stat.custom_match.custommatchresult.score_userteam }} : {{ stat.custom_match.custommatchresult.score_versusteam }}</td>
+            <td class="px-4 py-3 text-lg text-gray-900">{{ stat.custom_match.match_date }}</td>
+            <td class="px-4 py-3 text-lg text-gray-900">
+              <a class="px-4 py-3 text-lg underline text-blue-900" href="{% url 'custommatches:custommatch-detail' stat.custom_match.slug %}">View</a>
+            </td>
+            </tr>
+          </tbody>
+          {% endfor %}
+        {% endif %}
       </table>
     </div>
 
