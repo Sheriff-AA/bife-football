@@ -20,3 +20,5 @@ django-widget-tweaks
 slippers
 gunicorn
 whitenoise
+dj-database-url
+psycopg[binary]

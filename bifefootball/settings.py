@@ -132,6 +132,17 @@ DATABASES = {
     }
 }
 
+DATABASE_URL = config("DATABASE_URL", cast=str)
+
+if DATABASE_URL is not None:
+    import dj_database_url
+    DATABASES = {
+    'default': dj_database_url.config(
+        default=DATABASE_URL,
+        conn_health_checks=True
+        )
+}
+
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -140,12 +151,16 @@ DATABASES = {
 LOGIN_REDIRECT_URL="/"
 ACCOUNT_AUTHENTICATION_METHOD="email"
 ACCOUNT_EMAIL_VERIFICATION="mandatory"
-ACCOUNT_EMAIL_SUBJECT_PREFIX="[Manager] "
+ACCOUNT_EMAIL_SUBJECT_PREFIX="[SoccerSpace] "
 ACCOUNT_EMAIL_REQUIRED=True
 
 ACCOUNT_FORMS = {
-'signup': 'organizations.forms.CustomSignupForm',
-}
+    'signup': 'organizations.forms.CustomSignupForm',
+    }
+
+SOCIALACCOUNT_FORMS = {
+    'signup': 'organizations.forms.MyCustomSocialSignupForm',
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {
