@@ -153,13 +153,14 @@ ACCOUNT_AUTHENTICATION_METHOD="email"
 ACCOUNT_EMAIL_VERIFICATION="mandatory"
 ACCOUNT_EMAIL_SUBJECT_PREFIX="[SoccerSpace] "
 ACCOUNT_EMAIL_REQUIRED=True
+SOCIALACCOUNT_AUTO_SIGNUP=False
 
 ACCOUNT_FORMS = {
     'signup': 'organizations.forms.CustomSignupForm',
     }
 
 SOCIALACCOUNT_FORMS = {
-    'signup': 'organizations.forms.MyCustomSocialSignupForm',
+    'signup': 'organizations.forms.CustomSocialSignupForm',
     }
 
 AUTH_PASSWORD_VALIDATORS = [
