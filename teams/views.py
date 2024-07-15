@@ -1,17 +1,20 @@
+import random
 from typing import Any
 # from django.db.models.query import QuerySet
 from django.db.models import Subquery
-from django.shortcuts import render, reverse, get_object_or_404
+from django.shortcuts import render, reverse, get_object_or_404, redirect
 from django.conf import settings
+from faker import Faker
 from django.contrib import messages
 from django.views import generic
 from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from players.mixins import PlayerorCoachRequiredMixin, CoachRequiredMixin
-from .forms import TeamModelForm, TeamSelectForm
-from players.models import Team, Contract, Match, Player, Result, Coach, PlayerStat
+from players.mixins import AdminorCoachRequiredMixin, CoachRequiredMixin, AdminRequiredMixin
+from .forms import TeamModelForm, TeamSelectForm, CoachModelForm
+from players.models import Team, Contract, Match, Player, Result, Coach, PlayerStat, User
+from admins.models import Admin
 from custommatches.models import CustomMatch, CustomMatchResult, CustomMatchPlayerStat
 
 GET_LATEST_CONTRACTS = settings.GET_LATEST_CONTRACTS
@@ -41,7 +44,7 @@ class TeamListView(generic.ListView):
             return render(request, 'teams/team_list.html', {'page_obj': page_obj})
 
 
-class TeamCreateView(CoachRequiredMixin, generic.CreateView):
+class TeamCreateView(AdminRequiredMixin, generic.CreateView):
     template_name = "teams/team_create.html"
     form_class = TeamModelForm
 
@@ -83,7 +86,7 @@ class TeamDetailView(generic.DetailView):
         return context
 
 
-class TeamDashboardView(LoginRequiredMixin, PlayerorCoachRequiredMixin, generic.DetailView):
+class TeamDashboardView(LoginRequiredMixin, AdminorCoachRequiredMixin, generic.DetailView):
     model = Player
     template_name = "teams/team_dashboard.html"
     context_object_name = "team"
@@ -235,4 +238,75 @@ class TeamMatchesView(generic.DetailView):
             # Return the full page if not an HTMX request
             return super().get(request, *args, **kwargs)
 
+
+class CoachCreateView(LoginRequiredMixin, AdminRequiredMixin, generic.CreateView):
+    template_name = "teams/coach_create.html"
+    form_class = CoachModelForm
+
+    def get_form_kwargs(self, **kwargs):
+        kwargs = super(CoachCreateView, self).get_form_kwargs(**kwargs)
+        kwargs.update({'user': self.request.user})
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(CoachCreateView, self).get_context_data(**kwargs)
+        admin = get_object_or_404(Admin, user=self.request.user)
+        context = {'admin_teams': Team.objects.filter(admin=admin),
+        'admin_team_id': self.get_selected_team_id(),
+        'form': CoachModelForm(user=self.request.user)
+        }
+
+        return context
+
+    def get_selected_team_id(self):
+        selected_team_id = self.request.session.get('admin_team_id')
+        request_user = self.request.user
+
+        if selected_team_id is None:
+            if hasattr(request_user, 'admin'):
+                admin = get_object_or_404(Admin, user=request_user)
+                teams = Team.objects.filter(admin=admin)
+                if teams.exists():
+                    selected_team_id = teams.first().id
+                    self.request.session['admin_team_id'] = selected_team_id
+            else:
+                messages.error(self.request, "Action not permitted! Must be a coach")
+                return render(self.request, 'landing_page')
+
+        return selected_team_id
+    
+    def get_success_url(self):
+        return reverse("teams:team-dashboard")
+    
+    def form_valid(self, form):
+        fake = Faker()
+        random_password = f"{random.randint(0, 100000)}"
+        user = User.objects.create_user(
+            username=form.cleaned_data.get('username'),
+            email=form.cleaned_data.get('email'), 
+            first_name=form.cleaned_data.get('first_name'),
+            last_name=form.cleaned_data.get('last_name'),
+            password=random_password
+        )
+        user.is_coach = True
+        user.save()
+
+        # Create the Player object
+        coach = form.save(commit=False)
+        # player.user = user
+        coach.save()
+
+        # Get the selected team ID from the session or form
+        selected_team_id = self.get_selected_team_id()
+        if selected_team_id:
+            selected_team = get_object_or_404(Team, id=selected_team_id)
+            coach.team.add(selected_team)
+        return super(CoachCreateView, self).form_valid(form)
+
+
+class TeamSelectView(LoginRequiredMixin, AdminRequiredMixin, generic.View):
+    def post(self, request, *args, **kwargs):
+        selected_team_id = request.POST.get('team')
+        request.session['admin_team_id'] = selected_team_id
+        return redirect('teams:coach-create')
     

@@ -9,17 +9,13 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.paginator import Paginator
 
 from .mixins import SessionDefaultsMixin, UserTeamMixin
-from players.mixins import CoachRequiredMixin
+from players.mixins import CoachRequiredMixin, AdminRequiredMixin, AdminorCoachRequiredMixin
 from players.models import (
     Match, Result, PlayerStat, MatchEvent, Player, Contract, Team,
     )
 from custommatches.models import CustomMatch, CustomMatchResult
 from .forms import (
-    MatchModelForm,
-    MatchEventFormSet,
-    MatchEventModelForm,
-    PlayerStatFormSet,
-    PlayerStatModelForm,
+    MatchModelForm, MatchEventFormSet, MatchEventModelForm, PlayerStatFormSet, PlayerStatModelForm,
     )
 
 
@@ -218,7 +214,7 @@ class MatchCreateView(CoachRequiredMixin, SessionDefaultsMixin, UserTeamMixin, g
         return super(MatchCreateView, self).form_valid(form)
  
 
-class MatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateView):
+class MatchCreateEventView(LoginRequiredMixin, AdminorCoachRequiredMixin, generic.CreateView):
     template_name = "matches/match_event_create.html"
     form_class = MatchEventModelForm
 
@@ -245,7 +241,18 @@ class MatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.Creat
             data['formset'] = self.get_formset(match_instance)
             if hasattr(request_user, 'admin'):
                 # messages.error(self.request, "Admin allowed")
-                data["can_add_event"] = True
+                admin_team = request_user.admin.team
+                if admin_team == match_instance.home_team or admin_team == match_instance.away_team:
+                    data["can_add_event"] = True
+                else:
+                    data["can_add_event"] = False
+            elif hasattr(request_user, 'coach'):
+                # messages.error(self.request, "Admin allowed")
+                coach_team = request_user.coach.team
+                if coach_team == match_instance.home_team or coach_team == match_instance.away_team:
+                    data["can_add_event"] = True
+                else:
+                    data["can_add_event"] = False
             else:
                 # messages.error(self.request, "View details only")
                 data["can_add_event"] = False
@@ -258,7 +265,18 @@ class MatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.Creat
             )
             if hasattr(request_user, 'admin'):
                 # messages.error(self.request, "Admin allowed")
-                data["can_add_event"] = True
+                admin_team = request_user.admin.team
+                if admin_team == match_instance.home_team or admin_team == match_instance.away_team:
+                    data["can_add_event"] = True
+                else:
+                    data["can_add_event"] = False
+            elif hasattr(request_user, 'coach'):
+                # messages.error(self.request, "Admin allowed")
+                coach_team = request_user.coach.team
+                if coach_team == match_instance.home_team or coach_team == match_instance.away_team:
+                    data["can_add_event"] = True
+                else:
+                    data["can_add_event"] = False
             else:
                 # messages.error(self.request, "View details only")
                 data["can_add_event"] = False

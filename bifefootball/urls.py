@@ -23,6 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', LandingPageView.as_view(), name="landing-page"),
     path("matches/", include("matches.urls", namespace="matches")),
+    path("admins/", include("admins.urls", namespace="admins")),
     path("players/", include("players.urls", namespace="players")),
     path("teams/", include("teams.urls", namespace="teams")),
     path('accounts/', include('allauth.urls')),

@@ -3,12 +3,12 @@ from .models import Player, Team, User
 
 
 class PlayerModelForm(forms.ModelForm):
-    username = forms.CharField(max_length=20, required=True, label="Player's Username")
+    # username = forms.CharField(max_length=20, required=True, label="Player's Username")
     # email = forms.CharField(max_length=45, required=True, label="Email")
 
     class Meta:
         model = Player
-        fields =("first_name", "last_name", "shirt_number", "age", "position")
+        fields = ("first_name", "last_name", "shirt_number", "age", "position")
     # teams = forms.ModelChoiceField(queryset=Team.objects.all())
 
     def __init__(self, *args, **kwargs):

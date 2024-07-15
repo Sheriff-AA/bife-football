@@ -5,6 +5,8 @@ from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django import forms
 from players.models import Team, Coach
+from admins.models import Admin
+
 
 class CustomSignupForm(SignupForm):
     first_name = forms.CharField(max_length=20, required=True, label='First Name')
@@ -33,6 +35,10 @@ class CustomSignupForm(SignupForm):
         team_name = self.cleaned_data['team_name'],
         short_team_name = self.cleaned_data['short_team_name'],
         organisation = user
+        )
+        Admin.objects.create(
+            team = team,
+            user = user
         )
         Coach.objects.create(
             first_name = self.cleaned_data['first_name'],
@@ -81,6 +87,10 @@ class CustomSocialSignupForm(SocialSignupForm):
         team_name = self.cleaned_data['team_name'],
         short_team_name = self.cleaned_data['short_team_name'],
         organisation = user
+        )
+        Admin.objects.create(
+            team = team,
+            user = user
         )
         Coach.objects.create(
             first_name = self.cleaned_data['first_name'],

@@ -15,7 +15,7 @@ class CoachRequiredMixin(AccessMixin):
 class AdminRequiredMixin(AccessMixin):
     """Verify that the current user is authenticated and is an admin."""
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated or hasattr(request.user, 'admin'):
+        if not request.user.is_authenticated or not hasattr(request.user, 'admin'):
             return self.handle_no_permission()
         return super().dispatch(request, *args, **kwargs)
 
@@ -31,8 +31,18 @@ class PlayerRequiredMixin(AccessMixin):
 class PlayerorCoachRequiredMixin(AccessMixin):
     """Verify that the current user is authenticated and is a player."""
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_authenticated :
+        if not request.user.is_authenticated:
             if not hasattr(request.user, 'player') or not hasattr(request.user, 'coach'):
+                return self.handle_no_permission()
+            return self.handle_no_permission() 
+        return super().dispatch(request, *args, **kwargs)
+    
+
+class AdminorCoachRequiredMixin(AccessMixin):
+    """Verify that the current user is authenticated and is a player."""
+    def dispatch(self, request, *args, **kwargs):
+        if not request.user.is_authenticated:
+            if not hasattr(request.user, 'admin') or not hasattr(request.user, 'coach'):
                 return self.handle_no_permission()
             return self.handle_no_permission() 
         return super().dispatch(request, *args, **kwargs)

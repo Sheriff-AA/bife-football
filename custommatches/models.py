@@ -7,7 +7,7 @@ from players.models import Player, MINUTES_CHOICES, Contract, Team, Venue, EVENT
 class CustomMatch(models.Model):
     versus_team = models.CharField(max_length=40)
     user_team = models.ForeignKey(Team, related_name='custom_matches', on_delete=models.CASCADE)
-    venue = models.ForeignKey(Venue, null=True, blank=True, on_delete=models.SET_NULL)
+    venue = models.CharField(max_length=20, null=False, blank=False)
     match_date = models.DateTimeField()
     slug = models.SlugField(null=True, blank=True, unique=True)
     is_fixture = models.BooleanField(default=True)

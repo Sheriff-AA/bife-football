@@ -64,7 +64,7 @@ class Team(models.Model):
 class Coach(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
-    team = models.ForeignKey("Team", on_delete=models.CASCADE, related_name='coach')
+    team = models.OneToOneField("Team", on_delete=models.CASCADE, related_name='coach')
     user = models.OneToOneField("User", on_delete=models.CASCADE)
 
 
@@ -78,7 +78,6 @@ class Player(models.Model):
     shirt_number = models.IntegerField()
     slug = models.SlugField(null=True, blank=True, unique=True)
     age = models.IntegerField(default=0)
-    user = models.OneToOneField("User", on_delete=models.CASCADE)
     teams = models.ManyToManyField("Team", through="Contract")
     matches = models.ManyToManyField("Match", through="PlayerStat")
     position = models.CharField(max_length=30, blank=True, choices=PLAYER_POSITION)
@@ -118,7 +117,7 @@ class Venue(models.Model):
 class Match(models.Model):
     home_team = models.ForeignKey("Team", related_name='home_matches', on_delete=models.CASCADE)
     away_team = models.ForeignKey("Team", related_name='away_matches', on_delete=models.CASCADE)
-    venue = models.ForeignKey("Venue", null=True, blank=True, on_delete=models.SET_NULL)
+    venue = models.CharField(max_length=20, blank=False, null=False)
     match_date = models.DateTimeField()
     slug = models.SlugField(null=True, blank=True, unique=True)
     is_fixture = models.BooleanField(default=True)

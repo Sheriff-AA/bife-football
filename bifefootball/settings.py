@@ -85,6 +85,7 @@ INSTALLED_APPS = [
     'players',
     'teams',
     'custommatches',
+    'admins',
 ]
 
 MIDDLEWARE = [
@@ -151,7 +152,7 @@ if DATABASE_URL is not None:
 LOGIN_REDIRECT_URL="/"
 ACCOUNT_AUTHENTICATION_METHOD="email"
 ACCOUNT_EMAIL_VERIFICATION="mandatory"
-ACCOUNT_EMAIL_SUBJECT_PREFIX="[SoccerSpace] "
+ACCOUNT_EMAIL_SUBJECT_PREFIX="[SoccerBase] "
 ACCOUNT_EMAIL_REQUIRED=True
 SOCIALACCOUNT_AUTO_SIGNUP=False
 

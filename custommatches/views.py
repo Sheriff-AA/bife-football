@@ -7,7 +7,7 @@ from django.views import generic
 from django.contrib.auth.mixins import LoginRequiredMixin
 
 from players.models import Contract
-from players.mixins import PlayerRequiredMixin, CoachRequiredMixin
+from players.mixins import AdminorCoachRequiredMixin, CoachRequiredMixin
 from .models import CustomMatch, CustomMatchPlayerStat, CustomMatchResult, CustomMatchEvent
 from .forms import CustomMatchModelForm, CustomMatchEventFormSet, CustomMatchPlayerStatModelForm, CustomMatchPlayerStatFormSet, CustomCreateResultForm, CustomMatchEventModelForm
 
@@ -57,7 +57,7 @@ class CustomMatchDetailView(generic.DetailView):
         return context
 
 
-class CustomMatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateView):
+class CustomMatchCreateEventView(LoginRequiredMixin, AdminorCoachRequiredMixin, generic.CreateView):
     template_name = "custommatches/cstmmatch_create_event.html"
     form_class = CustomMatchEventModelForm
 
@@ -84,7 +84,18 @@ class CustomMatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic
             data['formset'] = self.get_formset(match_instance)
             if hasattr(request_user, 'admin'):
                 # messages.error(self.request, "Admin allowed")
-                data["can_add_event"] = True
+                admin_team = request_user.admin.team
+                if admin_team == match_instance.user_team:
+                    data["can_add_event"] = True
+                else:
+                    data["can_add_event"] = False
+            elif hasattr(request_user, 'coach'):
+                # messages.error(self.request, "Admin allowed")
+                coach_team = request_user.coach.team
+                if coach_team == match_instance.user_team:
+                    data["can_add_event"] = True
+                else:
+                    data["can_add_event"] = False
             else:
                 # messages.error(self.request, "View details only")
                 data["can_add_event"] = False
@@ -97,7 +108,18 @@ class CustomMatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic
             )
             if hasattr(request_user, 'admin'):
                 # messages.error(self.request, "Admin allowed")
-                data["can_add_event"] = True
+                admin_team = request_user.admin.team
+                if admin_team == match_instance.user_team:
+                    data["can_add_event"] = True
+                else:
+                    data["can_add_event"] = False
+            elif hasattr(request_user, 'coach'):
+                # messages.error(self.request, "Admin allowed")
+                coach_team = request_user.coach.team
+                if coach_team == match_instance.user_team:
+                    data["can_add_event"] = True
+                else:
+                    data["can_add_event"] = False
             else:
                 # messages.error(self.request, "View details only")
                 data["can_add_event"] = False
@@ -160,7 +182,7 @@ class CustomMatchCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic
         return self.render_to_response(self.get_context_data(form=form, formset=formset))    
 
 
-class CustomResultCreateView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateView):
+class CustomResultCreateView(LoginRequiredMixin, AdminorCoachRequiredMixin, generic.CreateView):
     template_name = "custommatches/cstmmatch_create_result.html"
     form_class = CustomCreateResultForm
 
@@ -207,7 +229,7 @@ class CustomResultCreateView(LoginRequiredMixin, CoachRequiredMixin, generic.Cre
         )
 
 
-class CustomMatchPlayerStatCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateView):
+class CustomMatchPlayerStatCreateEventView(LoginRequiredMixin, AdminorCoachRequiredMixin, generic.CreateView):
     template_name = "custommatches/cstmmatch_create_playerstats.html"
     form_class = CustomMatchPlayerStatModelForm
 

@@ -155,19 +155,19 @@ class PlayerCreateView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateVie
     
     def form_valid(self, form):
         # fake = Faker()
-        random_password = f"{random.randint(0, 100000)}"
-        user = User.objects.create_user(
-            username=form.cleaned_data.get('username'), 
-            first_name=form.cleaned_data.get('first_name'),
-            last_name=form.cleaned_data.get('last_name'),
-            password=random_password
-        )
-        user.is_player = True
-        user.save()
+        # random_password = f"{random.randint(0, 100000)}"
+        # user = User.objects.create_user(
+        #     username=form.cleaned_data.get('username'), 
+        #     first_name=form.cleaned_data.get('first_name'),
+        #     last_name=form.cleaned_data.get('last_name'),
+        #     password=random_password
+        # )
+        # user.is_player = True
+        # user.save()
 
         # Create the Player object
         player = form.save(commit=False)
-        player.user = user
+        # player.user = user
         player.save()
 
         # Get the selected team ID from the session or form
