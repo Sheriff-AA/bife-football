@@ -30,6 +30,7 @@ class CustomSignupForm(SignupForm):
     def save(self, request):
         user = super(CustomSignupForm, self).save(request)
         user.is_coach = True
+        user.is_admin = True
         user.save()
         team = Team.objects.create(
         team_name = self.cleaned_data['team_name'],
@@ -81,6 +82,7 @@ class CustomSocialSignupForm(SocialSignupForm):
 
     def save(self, request):
         user = super(CustomSocialSignupForm, self).save(request)
+        user.is_admin = True
         user.is_coach = True
         user.save()
         team = Team.objects.create(

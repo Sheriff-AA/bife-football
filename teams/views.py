@@ -293,14 +293,14 @@ class CoachCreateView(LoginRequiredMixin, AdminRequiredMixin, generic.CreateView
 
         # Create the Player object
         coach = form.save(commit=False)
-        # player.user = user
-        coach.save()
-
+        coach.user = user
         # Get the selected team ID from the session or form
         selected_team_id = self.get_selected_team_id()
         if selected_team_id:
             selected_team = get_object_or_404(Team, id=selected_team_id)
-            coach.team.add(selected_team)
+            coach.team = selected_team
+        coach.save()
+        
         return super(CoachCreateView, self).form_valid(form)
 
 

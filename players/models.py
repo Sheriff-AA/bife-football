@@ -64,7 +64,7 @@ class Team(models.Model):
 class Coach(models.Model):
     first_name = models.CharField(max_length=20)
     last_name = models.CharField(max_length=20)
-    team = models.OneToOneField("Team", on_delete=models.CASCADE, related_name='coach')
+    team = models.ForeignKey("Team", on_delete=models.CASCADE, related_name='coach')
     user = models.OneToOneField("User", on_delete=models.CASCADE)
 
 

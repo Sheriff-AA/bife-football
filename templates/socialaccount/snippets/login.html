@@ -1,0 +1,16 @@
+{% load i18n %}
+{% load static %}
+{% load allauth %}
+{% load socialaccount %}
+<link rel="stylesheet" href="{% static 'vendors/tailwind-out.css' %}" />
+<script src="{% static 'vendors/htmx.min.js' %}"></script>
+{% get_providers as socialaccount_providers %}
+{% if socialaccount_providers %}
+    {% if not SOCIALACCOUNT_ONLY %}
+        <div class="divider divider-neutral">
+            <h2 class="flex justify-center text-sm">{% translate "or" %}</h2>
+        </div> 
+    {% endif %}
+    {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+    {% include "socialaccount/snippets/login_extra.html" %}
+{% endif %}
