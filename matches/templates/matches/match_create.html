@@ -7,8 +7,13 @@
     <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
   </div>
 
-  <div class="flex justify-center py-5">
-    <h1 class="text-2xl font-bold mb-4">Create a new match</h1>
+  <div class="flex justify-center">
+    <h1 class="text-2xl font-bold">Create a new match</h1>
+  </div>
+
+  <div class="flex justify-center">
+    <h1 class="text-l mb-4">This is for creating matches against teams that use this platform, for custom opponents use 
+      <a href="{% url 'custommatches:custommatch-create' %}" class="text-blue-500"> this </a> </h1>
   </div>
 
   <div class="max-w-lg mx-auto mb-3">

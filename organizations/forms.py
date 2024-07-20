@@ -1,7 +1,8 @@
 from allauth.account.forms import SignupForm, SetPasswordField, PasswordField
 from allauth.socialaccount.forms import SignupForm as SocialSignupForm
-from django.db import IntegrityError
-from django.contrib import messages
+# from django.db import IntegrityError
+# from django.contrib import messages
+from utils.titlecase import titlecase 
 from django.core.exceptions import ValidationError
 from django import forms
 from players.models import Team, Coach
@@ -33,8 +34,8 @@ class CustomSignupForm(SignupForm):
         user.is_admin = True
         user.save()
         team = Team.objects.create(
-        team_name = self.cleaned_data['team_name'],
-        short_team_name = self.cleaned_data['short_team_name'],
+        team_name = titlecase(self.cleaned_data['team_name']),
+        short_team_name = self.cleaned_data['short_team_name'].upper(),
         organisation = user
         )
         Admin.objects.create(
@@ -42,8 +43,8 @@ class CustomSignupForm(SignupForm):
             user = user
         )
         Coach.objects.create(
-            first_name = self.cleaned_data['first_name'],
-            last_name = self.cleaned_data['last_name'],
+            first_name = titlecase(self.cleaned_data['first_name']),
+            last_name = titlecase(self.cleaned_data['last_name']),
             team = team,
             user = user
         )
@@ -56,7 +57,7 @@ class CustomSocialSignupForm(SocialSignupForm):
     team_name = forms.CharField(max_length=80, required=True, label='Name of Your Team')
     short_team_name = forms.CharField(max_length=3, required=True, label='Abbreviated 3 Letter Name For Your Team')
     password1 = SetPasswordField(max_length=20, label='Password', required=True)
-    password2 = PasswordField(max_length=20, label='Password Again', required=True)
+    password2 = PasswordField(max_length=20, label='Confirm Password', required=True)
 
     def clean_password2(self):
         if ("password1" in self.cleaned_data and "password2" in self.cleaned_data):
@@ -85,9 +86,10 @@ class CustomSocialSignupForm(SocialSignupForm):
         user.is_admin = True
         user.is_coach = True
         user.save()
+        print(self.cleaned_data['team_name'])
         team = Team.objects.create(
-        team_name = self.cleaned_data['team_name'],
-        short_team_name = self.cleaned_data['short_team_name'],
+        team_name = titlecase(self.cleaned_data['team_name']),
+        short_team_name = self.cleaned_data['short_team_name'].upper(),
         organisation = user
         )
         Admin.objects.create(
@@ -95,8 +97,8 @@ class CustomSocialSignupForm(SocialSignupForm):
             user = user
         )
         Coach.objects.create(
-            first_name = self.cleaned_data['first_name'],
-            last_name = self.cleaned_data['last_name'],
+            first_name = titlecase(self.cleaned_data['first_name']),
+            last_name = titlecase(self.cleaned_data['last_name']),
             team = team,
             user = user
         )

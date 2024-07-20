@@ -17,7 +17,6 @@ class MatchModelForm(forms.ModelForm):
         fields = ("home_team", "away_team", "venue", "match_date")
         widgets = {
             "match_date": DateTimePickerInput(attrs={'type': 'datetime-local', 'class': 'form-input'}),
-            "venue": forms.Select(attrs={'class': 'form-select'}),
             "home_team": forms.Select(attrs={'class': 'form-select'}),
             "away_team": forms.Select(attrs={'class': 'form-select'}),
         }

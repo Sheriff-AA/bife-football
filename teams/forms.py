@@ -12,7 +12,7 @@ class TeamModelForm(forms.ModelForm):
 
 
 class CoachModelForm(forms.ModelForm):
-    username = forms.CharField(max_length=20, required=True, label="Player's Username")
+    username = forms.CharField(max_length=20, required=True, label="Coach's Username")
     email = forms.CharField(max_length=45, required=True, label="Email")
 
     def clean_email(self):

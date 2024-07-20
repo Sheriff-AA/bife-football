@@ -4,6 +4,7 @@ from typing import Any
 from django.db.models import Subquery
 from django.shortcuts import render, reverse, get_object_or_404, redirect
 from django.conf import settings
+from utils.titlecase import titlecase
 from faker import Faker
 from django.contrib import messages
 from django.views import generic
@@ -11,6 +12,8 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin
 
+from allauth.account.models import EmailAddress
+from allauth.account.utils import send_email_confirmation
 from players.mixins import AdminorCoachRequiredMixin, CoachRequiredMixin, AdminRequiredMixin
 from .forms import TeamModelForm, TeamSelectForm, CoachModelForm
 from players.models import Team, Contract, Match, Player, Result, Coach, PlayerStat, User
@@ -279,19 +282,19 @@ class CoachCreateView(LoginRequiredMixin, AdminRequiredMixin, generic.CreateView
         return reverse("teams:team-dashboard")
     
     def form_valid(self, form):
-        fake = Faker()
-        random_password = f"{random.randint(0, 100000)}"
+        random_password = f"{random.randint(9999, 100000)}"
         user = User.objects.create_user(
             username=form.cleaned_data.get('username'),
             email=form.cleaned_data.get('email'), 
-            first_name=form.cleaned_data.get('first_name'),
-            last_name=form.cleaned_data.get('last_name'),
+            first_name=titlecase(form.cleaned_data.get('first_name')),
+            last_name=titlecase(form.cleaned_data.get('last_name')),
             password=random_password
         )
         user.is_coach = True
+        user.is_active = False
         user.save()
 
-        # Create the Player object
+        # Create the Coach object
         coach = form.save(commit=False)
         coach.user = user
         # Get the selected team ID from the session or form
@@ -300,6 +303,15 @@ class CoachCreateView(LoginRequiredMixin, AdminRequiredMixin, generic.CreateView
             selected_team = get_object_or_404(Team, id=selected_team_id)
             coach.team = selected_team
         coach.save()
+
+        try:
+            send_email_confirmation(self.request, user)
+        except Exception as e:
+            # Notify the user about the issue
+            messages.error(self.request, "There was an error sending the confirmation email. Please try again later.")
+            # Optionally, delete the user if email sending fails
+            user.delete()
+            return redirect(reverse("teams:team-dashboard"))
         
         return super(CoachCreateView, self).form_valid(form)
 
