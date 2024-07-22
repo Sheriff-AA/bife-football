@@ -45,7 +45,7 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 DEBUG = config('DJANGO_DEBUG', cast=bool)
 
 ALLOWED_HOSTS = [
-    'https://soccerbase.onrender.com',
+    'soccerbase.onrender.com',
 ]
 
 if DEBUG:
