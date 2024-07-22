@@ -56,7 +56,7 @@ ENV DJANGO_DEBUG=${DJANGO_DEBUG}
 # RUN python manage.py collectstatic --noinput
 
 # set the Django default project name
-ARG PROJ_NAME="bife-football"
+ARG PROJ_NAME="bifefootball"
 
 # create a bash script to run the Django project
 # this script will execute at runtime when
