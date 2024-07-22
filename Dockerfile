@@ -52,8 +52,8 @@ ENV DJANGO_DEBUG=${DJANGO_DEBUG}
 # database isn't available during build
 # run any other commands that do not need the database
 # such as:
-RUN python manage.py vendor_static_pull
-RUN python manage.py collectstatic --noinput
+# RUN python manage.py vendor_static_pull
+# RUN python manage.py collectstatic --noinput
 
 # set the Django default project name
 ARG PROJ_NAME="bife-football"
@@ -64,6 +64,8 @@ ARG PROJ_NAME="bife-football"
 RUN printf "#!/bin/bash\n" > ./paracord_runner.sh && \
     printf "RUN_PORT=\"\${PORT:-8000}\"\n\n" >> ./paracord_runner.sh && \
     printf "python manage.py migrate --no-input\n" >> ./paracord_runner.sh && \
+    printf "python manage.py vendor_static_pull\n" >> ./paracord_runner.sh && \
+    printf "python manage.py collectstatic --noinput\n" >> ./paracord_runner.sh && \
     printf "gunicorn ${PROJ_NAME}.wsgi:application --bind \"0.0.0.0:\$RUN_PORT\"\n" >> ./paracord_runner.sh
 
 # make the bash script executable
