@@ -35,7 +35,7 @@ if all([ADMIN_USER_NAME, ADMIN_USER_EMAIL]):
     ]
     MANAGERS=ADMINS
 
-CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com", "https://*.ondigitalocean.app"]
+CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com"]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -46,9 +46,7 @@ SECRET_KEY = config('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DJANGO_DEBUG', cast=bool)
 
-ALLOWED_HOSTS = [
-    ".onrender.com"
-]
+ALLOWED_HOSTS = [".onrender.com"]
 
 if DEBUG:
     ALLOWED_HOSTS += [
@@ -92,7 +90,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    "whitenoise.middleware.WhiteNoiseMiddleware",
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
