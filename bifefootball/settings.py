@@ -35,7 +35,7 @@ if all([ADMIN_USER_NAME, ADMIN_USER_EMAIL]):
     ]
     MANAGERS=ADMINS
 
-CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com"]
+CSRF_TRUSTED_ORIGINS = ["https://*.onrender.com", "https://*.ondigitalocean.app"]
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -48,6 +48,7 @@ DEBUG = config('DJANGO_DEBUG', cast=bool)
 
 ALLOWED_HOSTS = [
     '.onrender.com',
+    '.ondigitalocean.app',
 ]
 
 if DEBUG:
