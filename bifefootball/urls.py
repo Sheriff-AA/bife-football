@@ -25,6 +25,7 @@ urlpatterns = [
     path("matches/", include("matches.urls", namespace="matches")),
     path("admins/", include("admins.urls", namespace="admins")),
     path("players/", include("players.urls", namespace="players")),
+    path("organizations/", include("organizations.urls", namespace="organizations")),
     path("teams/", include("teams.urls", namespace="teams")),
     path('accounts/', include('allauth.urls')),
     path("custommatches/", include("custommatches.urls", namespace="custommatches")),
