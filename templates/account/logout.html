@@ -5,6 +5,7 @@
 {% block content %}
 <link rel="stylesheet" href="{% static 'vendors/tailwind-out.css' %}" />
 <script src="{% static 'vendors/htmx.min.js' %}"></script>
+    {% include 'js.html' %}
     {% include "navbar.html" %}
     {% trans "Sign Out" as heading %}
     {% trans "Are you sure you want to sign out?" as subheading %}

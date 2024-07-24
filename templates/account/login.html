@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="{% static 'vendors/tailwind-out.css' %}" />
 <script src="{% static 'vendors/htmx.min.js' %}"></script>
     {% include "navbar.html" %}
+    {% include 'js.html' %}
     {% trans "Log In" as heading %}
     {% #container heading=heading  %}
     {% if not SOCIALACCOUNT_ONLY %}

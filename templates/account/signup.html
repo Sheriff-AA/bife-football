@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="{% static 'vendors/tailwind-out.css' %}" />
 <script src="{% static 'vendors/htmx.min.js' %}"></script>
     {% include "navbar.html" %}
+    {% include 'js.html' %}
     {% trans "Sign Up" as heading %}
     {% blocktranslate asvar subheading %}Already have an account? Then please <a href="{{ login_url }}" class="link">sign in</a>.{% endblocktranslate %}
     {% #container heading=heading subheading=subheading  %}

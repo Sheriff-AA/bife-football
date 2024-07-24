@@ -48,11 +48,11 @@ DEBUG = config('DJANGO_DEBUG', cast=bool)
 
 ALLOWED_HOSTS = [".onrender.com"]
 
-if DEBUG:
-    ALLOWED_HOSTS += [
-        "127.0.0.1",
-        "localhost"
-    ]
+# if DEBUG:
+#     ALLOWED_HOSTS += [
+#         "127.0.0.1",
+#         "localhost"
+#     ]
 
 
 
