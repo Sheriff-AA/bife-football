@@ -28,6 +28,10 @@ RUN apt-get update && apt-get install -y \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
+# Install Node.js and npm
+RUN curl -fsSL https://deb.nodesource.com/setup_14.x | bash - \
+    && apt-get install -y nodejs
+
 # Create the mini vm's code directory
 RUN mkdir -p /code
 
@@ -39,6 +43,12 @@ COPY requirements.txt /tmp/requirements.txt
 
 # copy the project code into the container's working directory
 COPY . /code
+
+# Install npm dependencies
+RUN npm install
+
+# Run the desired npm command (e.g., npm run watch)
+RUN npm run build
 
 # Install the Python project requirements
 RUN pip install -r /tmp/requirements.txt
