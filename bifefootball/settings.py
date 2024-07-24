@@ -25,7 +25,8 @@ EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", cast=str, default=None)
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool, default=True)  # Use EMAIL_PORT 587 for TLS
 EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False)  # Use MAIL_PORT 465 for SSL
 
-DEFAULT_FROM_EMAIL = 'mailtrap@sherifproductions.com'
+if not DEBUG:
+    DEFAULT_FROM_EMAIL = 'mailtrap@sherifproductions.com'
 
 ADMIN_USER_NAME=config("ADMIN_USER_NAME", default="Admin User")
 ADMIN_USER_EMAIL=config("ADMIN_USER_EMAIL", default=None)
@@ -153,7 +154,7 @@ if DATABASE_URL is not None:
 
 # DJANGO-ALLAUTH CONFIG
 LOGIN_REDIRECT_URL="/"
-ACCOUNT_AUTHENTICATION_METHOD="email"
+ACCOUNT_AUTHENTICATION_METHOD="username_email"
 ACCOUNT_EMAIL_VERIFICATION="mandatory"
 ACCOUNT_EMAIL_SUBJECT_PREFIX="[SoccerBase] "
 ACCOUNT_EMAIL_REQUIRED=True
