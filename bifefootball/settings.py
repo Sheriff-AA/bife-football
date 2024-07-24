@@ -25,8 +25,7 @@ EMAIL_HOST_PASSWORD = config("EMAIL_HOST_PASSWORD", cast=str, default=None)
 EMAIL_USE_TLS = config("EMAIL_USE_TLS", cast=bool, default=True)  # Use EMAIL_PORT 587 for TLS
 EMAIL_USE_SSL = config("EMAIL_USE_SSL", cast=bool, default=False)  # Use MAIL_PORT 465 for SSL
 
-if not DEBUG:
-    DEFAULT_FROM_EMAIL = 'mailtrap@sherifproductions.com'
+DEFAULT_FROM_EMAIL = 'mailtrap@sherifproductions.com'
 
 ADMIN_USER_NAME=config("ADMIN_USER_NAME", default="Admin User")
 ADMIN_USER_EMAIL=config("ADMIN_USER_EMAIL", default=None)
