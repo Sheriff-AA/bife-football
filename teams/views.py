@@ -297,6 +297,7 @@ class CoachCreateView(LoginRequiredMixin, AdminRequiredMixin, generic.CreateView
         # Create the Coach object
         coach = form.save(commit=False)
         coach.user = user
+        coach.role = titlecase(form.cleaned_data.get('role'))
         # Get the selected team ID from the session or form
         selected_team_id = self.get_selected_team_id()
         if selected_team_id:

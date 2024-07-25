@@ -23,7 +23,7 @@ class CoachModelForm(forms.ModelForm):
     
     class Meta:
         model = Coach
-        fields = ("first_name", "last_name")
+        fields = ("first_name", "last_name", "role")
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop("user")

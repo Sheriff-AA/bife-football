@@ -45,6 +45,7 @@ class CustomSignupForm(SignupForm):
         Coach.objects.create(
             first_name = titlecase(self.cleaned_data['first_name']),
             last_name = titlecase(self.cleaned_data['last_name']),
+            role = "Head Coach",
             team = team,
             user = user
         )
@@ -99,6 +100,7 @@ class CustomSocialSignupForm(SocialSignupForm):
         Coach.objects.create(
             first_name = titlecase(self.cleaned_data['first_name']),
             last_name = titlecase(self.cleaned_data['last_name']),
+            role = "Head Coach",
             team = team,
             user = user
         )
