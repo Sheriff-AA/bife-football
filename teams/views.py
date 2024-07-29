@@ -4,6 +4,7 @@ from typing import Any
 from django.db.models import Subquery
 from django.shortcuts import render, reverse, get_object_or_404, redirect
 from django.conf import settings
+from django.db.models import Sum
 from utils.titlecase import titlecase
 from faker import Faker
 from django.contrib import messages
@@ -12,11 +13,10 @@ from django.db.models import Q
 from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin
 
-from allauth.account.models import EmailAddress
 from allauth.account.utils import send_email_confirmation
-from players.mixins import AdminorCoachRequiredMixin, CoachRequiredMixin, AdminRequiredMixin
+from players.mixins import AdminorCoachRequiredMixin, AdminRequiredMixin
 from .forms import TeamModelForm, TeamSelectForm, CoachModelForm
-from players.models import Team, Contract, Match, Player, Result, Coach, PlayerStat, User
+from players.models import Team, Contract, Match, Player, Result, PlayerStat, User
 from admins.models import Admin
 from custommatches.models import CustomMatch, CustomMatchResult, CustomMatchPlayerStat
 
@@ -135,30 +135,39 @@ class TeamDashboardView(LoginRequiredMixin, AdminorCoachRequiredMixin, generic.D
     def group_stats(self, stats, queryset, is_custom):
         for stat in queryset:
             if is_custom:
-                match_id = stat.custom_match.id
+                match_slug = stat.custom_match.slug
             else:
-                match_id = stat.match.id
-            if match_id not in stats:
+                match_slug = stat.match.slug
+            if match_slug not in stats:
                 if is_custom:
                     match = stat.custom_match
                 else:
                     match = stat.match
-                stats[match_id] = {
+                stats[match_slug] = {
                     'match': match,
                     'player_stats': []
                 }
-            stats[match_id]['player_stats'].append(stat)
+            stats[match_slug]['player_stats'].append(stat)
         
         return stats
     
     def get_dashboard_context(self, form, selected_team):
         contract = Contract.objects.filter(team=selected_team, is_valid=True).order_by('-contract_date')
         latest_contracts = contract.extra(where=[GET_LATEST_CONTRACTS])
-        upcoming_matches = Match.objects.filter(Q(home_team=selected_team) | Q(away_team=selected_team), is_fixture=True).order_by('match_date')[:5]
-        team_results = Result.objects.filter(Q(match__home_team=selected_team) | Q(match__away_team=selected_team)).order_by('-match__match_date')[:5]
 
-        custom_matches = CustomMatch.objects.filter(Q(user_team=selected_team),is_fixture=True).order_by('match_date')[:5]
-        custom_results = CustomMatchResult.objects.filter(Q(custom_match__user_team=selected_team)).order_by('-custom_match__match_date')[:5]
+        # MATCHES
+        all_matches = Match.objects.filter(Q(home_team=selected_team) | Q(away_team=selected_team), is_fixture=True)
+        all_results = Result.objects.filter(Q(match__home_team=selected_team) | Q(match__away_team=selected_team))
+
+        # CUSTOM MATCHES
+        all_custom_matches = CustomMatch.objects.filter(Q(user_team=selected_team),is_fixture=True)
+        all_custom_results = CustomMatchResult.objects.filter(Q(custom_match__user_team=selected_team))
+
+
+        upcoming_matches = all_matches.order_by('match_date')[:5]
+        team_results = all_results.order_by('-match__match_date')[:5]
+        custom_matches = all_custom_matches.order_by('match_date')[:5]
+        custom_results = all_custom_results.order_by('-custom_match__match_date')[:5]
 
         player_stats = PlayerStat.objects.filter(match__in=Subquery(team_results.values("match")[:3]), player_contract__team=selected_team)
         custom_player_stats = CustomMatchPlayerStat.objects.filter(custom_match__in=Subquery(custom_results.values("custom_match")[:3]), player_contract__team=selected_team)
@@ -168,10 +177,19 @@ class TeamDashboardView(LoginRequiredMixin, AdminorCoachRequiredMixin, generic.D
         matches_stats = self.group_stats(matches_stats, player_stats, False)
         matches_stats = self.group_stats(matches_stats, custom_player_stats, True)
 
+        home_goals = Result.objects.filter(match__home_team=selected_team).aggregate(total=Sum('score_hometeam'))['total'] or 0
+        away_goals = Result.objects.filter(match__away_team=selected_team).aggregate(total=Sum('score_awayteam'))['total'] or 0
+        goals_in_custom = CustomMatchResult.objects.filter(custom_match__user_team=selected_team).aggregate(total=Sum('score_userteam'))['total'] or 0
+
+        goals_scored = home_goals + away_goals + goals_in_custom
+
         return {
             "contracts": latest_contracts,
             "upcoming_matches": upcoming_matches,
             "custom_matches": custom_matches,
+            "goals_scored": goals_scored,
+            "games_played": all_results.count() + all_custom_results.count(),
+            "games_to_play": all_custom_matches.count() + all_matches.count(),
             "team_results": team_results,
             "custom_results": custom_results,
             "selected_team": selected_team,
