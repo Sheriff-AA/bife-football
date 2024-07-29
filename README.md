@@ -46,16 +46,16 @@ To set up the project locally:
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/yourusername/yourproject.git
+   git clone https://github.com/Sheriff-AA/bife-football.git
    ```
 2. Navigate to the project directory:
    ```sh
-   cd yourproject
+   cd bife-football
    ```
 3. Create and activate a virtual environment:
    ```sh
    python -m venv venv
-   source venv/bin/activate
+   source venv\Source\activate
    ```
 4. Install dependencies:
    ```sh
@@ -82,12 +82,12 @@ To set up the project locally:
 3. Fill in the team details and submit.
 
 ### Adding Players
-1. Go to the team page.
+1. Go to the dashboard page.
 2. Click on "Add Player".
 3. Fill in the player details and submit.
 
 ### Adding Coaches
-1. Go to the team page.
+1. Go to the dashboard page.
 2. Click on "Add Coach".
 3. Fill in the coach details and submit.
 
