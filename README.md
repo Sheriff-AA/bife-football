@@ -1,6 +1,10 @@
 # Website Project Documentation
 SoccerBase - A profile website for a football team matches and players statistics
 
+You can access the live website here on soccerbase.onrender.com
+
+Note: The website is hosted on a free server, so it may take a few moments to boot up when accessed.
+
 ## Overview
 
 This project is a web application built with Django, utilizing HTMX for dynamic interactions and multiple other technologies to enhance functionality. Users can manage sports teams, players, and matches. Features include team creation, player and coach management, match scheduling, recording match events, updating player stats, viewing previous results, and performing various searches.
@@ -32,7 +36,7 @@ This project is a web application built with Django, utilizing HTMX for dynamic 
 5. [License](#license)
 
 ## Website Link
-You can access the live website [here](soccerbase.onrender.com)
+You can access the live website here on soccerbase.onrender.com
 
 Note: The website is hosted on a free server, so it may take a few moments to boot up when accessed.
 
