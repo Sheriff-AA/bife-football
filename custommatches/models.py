@@ -11,6 +11,7 @@ class CustomMatch(models.Model):
     match_date = models.DateTimeField()
     slug = models.SlugField(null=True, blank=True, unique=True)
     is_fixture = models.BooleanField(default=True)
+    has_result = models.BooleanField(default=False)
     is_home = models.BooleanField(default=False)
 
     class Meta:
@@ -64,6 +65,12 @@ class CustomMatchEvent(models.Model):
 
     def __str__(self):
         return f"{self.event_type} - Match: {self.custom_match}"
+    
+    def save(self, *args, **kwargs):
+        # Check for and delete previous duplicates
+        CustomMatchEvent.objects.filter(custom_match=self.custom_match, minute=self.minute, player_contract=self.player_contract, event_type=self.event_type).delete()
+        # Save the new instance
+        super().save(*args, **kwargs)
     
 
 class CustomMatchResult(models.Model):

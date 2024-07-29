@@ -93,17 +93,23 @@ class MatchDetailView(generic.DetailView):
     
     def get_context_data(self, **kwargs):
         context = super(MatchDetailView, self).get_context_data(**kwargs)
+        can_edit_stats = False
         home_team = PlayerStat.objects.filter(
             match=self.get_object(),
-            player_contract__team =self.get_object().home_team
+            player_contract__team = self.get_object().home_team
         )
         away_team = PlayerStat.objects.filter(
             match=self.get_object(),
-            player_contract__team =self.get_object().away_team
+            player_contract__team = self.get_object().away_team
         )
+        if hasattr(self.request.user, 'coach'):
+            if self.request.user.coach.team == self.get_object().home_team or self.request.user.coach.team == self.get_object().away_team:
+                can_edit_stats = True
+
         context.update({
             "hometeam_players": home_team,
             "awayteam_players": away_team,
+            "can_edit_stats": can_edit_stats,
             "events": self.get_object().match_events.all().order_by('minute')
         })
         return context
@@ -227,7 +233,7 @@ class MatchCreateEventView(LoginRequiredMixin, AdminorCoachRequiredMixin, generi
         return kwargs
 
     def get_success_url(self):
-        return reverse("matches:match-list")
+        return reverse("matches:match-detail", kwargs={'slug':self.kwargs['slug']})
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -328,7 +334,8 @@ class MatchCreateEventView(LoginRequiredMixin, AdminorCoachRequiredMixin, generi
                 instance.is_fixture = False
                 instance.save()
                 match_event.save()
-                return redirect("matches:result-create", slug=instance.slug)
+                # return redirect("matches:result-create", slug=instance.slug)
+                return HttpResponseRedirect(self.get_success_url())
             else:
                 match_event.save()
         return HttpResponseRedirect(self.get_success_url())
@@ -351,7 +358,7 @@ class ResultCreateView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateVie
         return queryset
 
     def get_success_url(self):
-        return reverse("matches:match-list")
+        return reverse("matches:match-detail", kwargs={'slug':self.kwargs['slug']})
     
     def form_valid(self, form):
         match_instance = self.get_object()
@@ -360,10 +367,11 @@ class ResultCreateView(LoginRequiredMixin, CoachRequiredMixin, generic.CreateVie
             score_hometeam=self.calculate_score(match_instance.home_team), 
             score_awayteam=self.calculate_score(match_instance.away_team)
             )
+        match_instance.has_result=True
+        match_instance.save()
         
-        return redirect("matches:player-stat-create", slug=match_instance.slug)
-        
-        # return HttpResponseRedirect(self.get_success_url())
+        # return redirect("matches:player-stat-create", slug=match_instance.slug)
+        return HttpResponseRedirect(self.get_success_url())
     
     def get_context_data(self, **kwargs):
         data = super(ResultCreateView, self).get_context_data(**kwargs)
@@ -430,7 +438,7 @@ class PlayerStatCreateEventView(LoginRequiredMixin, CoachRequiredMixin, generic.
         return formset
         
     def get_success_url(self):
-        return reverse("matches:match-list")
+        return reverse("matches:match-detail", kwargs={'slug':self.kwargs['slug']})
     
     def get(self, request, *args, **kwargs):
         """

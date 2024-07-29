@@ -1,48 +1,55 @@
 <div class="lg:w-3/3 w-full mx-auto overflow-auto mb-5">
   <div class="flex flex-col w-full">
-    <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Results</h1>
+    <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">RESULTS</h1>
   </div>
 
-  <table class="table-auto w-full text-left whitespace-no-wrap">
-    <thead>
-      <tr>
-        <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
-        <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
-        <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Scoreline</th>
-        <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
-        <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
-      </tr>
-    </thead>
-    {% for result in results %}
-    <tbody>
-      <tr>
-      <td class="px-4 py-3">
-          <a href="{% url 'matches:match-detail' result.match.slug %}">
-              {{ result.match.home_team }}
-          </a>
-      </td>
-      <td class="px-4 py-3">
-          <a href="{% url 'matches:match-detail' result.match.slug %}">
-              {{ result.match.away_team }}
-          </a>
-      </td>
-      <td class="px-4 py-3">
-          {{ result.score_hometeam }} : {{ result.score_awayteam }}</td>
-      <td class="px-4 py-3 text-lg text-gray-900">{{ result.match.match_date|date:"F d, Y, h:i A" }}</td>
-      <td class="px-4 py-3 text-lg underline text-blue-900">
-        <a href="{% url 'matches:match-detail' result.match.slug %}">View</a>
-      </td>
-      </tr>
-    </tbody>
-    {% endfor %}
-  </table>
+  {% if results %}
+    <table class="table-auto w-full text-left whitespace-no-wrap">
+      <thead>
+        <tr>
+          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">Home team</th>
+          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Away team</th>
+          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Scoreline</th>
+          <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">Date</th>
+          <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+        </tr>
+      </thead>
+      {% for result in results %}
+      <tbody>
+        <tr>
+        <td class="px-4 py-3">
+            <a href="{% url 'matches:match-detail' result.match.slug %}">
+                {{ result.match.home_team }}
+            </a>
+        </td>
+        <td class="px-4 py-3">
+            <a href="{% url 'matches:match-detail' result.match.slug %}">
+                {{ result.match.away_team }}
+            </a>
+        </td>
+        <td class="px-4 py-3">
+            {{ result.score_hometeam }} : {{ result.score_awayteam }}</td>
+        <td class="px-4 py-3 text-lg text-gray-900">{{ result.match.match_date|date:"F d, Y, h:i A" }}</td>
+        <td class="px-4 py-3 text-lg underline text-blue-900">
+          <a href="{% url 'matches:match-detail' result.match.slug %}">View</a>
+        </td>
+        </tr>
+      </tbody>
+      {% endfor %}
+    </table>
+  {% else %}
+  <div class="flex flex-col text-center w-full mb-10">
+    <p class="lg:w-2/3 mx-auto leading-relaxed text-base font-semibold">
+    NO RESULT AT THIS TIME...</p>
+</div>
+  {% endif %}
 </div>
 
 <!--Private Results-->
+<div class="flex flex-col w-full mt-20">
+  <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">CUSTOM RESULTS</h1>
+</div>
 {% if customresults %}
-  <div class="flex flex-col w-full mt-20">
-    <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Custom Results</h1>
-  </div>
   <table class="table-auto w-full text-left whitespace-no-wrap mb-5">
     <thead>
       <tr>
@@ -85,15 +92,20 @@
     </tbody>
     {% endfor %}
   </table>
+{% else %}
+  <div class="flex flex-col text-center w-full mb-10">
+    <p class="lg:w-2/3 mx-auto leading-relaxed text-base font-semibold">
+    NONE AT THIS TIME...</p>
+  </div>
 {% endif %}
 <!--Private Results-->
 
 <!--Fixtures-->
+<div class="flex flex-col w-full mt-20">
+  <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">FIXTURES</h1>
+</div>
 {% if fixtures %}
   <div class="lg:w-3/3 w-full mx-auto overflow-auto">
-    <div class="flex flex-col w-full mt-20">
-      <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Fixtures</h1>
-    </div>
     <table class="table-auto w-full text-left whitespace-no-wrap mb-5">
       <thead>
         <tr>
@@ -118,22 +130,27 @@
         </td>
         <td class="px-3 py-3 text-lg text-gray-900">{{ fixture.match_date|date:"F d, Y, h:i A" }}</td>
         <td class="px-3 py-3 text-right text-lg underline text-blue-900">
-          <a href="{% url 'matches:match-event-create' fixture.slug %}">Add event(s)</a>
+          <a href="{% url 'matches:match-event-create' fixture.slug %}">View event(s)</a>
         </td>
         </tr>
       </tbody>
       {% endfor %}
     </table>
   </div>
+{% else %}
+  <div class="flex flex-col text-center w-full mb-10">
+    <p class="lg:w-2/3 mx-auto leading-relaxed text-base font-semibold">
+    NO UPCOMING GAMES...</p>
+  </div>
 {% endif %}
 <!--Fixtures-->
 
 <!--Private Games-->
+<div class="flex flex-col w-full mt-20">
+  <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">PRIVATE GAMES</h1>
+</div>
 {% if custommatches %}
   <div class="lg:w-3/3 w-full mx-auto mb-10 overflow-auto">
-    <div class="flex flex-col w-full mt-20">
-      <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Private Games</h1>
-    </div>
     <table class="table-auto w-full text-left whitespace-no-wrap mb-5">
       <thead>
         <tr>
@@ -163,12 +180,17 @@
         {% endif %}
         <td class="px-3 py-3 text-lg text-gray-900">{{ match.match_date|date:"F d, Y, h:i A" }}</td>
         <td class="px-3 py-3 text-right text-lg underline text-blue-900">
-          <a href="{% url 'custommatches:custommatch-event-create' match.slug %}">Add event(s)</a>
+          <a href="{% url 'custommatches:custommatch-event-create' match.slug %}">View event(s)</a>
         </td>
         </tr>
       </tbody>
       {% endfor %}
     </table>
+  </div>
+{% else %}
+  <div class="flex flex-col text-center w-full mb-10">
+    <p class="lg:w-2/3 mx-auto leading-relaxed text-base font-semibold">
+    NO PRIVATE GAMES SCHEDULED...</p>
   </div>
 {% endif %}
 <!--Private Games-->

@@ -3,14 +3,22 @@
 
 <div class="container p-6 mx-auto">
     <div class="flex justify-center mt-5 mb-5">
-        <a class="text-blue-800 hover:text-blue-100 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
+        <a class="text-blue-800 hover:text-blue-100 mt-3" href="{% url 'custommatches:custommatch-detail' match.slug %}"> Go back to match details</a>
     </div>
 
     <div class="flex justify-center py-5">
         <h1 class="text-4xl text-gray-800">Match Event(s) for {{ match }}</h1>
     </div>
 
-    {% if can_add_event and match.is_fixture %}
+    {% comment %} {% if can_add_event and match.is_fixture %} {% endcomment %}
+    {% if can_add_event %}
+
+
+        <div class="flex flex-col text-center w-full mb-10">
+            <p class="lg:w-2/3 mx-auto leading-relaxed text-base font-semibold">
+            Use the "FULLTIME" option to end the match and click submit. ENSURE THAT IT IS THE LAST EVENT ON THE FORM AS EVENTS AFTER THAT ARE NOT ACCOUNTED FOR!</p>
+        </div>
+
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
             {{ formset.management_form }}
@@ -88,7 +96,7 @@
     {% endif %}
 
     <div class="py-5 border-t border-gray-200">
-        <h1 class="text-4xl text-gray-800">Match events</h1>
+        <h1 class="text-4xl text-gray-800">MATCH EVENTS</h1>
     </div>
 
     {% if events %}

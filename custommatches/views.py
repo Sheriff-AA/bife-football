@@ -45,13 +45,18 @@ class CustomMatchDetailView(generic.DetailView):
     
     def get_context_data(self, **kwargs):
         context = super(CustomMatchDetailView, self).get_context_data(**kwargs)
+        can_edit_stats = False
         user_team = CustomMatchPlayerStat.objects.filter(
             custom_match=self.get_object(),
             player_contract__team =self.get_object().user_team
         )
+        if hasattr(self.request.user, 'coach'):
+            if self.request.user.coach.team == self.get_object().user_team:
+                can_edit_stats = True
 
         context.update({
             "userteam_players": user_team,
+            "can_edit_stats": can_edit_stats,
             "events": self.get_object().match_events.all().order_by('minute')
         })
         return context
@@ -70,7 +75,7 @@ class CustomMatchCreateEventView(LoginRequiredMixin, AdminorCoachRequiredMixin, 
         return kwargs
 
     def get_success_url(self):
-        return reverse("matches:match-list")
+        return reverse("custommatches:custommatch-detail", kwargs={'slug':self.kwargs['slug']})
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
@@ -169,7 +174,8 @@ class CustomMatchCreateEventView(LoginRequiredMixin, AdminorCoachRequiredMixin, 
                 instance.is_fixture = False
                 instance.save()
                 match_event.save()
-                return redirect("custommatches:custom-create-result", slug=instance.slug)
+                # return redirect("custommatches:custom-create-result", slug=instance.slug)
+                return HttpResponseRedirect(self.get_success_url())
             else:
                 match_event.save()
         return HttpResponseRedirect(self.get_success_url())
@@ -191,7 +197,7 @@ class CustomResultCreateView(LoginRequiredMixin, AdminorCoachRequiredMixin, gene
         return queryset
 
     def get_success_url(self):
-        return reverse("matches:match-list")
+        return reverse("custommatches:custommatch-detail", kwargs={'slug':self.kwargs['slug']})
     
     def form_valid(self, form):
         match_instance = self.get_object()
@@ -200,8 +206,10 @@ class CustomResultCreateView(LoginRequiredMixin, AdminorCoachRequiredMixin, gene
             score_userteam = self.calculate_score(match_instance.user_team),
             score_versusteam = form.cleaned_data['score_versusteam']
             )
+        match_instance.has_result=True
+        match_instance.save()
         
-        return redirect("custommatches:custom-playerstat-create", slug=match_instance.slug)
+        return HttpResponseRedirect(self.get_success_url())
         
     
     def get_context_data(self, **kwargs):
@@ -269,7 +277,7 @@ class CustomMatchPlayerStatCreateEventView(LoginRequiredMixin, AdminorCoachRequi
         return formset
         
     def get_success_url(self):
-        return reverse("matches:match-list")
+        return reverse("custommatches:custommatch-detail", kwargs={'slug':self.kwargs['slug']})
     
     def get(self, request, *args, **kwargs):
         """

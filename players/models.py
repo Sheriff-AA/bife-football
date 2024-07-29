@@ -47,6 +47,7 @@ class Team(models.Model):
     team_name = models.CharField(max_length=80, unique=True)
     slug = models.SlugField(null=True, blank=True, unique=True)
     short_team_name = models.CharField(unique=True, max_length=3)
+    team_description = models.TextField(default="No description")
     organisation = models.ForeignKey("User",
         on_delete=models.CASCADE,
         related_name='team'
@@ -122,6 +123,7 @@ class Match(models.Model):
     match_date = models.DateTimeField()
     slug = models.SlugField(null=True, blank=True, unique=True)
     is_fixture = models.BooleanField(default=True)
+    has_result = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ['home_team', 'away_team', 'match_date']
@@ -176,4 +178,10 @@ class MatchEvent(models.Model):
 
     def __str__(self):
         return f"{self.event_type} - Match: {self.match}"
+    
+    def save(self, *args, **kwargs):
+        # Check for and delete previous duplicates
+        MatchEvent.objects.filter(match=self.match, minute=self.minute, player_contract=self.player_contract, event_type=self.event_type).delete()
+        # Save the new instance
+        super().save(*args, **kwargs)
     

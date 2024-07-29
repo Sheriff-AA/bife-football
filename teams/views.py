@@ -204,7 +204,7 @@ class TeamDashboardView(LoginRequiredMixin, AdminorCoachRequiredMixin, generic.D
             return self.render_to_response(context)
         
 
-class TeamMatchesView(generic.DetailView):
+class TeamMatchesView(LoginRequiredMixin, AdminorCoachRequiredMixin, generic.DetailView):
     template_name = "teams/team_matches.html"
     context_object_name = "team"
 

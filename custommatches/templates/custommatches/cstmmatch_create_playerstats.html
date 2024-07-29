@@ -3,11 +3,14 @@
 
 <div class="container p-6 mx-auto">
     <div class="flex justify-center mt-5 mb-5">
-        <a class="text-blue-800 hover:text-blue-200 mt-3" href="{% url 'matches:match-list'%}"> Back to match list</a>
+        <a class="text-blue-800 hover:text-blue-200 mt-3" href="{% url 'custommatches:custommatch-detail' match.slug %}"> Back to match details</a>
     </div>
 
-    <div class="flex justify-center py-5">
+    <div class="flex justify-center">
         <h1 class="text-4xl text-gray-800">Create player stats for {{ match }}</h1>
+    </div>
+    <div class="flex justify-center py-5">
+        <p class="text-l text-gray-800 font-semibold">Ignore empty rows!</p>
     </div>
 
     <form method="post" enctype="multipart/form-data">

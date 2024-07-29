@@ -2,12 +2,30 @@
 
 {% block content %}
 <section class="container mx-auto p-6 font-mono">
-  <div class="flex flex-col text-center w-full mb-20">
+  <div class="flex flex-col text-center w-full mb-10">
     <h1 class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Match Details</h1>
-    <p class="lg:w-2/3 mx-auto leading-relaxed text-base">{{ match.result }}</p>
+    {% if  match.has_result %}
+      <p class="lg:w-2/3 mx-auto leading-relaxed text-base">{{ match.custommatchresult }}</p>
+    {% endif %}
   </div>
 
-  
+  {% if can_edit_stats %}
+  <div class="flex justify-left mb-2">
+    {% if not match.is_fixture and not match.has_result %}
+      <a href="{% url 'custommatches:custom-create-result' match.slug %}" class="mr-5">
+        <p class="inline-flex text-white bg-blue-500 border-0 py-2 px-2 focus:outline-none hover:bg-blue-600 rounded text-sm">CONFIRM RESULTS!</p>
+      </a>
+    {% elif match.is_fixture %}
+      <a href="{% url 'custommatches:custommatch-event-create' match.slug %}" class="mr-5">
+        <p class="inline-flex text-white bg-blue-500 border-0 py-2 px-2 focus:outline-none hover:bg-blue-600 rounded text-sm">Add Match Events</p>
+      </a>
+    {% endif %}
+      <a href="{% url 'custommatches:custom-playerstat-create' match.slug %}">
+        <p class="inline-flex text-white bg-blue-500 border-0 py-2 px-2 focus:outline-none hover:bg-blue-600 rounded text-sm">Edit or Add Player Stats</p>
+      </a>
+  </div>
+  {% endif %}
+
   <p class="sm:text-4xl text-3xl font-medium title-font mb-2 text-gray-900">Team - {{ match.user_team }}</p>
   <div class="w-full mb-8 overflow-hidden rounded-lg shadow-lg">
     <div class="w-full overflow-x-auto">
@@ -46,10 +64,10 @@
   </div>
 
 
+  <div class="py-5 border-t border-gray-200">
+    <h1 class="text-4xl text-gray-800">MATCH EVENTS</h1>
+  </div>
   {% if events %}
-    <div class="py-5 border-t border-gray-200">
-        <h1 class="text-4xl text-gray-800">Match events</h1>
-    </div>
     <div class="px-5 lg:w-3/3 w-full mx-auto overflow-auto">
         <table class="table-auto w-full text-left whitespace-no-wrap">
           <thead>
@@ -71,6 +89,11 @@
           </tbody>
           {% endfor %}
         </table>
+    </div>
+  {% else %}
+    <div class="flex flex-col text-center w-full mb-10">
+    <p class="lg:w-2/3 mx-auto leading-relaxed text-base font-semibold">
+    NONE AT THIS TIME...</p>
     </div>
   {% endif %}
     

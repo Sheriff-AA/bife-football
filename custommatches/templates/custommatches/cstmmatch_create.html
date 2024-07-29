@@ -5,7 +5,12 @@
 <div class="container p-4 mx-auto">
 
   <div class="flex justify-center mt-5 mb-5">
-    <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list'%}"> Go back to match list</a>
+    <a class="hover:text-blue-500 mt-3" href="{% url 'matches:match-list' %}"> Go back to match list</a>
+  </div>
+
+  <div class="flex justify-center">
+    <h1 class="text-l mb-4">This is for creating matches against teams are not on this platform, to schedule a match against already existing teams 
+      <a href="{% url 'matches:match-create' %}" class="text-blue-500"> this </a> </h1>
   </div>
 
   <div class="flex justify-center py-5">
