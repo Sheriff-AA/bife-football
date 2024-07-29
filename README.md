@@ -115,7 +115,7 @@ To set up the project locally:
 1. Use the search bar on the dashboard.
 2. Enter a team name, match date, or player name to find relevant information.
 
-### Technology Stack
+## Technology Stack
 1. Backend: Django, Django AllAuth
 2. Frontend: HTMX, Django-Crispy-Forms, Tailwind CSS
 3. Database: PostgreSQL free database on xata
