@@ -31,9 +31,10 @@ This project is a web application built with Django, utilizing HTMX for dynamic 
    - [Updating Player Statistics](#updating-player-statistics)
    - [Viewing Previous Results](#viewing-previous-results)
    - [Searching](#searching)
-3. [Database Schema](#database-schema)
-4. [Contributing](#contributing)
-5. [License](#license)
+3. [Technology Stack](#technology-stack)
+4. [Database Schema](#database-schema)
+5. [Contributing](#contributing)
+6. [License](#license)
 
 ## Website Link
 You can access the live website [here](https://soccerbase.onrender.com/)
@@ -113,6 +114,13 @@ To set up the project locally:
 ### Searching
 1. Use the search bar on the dashboard.
 2. Enter a team name, match date, or player name to find relevant information.
+
+### Technology Stack
+1. Backend: Django, Django AllAuth
+2. Frontend: HTMX, Django-Crispy-Forms, Tailwind CSS
+3. Database: PostgreSQL free database on xata
+4. Deployment: Docker
+5. Deployment: Gunicorn, Whitenoise, and free server hosting on render
 
 ## Database Schema
 
